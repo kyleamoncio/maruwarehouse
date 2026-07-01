@@ -2284,6 +2284,36 @@ select.form-control option {
 /* House Portal shell parity overrides */
 
 
+
+
+/* Settings/product reference table safety in the House-style two-column layout. */
+#priceRefTable {
+  table-layout: fixed !important;
+}
+#priceRefTable th,
+#priceRefTable td {
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+  white-space: nowrap !important;
+}
+#priceRefTable th:nth-child(1), #priceRefTable td:nth-child(1) { width: 39% !important; }
+#priceRefTable th:nth-child(2), #priceRefTable td:nth-child(2) { width: 15% !important; }
+#priceRefTable th:nth-child(3), #priceRefTable td:nth-child(3) { width: 31% !important; }
+#priceRefTable th:nth-child(4), #priceRefTable td:nth-child(4) { width: 15% !important; text-align: right !important; }
+#priceRefTable .badge {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#page-settings .two-col {
+  grid-template-columns: minmax(360px, .95fr) minmax(520px, 1.05fr) !important;
+}
+@media (max-width: 1180px) {
+  #page-settings .two-col {
+    grid-template-columns: 1fr !important;
+  }
+}
+
 /* Warehouse entry form safety: House-style shell with no clipped fields. */
 #page-entry .entry-order-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
@@ -2922,6 +2952,36 @@ tbody td {
 }
 
 
+
+
+
+/* Settings/product reference table safety in the House-style two-column layout. */
+#priceRefTable {
+  table-layout: fixed !important;
+}
+#priceRefTable th,
+#priceRefTable td {
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+  white-space: nowrap !important;
+}
+#priceRefTable th:nth-child(1), #priceRefTable td:nth-child(1) { width: 39% !important; }
+#priceRefTable th:nth-child(2), #priceRefTable td:nth-child(2) { width: 15% !important; }
+#priceRefTable th:nth-child(3), #priceRefTable td:nth-child(3) { width: 31% !important; }
+#priceRefTable th:nth-child(4), #priceRefTable td:nth-child(4) { width: 15% !important; text-align: right !important; }
+#priceRefTable .badge {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#page-settings .two-col {
+  grid-template-columns: minmax(360px, .95fr) minmax(520px, 1.05fr) !important;
+}
+@media (max-width: 1180px) {
+  #page-settings .two-col {
+    grid-template-columns: 1fr !important;
+  }
+}
 
 /* Warehouse entry form safety: House-style shell with no clipped fields. */
 #page-entry .entry-order-grid {
@@ -5094,7 +5154,7 @@ function saveScriptUrl(){
 function renderBuyerPills(){
   const el=document.getElementById('buyerPills');
   if(!el) return;
-  el.innerHTML=BUYERS.map((b,i)=>`<span class="buyer-pill">${b}<button class="pill-remove" onclick="removeBuyer(${i})" title="Remove">Ã—</button></span>`).join('');
+  el.innerHTML=BUYERS.map((b,i)=>`<span class="buyer-pill">${b}<button class="pill-remove" onclick="removeBuyer(${i})" title="Remove">×</button></span>`).join('');
 }
 function addBuyer(){
   const val=document.getElementById('newBuyerInput').value.trim().toUpperCase();
