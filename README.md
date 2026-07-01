@@ -39,6 +39,8 @@ WAREHOUSE_PORTAL_API_TOKEN=change-this-to-a-long-random-secret
 ALLOWED_ORIGIN=https://maruwarehouse.vercel.app
 ```
 
+`api/sheets.js` also accepts `WAREHOUSE_PORTAL_URL` as a backward-compatible alias for `WAREHOUSE_PORTAL_APPS_SCRIPT_URL`, but the preferred env name is `WAREHOUSE_PORTAL_APPS_SCRIPT_URL`.
+
 Use the same `WAREHOUSE_PORTAL_API_TOKEN` value in Apps Script Script Properties.
 
 ## Local run
