@@ -2643,7 +2643,7 @@ table,
               <th onclick="sortAllData('total')">Total ↕</th>
             </tr></thead>
             <tbody id="allDataBody">
-              <tr><td colspan="9"><div class="empty-state"><div class="empty-icon">📂</div><h3>No data loaded</h3><p>Connect your Apps Script URL in Settings.</p></div></td></tr>
+              <tr><td colspan="9"><div class="empty-state"><div class="empty-icon">📂</div><h3>Loading live data…</h3><p>The portal connects automatically through Vercel.</p></div></td></tr>
             </tbody>
           </table>
         </div>
@@ -2920,13 +2920,13 @@ table,
       <div class="two-col" style="align-items:start">
         <div style="display:flex;flex-direction:column;gap:12px">
           <div class="card">
-            <div class="card-header"><div class="card-title">Apps Script URL</div></div>
+            <div class="card-header"><div class="card-title">Connection</div></div>
             <div class="card-body">
-              <div class="settings-section-desc">Vercel mode uses /api/sheets by default. Optional: override the API endpoint here for testing.</div>
+              <div class="settings-section-desc">Warehouse Portal now connects automatically through the secure Vercel bridge. No Apps Script URL upload is needed in the browser.</div>
               <div class="form-group" style="margin-bottom:10px">
-                <input class="form-control mono" id="scriptUrl" placeholder="/api/sheets" style="font-size:12px"/>
+                <input class="form-control mono" id="scriptUrl" value="/api/sheets" readonly style="font-size:12px"/>
               </div>
-              <button class="btn btn-primary" onclick="saveScriptUrl()">Save &amp; Test Connection</button>
+              <button class="btn btn-primary" onclick="loadAllData()">Refresh Live Data</button>
             </div>
           </div>
 
@@ -3069,7 +3069,8 @@ function normalizeBuyerList(buyers) {
 //  STATE
 // ===============================================
 const DEFAULT_API_URL = '/api/sheets';
-let SCRIPT_URL = localStorage.getItem('maru_script_url') || DEFAULT_API_URL;
+localStorage.removeItem('maru_script_url');
+let SCRIPT_URL = DEFAULT_API_URL;
 let BUYERS      = normalizeBuyerList(JSON.parse(localStorage.getItem('maru_buyers') || 'null'));
 let allData     = [];
 let filteredData= [];
@@ -3091,7 +3092,7 @@ document.addEventListener('DOMContentLoaded', () => {
   bindDatePickerOpeners();
   syncTopbarScrollState();
   window.addEventListener('scroll', syncTopbarScrollState, { passive: true });
-  if (SCRIPT_URL) loadAllData(); else loadDemoData();
+  loadAllData();
 });
 
 function bindDatePickerOpeners() {
@@ -3321,12 +3322,13 @@ async function loadAllData() {
   try {
     const res  = await fetch(SCRIPT_URL + '?action=getAllData');
     const json = await res.json();
+    if (!res.ok || json.error) throw new Error(json.error || 'No data returned');
     if (!json.data) throw new Error('No data returned');
     allData = json.data.map(r => ({ date:r[0],buyer:r[1],po:r[2],si:r[3],packs:+r[4],cases:+r[5],price:+r[6],total:+r[7],product:r[10] }));
     filteredData = [...allData];
     renderDashboard(); renderAllData(); renderSummary();
     showToast('Data loaded successfully','success');
-  } catch(e) { showToast('Could not load data. Check Script URL.','error'); }
+  } catch(e) { showToast('Could not load data: ' + (e?.message || 'Bridge error'),'error'); }
 }
 
 // ===============================================
@@ -4466,11 +4468,11 @@ async function submitEntry() {
 //  SETTINGS
 // ===============================================
 function saveScriptUrl(){
-  const url=document.getElementById('scriptUrl').value.trim();
-  SCRIPT_URL=url; localStorage.setItem('maru_script_url',url);
+  SCRIPT_URL = DEFAULT_API_URL;
+  localStorage.removeItem('maru_script_url');
   updateConnectionStatus();
-  if(url){ showToast('URL saved. Loading data…','success'); loadAllData(); }
-  else showToast('URL cleared. Running in demo mode.','info');
+  showToast('Warehouse Portal uses the secure Vercel bridge automatically. Refreshing live data…','info');
+  loadAllData();
 }
 function renderBuyerPills(){
   const el=document.getElementById('buyerPills');
