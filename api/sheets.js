@@ -39,6 +39,22 @@ function getAction(req, body) {
   return body.action || req.query?.action || "";
 }
 
+async function fetchLegacyGetAllData() {
+  const url = new URL(APPS_SCRIPT_URL);
+  url.searchParams.set("action", "getAllData");
+  const response = await fetch(url.toString(), { method: "GET", redirect: "follow" });
+  const text = await response.text();
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    const preview = sanitizeBodyPreview(text);
+    throw new Error(
+      `Apps Script legacy getAllData returned non-JSON response (${response.status}). ` +
+      (preview ? `Preview: ${preview}` : "No response body.")
+    );
+  }
+}
+
 async function forwardToAppsScript(action, body) {
   if (!APPS_SCRIPT_URL) {
     throw new Error("Missing WAREHOUSE_PORTAL_APPS_SCRIPT_URL environment variable.");
@@ -86,6 +102,10 @@ async function forwardToAppsScript(action, body) {
       `Apps Script returned non-JSON response (${upstreamResponse.status}). ` +
       (preview ? `Preview: ${preview}` : "No response body.")
     );
+  }
+
+  if (parsed && parsed.error === "Unknown action" && action === "getAllData") {
+    return fetchLegacyGetAllData();
   }
 
   if (!upstreamResponse.ok) {
