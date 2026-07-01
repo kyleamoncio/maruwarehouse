@@ -1,8 +1,12 @@
 node_modules
-.next
-.vercel
 .env
 .env.local
 .env.*.local
-credentials.json
-service-account.json
+.vercel
+.next
+*.pem
+*.key
+*credentials*.json
+service-account*.json
+google-credentials*.json
+.DS_Store
