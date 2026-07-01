@@ -14,3 +14,9 @@ for (const [i, script] of scripts.entries()) {
 require(apiPath);
 console.log('api/sheets.js: ok');
 console.log('frontend default API:', html.includes("DEFAULT_API_URL = '/api/sheets'") ? 'ok' : 'missing');
+
+const envExample = fs.readFileSync(path.join(root, '.env.example'), 'utf8');
+for (const forbidden of ['GOOGLE_CLIENT_EMAIL', 'GOOGLE_PRIVATE_KEY', 'service-account.json', 'credentials.json']) {
+  if (envExample.includes(forbidden)) throw new Error(`forbidden env/credential reference in .env.example: ${forbidden}`);
+}
+console.log('bridge env example: ok');

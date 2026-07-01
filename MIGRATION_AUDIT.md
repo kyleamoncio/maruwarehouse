@@ -7,9 +7,37 @@ Source inspected locally in `C:\Users\kylea\OneDrive\Desktop\WAREHOUSE PORTAL`.
 - `index.html` exists and contains the portal UI, CSS, and client-side JavaScript in one file.
 - `Code.gs` exists and contains Apps Script server/Sheets functions.
 - No `scripts.html` or `styles.html` files were present in the local source folder.
-- Original Apps Script files were not edited by this Vercel migration; the Vercel copy is under `vercel-warehouse-portal/`.
+- Original Apps Script deployment is preserved as backup; the Vercel copy is under `vercel-warehouse-portal/`.
+
+## Current Vercel architecture
+
+Updated to match the successful House Portal path:
+
+```text
+Vercel frontend
+→ `/api/sheets`
+→ Apps Script Web App `/exec` URL
+→ existing Warehouse Apps Script functions
+→ Google Sheets
+```
+
+This version does **not** require direct Google Sheets API credentials, service accounts, private keys, or credential JSON files.
+
+## Vercel env vars now required
+
+- `WAREHOUSE_PORTAL_APPS_SCRIPT_URL`
+- `WAREHOUSE_PORTAL_API_TOKEN`
+- `ALLOWED_ORIGIN`
+
+Removed/stopped requiring:
+
+- `GOOGLE_SHEET_ID`
+- `GOOGLE_CLIENT_EMAIL`
+- `GOOGLE_PRIVATE_KEY`
 
 ## Client/UI functions preserved inside `public/index.html`
+
+The one-file frontend remains preserved. Major preserved functions include:
 
 - Navigation/pages: `navigate`, `syncTopbarScrollState`, `closeSidebar`, `openSidebar`.
 - Setup/dropdowns/settings: `normalizeBuyerList`, `setTodayDate`, `populateDropdowns`, `populateProductSelect`, `populateSearchProductFilters`, `populateBuyerSelect`, `renderBuyerPills`, `addBuyer`, `removeBuyer`, `saveBuyers`, `renderPriceReference`, `saveScriptUrl`.
@@ -19,82 +47,54 @@ Source inspected locally in `C:\Users\kylea\OneDrive\Desktop\WAREHOUSE PORTAL`.
 - Summary: `renderSummary`, `buildSummaryRows`, due-date helpers.
 - Search: `runSearch`, `clearSearch`, `renderSearchSummary`, product filter add/remove/reset.
 - New Entry: `onBuyerChange`, `onProductChange`, `autoFillPrice`, `onCasesChange`, `collectEntryLines`, `submitEntry`, entry-line add/remove/renumber, preview/save overlay helpers.
-- Formatting/helpers: price/date/product/buyer badge and toast helpers.
 
-The only intentional frontend behavior change is the default endpoint: `SCRIPT_URL` now defaults to `/api/sheets` instead of the Apps Script URL/current page URL. The one-file UI/CSS/JS structure is preserved.
+The only intentional frontend behavior change from Apps Script hosting is that `SCRIPT_URL` defaults to `/api/sheets` for Vercel.
 
-## Apps Script backend functions mapped
+## Apps Script backend functions mapped through bridge
 
-- `doGet?action=getAllData` → `GET /api/sheets?action=getAllData`.
-- `doPost { action: "appendProducts" }` → `POST /api/sheets`.
-- `doPost { action: "appendToProduct" }` → `POST /api/sheets` fallback preserved.
-- `getAllDataJSON` → `getAllDataJSON` in `api/sheets.js`.
-- `appendProductsToProductTabs`, `appendToProduct`, `prepareProductAppend_`, `appendPreparedProductRows_`, `appendPreparedRowsToAllData_`, `findLastDataRow` → equivalent functions in `api/sheets.js`.
-- Warehouse lookup helpers (`getWarehouseForProduct`, `getWarehouseTrackerProductName`, `normalizeWarehouseText`, `createWarehouseTrackerLookup_`, `getWarehouseUpdateTarget`) → equivalent functions in `api/sheets.js`.
-- `syncWarehouseTrackerFromProductTabs` and formula generation are exposed as `POST /api/sheets` with `action: "syncWarehouseTrackerFromProductTabs"` for parity/maintenance.
-- Spreadsheet edit triggers (`onEdit`, `buildAllData`, `searchWarehouseData`) are not browser endpoint calls. The Vercel first version preserves the portal's live app behavior by writing product rows and inserting new rows into `ALL DATA`, matching the current submit path.
+- `GET /api/sheets?action=getAllData` forwards to Apps Script `doPost` action `getAllData`, which calls `getAllDataJSON()`.
+- `POST /api/sheets` action `appendProducts` forwards to Apps Script `appendProductsToProductTabs(payload)`.
+- `POST /api/sheets` action `appendToProduct` forwards to Apps Script `appendToProduct(payload)`.
+- Optional maintenance action `syncWarehouseTrackerFromProductTabs` forwards to existing Apps Script sync function.
 
-## Google Sheet tabs/ranges used
+See `APPS_SCRIPT_BRIDGE.md` for the exact token-protected Apps Script `doPost(e)` bridge.
 
-Spreadsheet ID: `1quJTlW8R3c-__SFv9b6Xto8B5ZzEwcVkRIczsn7RBUA`
+## Google Sheet tabs/ranges preserved by Apps Script
 
-Read/write tabs:
+Spreadsheet ID remains:
+
+`1quJTlW8R3c-__SFv9b6Xto8B5ZzEwcVkRIczsn7RBUA`
+
+Existing Apps Script continues to handle:
 
 - `ALL DATA!A:K`
-  - Read from `A2:K` for dashboard/search/summary/all-data.
-  - Insert new rows below header and write `A:K` on entry submit.
-- Product tabs, from row 8, columns `A:H` for entry appends:
-  - `Bathroom Tissue 4s Fluffy`
-  - `Bathroom Tissue 9s Fluffy`
-  - `Bathroom Tissue 12s Fluffy`
-  - `Kitchen Towel Fluffy`
-  - `Paper Towel Fluffy`
-  - `Cotton Buds Fluffy`
-  - `Cotton Pads Fluffy`
-  - `Bamboo Kitchen Towel Fluffy`
-  - `Bamboo Facial Tissue Fluffy`
-  - `Wet Wipes 30s Fluffy`
-  - `Wet Wipes 60s Fluffy`
-  - `Bathroom Tissue 4s Plush`
-  - `Bathroom Tissue 9s Plush`
-  - `Bathroom Tissue 12s Plush`
-  - `Bathroom Tissue 20s Plush`
-  - `Bathroom Tissue 30s Plush`
-  - `Kitchen Towel Plush`
-  - `Paper Towel Plush`
-  - `Wet Wipes 30s Plush`
-  - `Wet Wipes 60s Plush`
-  - `Cotton Buds (Plastic) Plush`
-  - `Cotton Buds (Container) Plush`
-- `WAREHOUSE TRACKER`
-  - Reads display values to find `QC INVENTORY 2026` and `PASIG INVENTORY 2026` sections, headers, product rows, current/start case/pack columns.
-  - Optional formula sync writes current case/current pack formulas when explicitly requested.
+- Product tabs from row 8, columns `A:H`
+- `WAREHOUSE TRACKER` sections for `QC INVENTORY 2026` and `PASIG INVENTORY 2026`
 
-## Security mapping
+## Security
 
-- Browser code never contains Google credentials.
-- `api/sheets.js` reads credentials from Vercel/server environment only.
+- Browser code contains no Google credentials.
+- Vercel only stores the Apps Script URL and bridge token in env vars.
+- Apps Script validates `WAREHOUSE_PORTAL_API_TOKEN` from Script Properties.
 - `.gitignore` excludes `.env`, `.env.local`, `.env.*.local`, `.vercel`, `node_modules`, `.next`, private keys, and credential JSON files.
 
-## Verification completed so far
+## Verification completed locally
 
-- `npm install` completed.
-- `npm audit --omit=dev` found 0 vulnerabilities after updating `googleapis`.
-- `npm run check` compiled the preserved inline client script and loaded `api/sheets.js` successfully.
+- `npm run check` compiles the preserved inline frontend script, loads `api/sheets.js`, and confirms the default endpoint is `/api/sheets`.
 
-## Verification still blocked until credentials are provided
+## Verification still blocked until Apps Script bridge URL/token are provided
 
-The live Google Sheets read/write tests require a Google service account with Editor access to the spreadsheet and these env vars set locally and in Vercel:
+Live Google Sheets tests require:
 
-- `GOOGLE_SHEET_ID`
-- `GOOGLE_CLIENT_EMAIL`
-- `GOOGLE_PRIVATE_KEY`
+1. Apps Script `doPost(e)` bridge from `APPS_SCRIPT_BRIDGE.md` deployed as Web App.
+2. Apps Script Script Property `WAREHOUSE_PORTAL_API_TOKEN` set.
+3. Vercel env vars set with the same token and the Apps Script `/exec` URL.
 
-Once provided, test these before switching users to Vercel:
+Then test:
 
-1. `GET /api/sheets?action=getAllData` returns real rows.
-2. Portal loads dashboard/search/summary from the same Sheet.
+1. Vercel portal loads.
+2. `/api/sheets?action=getAllData` returns real rows from Apps Script JSON.
 3. Add a clearly marked test entry.
-4. Confirm the entry is appended to the correct product tab and inserted into `ALL DATA`.
-5. If supported/needed, remove the test row manually from both places after verification.
-6. Deploy to Vercel, add env vars, test the live URL against the same spreadsheet.
+4. Confirm it appears in the correct product tab and `ALL DATA`.
+5. Test search/filter/navigation and all main buttons.
+6. Confirm no secrets are committed.
