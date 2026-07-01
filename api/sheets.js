@@ -56,12 +56,25 @@ async function forwardToAppsScript(action, body) {
     token: API_TOKEN
   };
 
-  const upstreamResponse = await fetch(APPS_SCRIPT_URL, {
-    method: "POST",
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify(upstreamPayload),
-    redirect: "follow"
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 25000);
+  let upstreamResponse;
+  try {
+    upstreamResponse = await fetch(APPS_SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(upstreamPayload),
+      redirect: "follow",
+      signal: controller.signal
+    });
+  } catch (error) {
+    if (error && error.name === "AbortError") {
+      throw new Error("Apps Script bridge timed out after 25 seconds. Check that the Web App URL points to the updated deployment and that doPost(e) returns JSON quickly.");
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+  }
 
   const text = await upstreamResponse.text();
   let parsed;
