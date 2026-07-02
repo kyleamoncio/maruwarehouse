@@ -3139,6 +3139,18 @@ html,body{background:var(--bg)!important;color:var(--house-text)!important;font-
 .form-control,input,select,textarea{height:34px!important;min-height:34px!important;padding:0 12px!important;background:var(--house-field-bg)!important;border:1px solid var(--house-border)!important;border-radius:6px!important;color:var(--house-text)!important;font-family:var(--font)!important;font-size:12.5px!important;font-weight:520!important;box-shadow:none!important}input[type="date"].form-control,select.form-control{height:34px!important;min-height:34px!important}.form-control:focus,input:focus,select:focus,textarea:focus{background:#111316!important;border-color:#4A4F54!important;box-shadow:none!important}.btn,button,.page-btn{min-height:34px!important;border-radius:6px!important;font-family:var(--font)!important;font-size:12px!important;font-weight:650!important;box-shadow:none!important}.btn-primary,.entry-submit-button{background:var(--house-action)!important;border-color:var(--house-action)!important;color:#0C0F10!important}.btn-primary:hover,.entry-submit-button:hover:not(:disabled){background:var(--house-action-hover)!important;border-color:var(--house-action-hover)!important}.btn-secondary,.btn-ghost,.page-btn,.entry-add-product-top,.entry-line-remove{background:var(--house-field-bg)!important;border:1px solid var(--house-border)!important;color:var(--house-text)!important}
 .table-wrap{background:var(--house-panel-bg)!important;border:0!important}table{background:transparent!important;color:var(--house-text)!important;font-family:var(--font)!important;font-size:12.5px!important}thead,thead tr,thead th{background:rgba(232,232,227,.035)!important}thead th{height:39px!important;padding:0 14px 0 8px!important;border-bottom:1px solid var(--house-border)!important;color:var(--house-muted)!important;font-family:var(--mono)!important;font-size:10px!important}tbody tr,tbody tr:nth-child(even),tbody td{background:transparent!important}tbody tr{border-bottom:1px solid rgba(232,232,227,.07)!important}tbody tr:hover,tbody tr:hover td{background:rgba(255,255,255,.025)!important}tbody td{padding:13px 14px!important;color:var(--house-text-soft)!important;font-size:13px!important;font-weight:450!important}#profitTable tbody td,#summaryTable tbody td{font-size:16px!important}.badge{min-height:22px!important;padding:3px 8px!important;border-radius:999px!important;border:1px solid rgba(232,232,227,.10)!important;font-size:10px!important;font-weight:700!important}.two-col,.three-col,.search-workspace,.dashboard-grid{gap:16px!important}
 #page-summary .summary-terminal-card,#page-summary .summary-terminal-body,#page-summary .summary-terminal-wrap,#page-summary #summaryTable,#page-summary #summaryTable tbody,#page-summary #summaryTable tbody tr,#page-summary #summaryTable tbody td{background:transparent!important}@media(max-width:899px){body{display:block!important;overflow:auto!important}#sidebar{position:fixed!important;width:236px!important;min-width:236px!important;padding:50px 10px 12px!important}#main{min-height:100vh!important;height:auto!important}#topbar{padding-left:54px!important}#content{width:auto!important;padding:18px 16px 36px!important}}
+/* USER POLISH 2026-07-01: House parity sidebar, balanced summary/search/entry spacing. */
+html,body,#content{scrollbar-width:none!important;-ms-overflow-style:none!important}
+html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.table-wrap::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}
+#sidebar{padding-top:38px!important;overflow:hidden!important}
+.sidebar-close-control{display:inline-flex!important;position:absolute!important;top:7px!important;left:13px!important;z-index:5!important;width:52px!important;height:20px!important;min-height:20px!important;align-items:center!important;justify-content:flex-start!important;gap:8px!important;padding:0!important;border:0!important;background:transparent!important;color:var(--house-muted)!important;box-shadow:none!important}
+.sidebar-close-pane{width:14px!important;height:14px!important;border:1px solid var(--house-muted)!important;border-radius:3px!important;opacity:.72!important;position:relative!important}.sidebar-close-pane::before{content:"";position:absolute;top:2px;bottom:2px;left:4px;border-left:1px solid var(--house-muted);opacity:.85}.sidebar-close-arrow{font-size:14px!important;line-height:14px!important;opacity:.7!important}.sidebar-close-control:hover{background:transparent!important;color:var(--house-text)!important}.sidebar-close-control:hover .sidebar-close-pane{border-color:var(--house-text-soft)!important}
+#sidebarToggle{display:none!important;position:fixed!important;top:7px!important;left:13px!important;z-index:80!important;width:52px!important;height:20px!important;min-height:20px!important;padding:0!important;border:0!important;background:transparent!important;color:var(--house-muted)!important;box-shadow:none!important}#sidebarToggle.visible{display:inline-flex!important}#sidebarToggle svg{width:18px!important;height:18px!important}
+#sidebar.collapsed{width:0!important;min-width:0!important;padding-left:0!important;padding-right:0!important;opacity:0!important;pointer-events:none!important;border-right-color:transparent!important}#sidebar.collapsed~#main #content{width:min(1280px,calc(100vw - 46px))!important}#sidebar.collapsed~#main{width:100vw!important}
+.topbar-brand{top:14px!important;left:118px!important;height:18px!important}.topbar-brand img{width:92px!important;max-width:92px!important;max-height:18px!important}.topbar-nav{margin-top:4px!important}.sidebar-footer{display:none!important;border:0!important;margin:0!important;padding:0!important}.nav-item{position:relative!important;transition:background .12s ease,color .12s ease!important}.nav-item:hover{background:rgba(255,255,255,.07)!important;color:#fff!important}.nav-item.active{background:rgba(232,232,227,.06)!important;color:#e8e8e3!important}
+#page-summary .summary-terminal-body{padding:0!important}#page-summary .summary-terminal-wrap{overflow-x:auto!important}#summaryTable{table-layout:fixed!important;width:100%!important;border-collapse:collapse!important}#summaryTable th,#summaryTable td{padding:10px 12px!important;text-align:left!important;vertical-align:middle!important;white-space:normal!important;word-break:break-word!important}#summaryTable thead th{font-size:9.5px!important;letter-spacing:.08em!important}#summaryTable tbody td{font-size:12.5px!important;line-height:1.34!important}#summaryTable th:nth-child(1){width:10%!important}#summaryTable th:nth-child(2){width:12%!important}#summaryTable th:nth-child(3){width:12%!important}#summaryTable th:nth-child(4){width:12%!important}#summaryTable th:nth-child(5){width:22%!important}#summaryTable th:nth-child(6),#summaryTable th:nth-child(7),#summaryTable th:nth-child(8){width:9%!important}#summaryTable th:nth-child(9){width:5%!important}
+#page-search .search-summary-products,#page-search .empty-state h3,#page-search .empty-state p{display:none!important}
+#page-entry .entry-product-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important;align-items:end!important}#page-entry .entry-product-grid .form-full{grid-column:1 / -1!important}#page-entry .entry-price-group,#page-entry .form-group:has(.entry-price){grid-column:auto!important}#page-entry .entry-price-hint{display:none!important}#page-entry .entry-line.is-no-price .entry-product-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}#page-entry .entry-line.is-no-price .entry-price-group,#page-entry .entry-line.is-no-price .form-group:has(.entry-price){display:block!important;visibility:hidden!important}
 </style>
 </head>
 <body>
@@ -3152,6 +3164,10 @@ html,body{background:var(--bg)!important;color:var(--house-text)!important;font-
 
 <!-- == SIDEBAR == -->
 <nav id="sidebar" class="topbar">
+  <button id="sidebarClose" class="sidebar-close-control" type="button" onclick="closeSidebar(false)" title="Hide sidebar" aria-label="Hide sidebar">
+    <span class="sidebar-close-pane" aria-hidden="true"></span>
+    <span class="sidebar-close-arrow" aria-hidden="true">‹</span>
+  </button>
   <div class="topbar-brand">
     <img
       src="https://drive.google.com/thumbnail?id=1pd1l8WGQBHdWER979se1NfPRnR8RvvvW&sz=w1000"
@@ -3180,14 +3196,13 @@ html,body{background:var(--bg)!important;color:var(--house-text)!important;font-
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
       New Entry
     </div>
-  </div>
-
-  <div class="sidebar-footer">
     <div class="nav-item" onclick="navigate('settings')">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       Settings
     </div>
   </div>
+
+  <div class="sidebar-footer" aria-hidden="true"></div>
 </nav>
 
 <!-- == MAIN == -->
@@ -5304,9 +5319,10 @@ function showToast(msg,type='info'){
 // ===============================================
 //  SIDEBAR COLLAPSE
 // ===============================================
-function closeSidebar(){
-  document.getElementById('sidebar').classList.remove('collapsed');
-  document.getElementById('sidebarToggle').classList.remove('visible');
+function closeSidebar(auto = true){
+  if (auto && window.innerWidth > 899) return;
+  document.getElementById('sidebar').classList.add('collapsed');
+  document.getElementById('sidebarToggle').classList.add('visible');
 }
 function openSidebar(){
   document.getElementById('sidebar').classList.remove('collapsed');
