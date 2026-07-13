@@ -1961,6 +1961,7 @@ select.form-control option {
 .toast.success { background: var(--green); }
 .toast.error   { background: var(--red); }
 .toast.info    { background: #37352f; }
+.toast.warning { background: #9a6700; }
 
 .entry-save-overlay {
   position: fixed;
@@ -5141,7 +5142,11 @@ async function submitEntry() {
         }
       }
 
-      showToast(validLines.length > 1 ? validLines.length + ' entries confirmed in Sheets!' : 'Entry confirmed in Sheets!', 'success');
+      if (saveResult.sync && saveResult.sync.v2 && !saveResult.sync.v2.success) {
+        showToast('Original Sheet saved. V2 sync needs attention: ' + (saveResult.sync.v2.error || 'Unknown V2 error'), 'warning');
+      } else {
+        showToast(validLines.length > 1 ? validLines.length + ' entries confirmed in both Sheets!' : 'Entry confirmed in both Sheets!', 'success');
+      }
     };
 
     applySavedEntriesLocally(newEntries);
@@ -5323,7 +5328,7 @@ function showToast(msg,type='info'){
   const container=document.getElementById('toast-container');
   const toast=document.createElement('div');
   toast.className=`toast ${type}`;
-  const icons={success:'✓',error:'✕',info:'ℹ'};
+  const icons={success:'✓',error:'✕',info:'ℹ',warning:'!'};
   toast.innerHTML=`<span>${icons[type]||'•'}</span><span>${msg}</span>`;
   container.appendChild(toast);
   setTimeout(()=>toast.remove(),3500);

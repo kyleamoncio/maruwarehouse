@@ -1,6 +1,11 @@
-const APPS_SCRIPT_URL = process.env.WAREHOUSE_PORTAL_APPS_SCRIPT_URL || process.env.WAREHOUSE_PORTAL_URL || "";
-const API_TOKEN = process.env.WAREHOUSE_PORTAL_API_TOKEN || "";
+const { randomUUID } = require("crypto");
+
+const ORIGINAL_APPS_SCRIPT_URL = process.env.WAREHOUSE_PORTAL_APPS_SCRIPT_URL || process.env.WAREHOUSE_PORTAL_URL || "";
+const V2_APPS_SCRIPT_URL = process.env.WAREHOUSE_PORTAL_V2_URL || "";
+const ORIGINAL_API_TOKEN = process.env.WAREHOUSE_PORTAL_API_TOKEN || "";
+const V2_API_TOKEN = process.env.WAREHOUSE_PORTAL_V2_API_TOKEN || ORIGINAL_API_TOKEN;
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || "*";
+const WRITE_ACTIONS = new Set(["appendProducts", "appendToProduct"]);
 
 function setCors(res) {
   res.setHeader("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
@@ -28,7 +33,6 @@ function sanitizeBodyPreview(text) {
 async function readRequestBody(req) {
   if (req.body && typeof req.body === "object") return req.body;
   if (typeof req.body === "string") return req.body ? JSON.parse(req.body) : {};
-
   const chunks = [];
   for await (const chunk of req) chunks.push(Buffer.from(chunk));
   const raw = Buffer.concat(chunks).toString("utf8").trim();
@@ -40,7 +44,7 @@ function getAction(req, body) {
 }
 
 async function fetchLegacyGetAllData() {
-  const url = new URL(APPS_SCRIPT_URL);
+  const url = new URL(ORIGINAL_APPS_SCRIPT_URL);
   url.searchParams.set("action", "getAllData");
   const response = await fetch(url.toString(), { method: "GET", redirect: "follow" });
   const text = await response.text();
@@ -49,74 +53,110 @@ async function fetchLegacyGetAllData() {
   } catch (error) {
     const preview = sanitizeBodyPreview(text);
     throw new Error(
-      `Apps Script legacy getAllData returned non-JSON response (${response.status}). ` +
+      `Original Apps Script legacy getAllData returned non-JSON response (${response.status}). ` +
       (preview ? `Preview: ${preview}` : "No response body.")
     );
   }
 }
 
-async function forwardToAppsScript(action, body) {
-  if (!APPS_SCRIPT_URL) {
-    throw new Error("Missing WAREHOUSE_PORTAL_APPS_SCRIPT_URL environment variable.");
-  }
-  if (!API_TOKEN) {
-    throw new Error("Missing WAREHOUSE_PORTAL_API_TOKEN environment variable.");
-  }
-  if (!action) {
-    throw new Error("Missing action.");
-  }
-
-  const upstreamPayload = {
-    ...body,
-    action,
-    token: API_TOKEN
-  };
+async function forwardToAppsScript(url, token, action, body, label) {
+  if (!url) throw new Error(`Missing ${label} Apps Script URL.`);
+  if (!token) throw new Error(`Missing ${label} API token.`);
+  if (!action) throw new Error("Missing action.");
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 25000);
-  let upstreamResponse;
+  let response;
   try {
-    upstreamResponse = await fetch(APPS_SCRIPT_URL, {
+    response = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(upstreamPayload),
+      body: JSON.stringify({ ...body, action, token }),
       redirect: "follow",
       signal: controller.signal
     });
   } catch (error) {
     if (error && error.name === "AbortError") {
-      throw new Error("Apps Script bridge timed out after 25 seconds. Check that the Web App URL points to the updated deployment and that doPost(e) returns JSON quickly.");
+      throw new Error(`${label} Apps Script timed out after 25 seconds.`);
     }
     throw error;
   } finally {
     clearTimeout(timeout);
   }
 
-  const text = await upstreamResponse.text();
+  const text = await response.text();
   let parsed;
   try {
     parsed = JSON.parse(text);
   } catch (error) {
     const preview = sanitizeBodyPreview(text);
     throw new Error(
-      `Apps Script returned non-JSON response (${upstreamResponse.status}). ` +
+      `${label} Apps Script returned non-JSON response (${response.status}). ` +
       (preview ? `Preview: ${preview}` : "No response body.")
     );
   }
 
-  if (parsed && parsed.error === "Unknown action" && action === "getAllData") {
+  if (label === "Original" && parsed?.error === "Unknown action" && action === "getAllData") {
     return fetchLegacyGetAllData();
   }
-
-  if (!upstreamResponse.ok) {
+  if (!response.ok) {
     return {
-      __status: upstreamResponse.status,
-      error: parsed.error || parsed.message || `Apps Script request failed with HTTP ${upstreamResponse.status}`,
+      __status: response.status,
+      success: false,
+      error: parsed.error || parsed.message || `${label} Apps Script request failed with HTTP ${response.status}`,
       details: parsed
     };
   }
-
   return parsed;
+}
+
+function succeeded(result) {
+  return Boolean(result) && !result.error && result.success !== false && !result.__status;
+}
+
+async function dualWrite(action, body) {
+  const requestId = String(body.requestId || randomUUID());
+  const payload = { ...body, requestId };
+  const original = await forwardToAppsScript(
+    ORIGINAL_APPS_SCRIPT_URL, ORIGINAL_API_TOKEN, action, payload, "Original"
+  );
+
+  if (!succeeded(original)) {
+    return {
+      ...original,
+      success: false,
+      requestId,
+      sync: {
+        original: { success: false, error: original?.error || "Original write failed." },
+        v2: { success: false, skipped: true, error: "V2 was not attempted because the original write failed." }
+      }
+    };
+  }
+
+  let v2;
+  if (!V2_APPS_SCRIPT_URL) {
+    v2 = { success: false, skipped: true, error: "V2 sync is not configured yet." };
+  } else {
+    try {
+      const result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, payload, "V2");
+      v2 = succeeded(result)
+        ? { success: true, result }
+        : { success: false, error: result?.error || "V2 write failed.", result };
+    } catch (error) {
+      v2 = { success: false, error: error instanceof Error ? error.message : String(error) };
+    }
+  }
+
+  return {
+    ...original,
+    success: true,
+    requestId,
+    sync: {
+      original: { success: true },
+      v2
+    },
+    warning: v2.success ? undefined : `Original Sheet saved successfully, but V2 sync failed: ${v2.error}`
+  };
 }
 
 module.exports = async function handler(req, res) {
@@ -128,9 +168,13 @@ module.exports = async function handler(req, res) {
   try {
     const body = req.method === "POST" ? await readRequestBody(req) : {};
     const action = getAction(req, body);
-    const result = await forwardToAppsScript(action, body);
-    const status = result && result.__status ? result.__status : 200;
-    if (result && result.__status) delete result.__status;
+    const result = req.method === "POST" && WRITE_ACTIONS.has(action)
+      ? await dualWrite(action, body)
+      : await forwardToAppsScript(
+          ORIGINAL_APPS_SCRIPT_URL, ORIGINAL_API_TOKEN, action, body, "Original"
+        );
+    const status = result?.__status || 200;
+    if (result?.__status) delete result.__status;
     return sendJson(res, status, result);
   } catch (error) {
     return sendJson(res, 500, {
