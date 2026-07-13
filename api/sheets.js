@@ -181,10 +181,10 @@ module.exports = async function handler(req, res) {
     let result;
     if (action === "appendRestocks") {
       const health = await getV2Health();
-      result = health.version === "2026-07-13.10"
+      result = ["2026-07-13.10", "2026-07-13.11"].includes(health.version)
         ? await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2")
         : { __status: 503, success: false, error: "Restock is temporarily paused while the formula-safe backend repair is being deployed." };
-    } else if (action === "repairRestockDamage" || action === "repairRestockRows") {
+    } else if (["repairRestockDamage", "repairRestockRows", "refreshProductView"].includes(action)) {
       result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2");
     } else if (action === "getV2Bootstrap") {
       result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2");
