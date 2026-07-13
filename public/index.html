@@ -3855,16 +3855,23 @@ const DEFAULT_BUYERS = ['WATSONS GANADO','WATSONS PAMPANGA','WATSONS CEBU','SM H
 function normalizeBuyerList(buyers) {
   const source = Array.isArray(buyers) && buyers.length ? buyers : DEFAULT_BUYERS;
   const normalized = [];
+  const bottomBuyers = ['SAMPLE', 'PERSONAL'];
 
   source.forEach(buyer => {
     const value = String(buyer || '').trim();
-    const nextValues = value === 'SAMPLE/PERSONAL' ? ['SAMPLE', 'PERSONAL'] : [value];
+    const nextValues = value === 'SAMPLE/PERSONAL' ? bottomBuyers : [value];
 
     nextValues.forEach(nextValue => {
-      if (nextValue && !normalized.includes(nextValue)) normalized.push(nextValue);
+      const cleanValue = String(nextValue || '').trim();
+      const typoKey = cleanValue.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      if (typoKey === 'WASONSPAMPANGA') return;
+      if (cleanValue && !bottomBuyers.includes(cleanValue) && !normalized.includes(cleanValue)) normalized.push(cleanValue);
     });
   });
 
+  bottomBuyers.forEach(buyer => {
+    if (source.some(value => String(value || '').toUpperCase().includes(buyer)) || DEFAULT_BUYERS.includes(buyer)) normalized.push(buyer);
+  });
   return normalized.length ? normalized : [...DEFAULT_BUYERS];
 }
 
