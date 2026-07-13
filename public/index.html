@@ -3162,6 +3162,20 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
 #page-summary #summaryTable th{border-bottom:1px solid rgba(232,232,227,.16)!important}
 #page-summary #summaryTable td{border-bottom:1px solid rgba(232,232,227,.08)!important}
 #page-summary #summaryTable tbody tr:last-child td{border-bottom:0!important}
+
+/* Requested Restock date parity: match one New Entry detail field. */
+#page-restock .restock-date-group{
+  width:calc(25% - 18px)!important;
+  min-width:160px!important;
+  max-width:none!important;
+  margin-bottom:18px!important;
+}
+@media(max-width:899px){
+  #page-restock .restock-date-group{width:calc(50% - 7px)!important;min-width:0!important}
+}
+@media(max-width:560px){
+  #page-restock .restock-date-group{width:100%!important}
+}
 </style>
 </head>
 <body>
@@ -3632,7 +3646,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
       <button class="btn btn-secondary entry-add-product-top" type="button" onclick="addRestockLine()">+ Add Product</button>
     </div>
     <div class="card-body">
-      <div class="form-group" style="max-width:280px;margin-bottom:18px">
+      <div class="form-group restock-date-group">
         <label class="form-label">Date</label>
         <input type="date" class="form-control" id="r-date"/>
       </div>
