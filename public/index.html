@@ -3901,7 +3901,6 @@ async function loadV2ReferenceData(force = false) {
       if (!name) return;
       if (!PRICES[name]) PRICES[name] = {};
       PACKS_PER_CASE[name] = Number(product.packsPerCase) || 0;
-      COSTS[name] = Number(product.defaultCost) || 0;
     });
     (result.prices || []).forEach(record => {
       const product = String(record.product || '').trim();
@@ -4184,11 +4183,18 @@ async function loadAllData() {
     const json = await res.json();
     if (!res.ok || json.error) throw new Error(json.error || 'No data returned');
     if (!json.data) throw new Error('No data returned');
-    allData = json.data.map(r => ({ date:r[0],buyer:r[1],po:r[2],si:r[3],packs:+r[4],cases:+r[5],price:+r[6],total:+r[7],product:r[10] }));
+    allData = json.data.map(r => ({ date:r[0],buyer:r[1],po:r[2],si:r[3],packs:+r[4],cases:+r[5],price:+r[6],total:+r[7],cost:+r[8],net:+r[9],product:r[10] }));
     filteredData = [...allData];
     renderDashboard(); renderAllData(); renderSummary();
     showToast('Data loaded successfully','success');
   } catch(e) { showToast('Could not load data: ' + (e?.message || 'Bridge error'),'error'); }
+}
+
+function getRowCost(row) {
+  if (row && Object.prototype.hasOwnProperty.call(row, 'cost') && Number.isFinite(Number(row.cost))) {
+    return Number(row.cost) || 0;
+  }
+  return (COSTS[row?.product] || 0) * (Number(row?.packs) || 0);
 }
 
 // ===============================================
@@ -4211,8 +4217,7 @@ function getDashboardMetrics() {
 
   allData.forEach(r => {
     const total = Number(r.total) || 0;
-    const rowPacks = Number(r.packs) || 0;
-    const rowCost = (COSTS[r.product] || 0) * rowPacks;
+    const rowCost = getRowCost(r);
     const d = parseLooseDate(r.date);
 
     if (!d || isNaN(d) || d.getFullYear() < 2026) return;
@@ -4310,8 +4315,7 @@ function renderMonthlyProfit() {
     const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
     if (!months[key]) months[key] = { revenue: 0, cost: 0 };
     months[key].revenue += Number(r.total) || 0;
-    const costPerPack = COSTS[r.product] || 0;
-    months[key].cost += costPerPack * (Number(r.packs) || 0);
+    months[key].cost += getRowCost(r);
   });
 
   const sorted = Object.entries(months).sort((a,b) => a[0].localeCompare(b[0]));
@@ -4359,7 +4363,7 @@ function getMonthlySalesRows() {
     const revenue = Number(r.total) || 0;
     const productName = r.product || 'Unknown Product';
     months[key].revenue += revenue;
-    months[key].cost += (COSTS[r.product] || 0) * packs;
+    months[key].cost += getRowCost(r);
     months[key].packs += packs;
     if (!months[key].products[productName]) {
       months[key].products[productName] = {
@@ -4496,8 +4500,7 @@ function renderEntryRecent() {
     return;
   }
   tbody.innerHTML = recent.map(r => {
-    const costPerPack = COSTS[r.product] || 0;
-    const cost = costPerPack * (Number(r.packs) || 0);
+    const cost = getRowCost(r);
     const netTotal = (Number(r.total) || 0) - cost;
     return `<tr>
       <td class="mono">${r.date || '—'}</td>
@@ -4523,8 +4526,7 @@ function renderTopProducts() {
     if (!d || isNaN(d) || d.getFullYear() < 2026) return;
     if (!stats[r.product]) stats[r.product] = { revenue: 0, cost: 0 };
     stats[r.product].revenue += Number(r.total) || 0;
-    const costPerPack = COSTS[r.product] || 0;
-    stats[r.product].cost += costPerPack * (Number(r.packs) || 0);
+    stats[r.product].cost += getRowCost(r);
   });
 
   const sorted = Object.entries(stats)
@@ -4755,8 +4757,7 @@ function buildSummaryRows() {
     if (r.product) {
       const packs = Number(r.packs) || 0;
       groups[groupKey].items[r.product] = (groups[groupKey].items[r.product] || 0) + packs;
-      const costPerPack = COSTS[r.product] || 0;
-      groups[groupKey].cost += costPerPack * packs;
+      groups[groupKey].cost += getRowCost(r);
     }
   });
 
@@ -4792,7 +4793,7 @@ function renderSearchSummary(results = []) {
   const packsVal = results.reduce((s,r)=>s+(Number(r.packs)||0),0);
   const casesVal = results.reduce((s,r)=>s+(Number(r.cases)||0),0);
   const totalVal = results.reduce((s,r)=>s+(Number(r.total)||0),0);
-  const costVal  = results.reduce((s,r)=>s+((COSTS[r.product]||0)*(Number(r.packs)||0)),0);
+  const costVal  = results.reduce((s,r)=>s+getRowCost(r),0);
   const netVal   = totalVal - costVal;
 
   summary.innerHTML = `
@@ -4887,7 +4888,7 @@ function runSearch() {
   const tbody = document.getElementById('searchBody');
   if (!results.length) { tbody.innerHTML='<tr><td colspan="11"><div class="empty-state"><div class="empty-icon">🔍</div><h3>No results</h3><p>Try different search terms.</p></div></td></tr>'; return; }
     tbody.innerHTML = results.map(r=>{
-      const cost = (COSTS[r.product] || 0) * (Number(r.packs) || 0);
+      const cost = getRowCost(r);
       const netTotal = (Number(r.total) || 0) - cost;
       return `<tr>
         <td class="mono" style="font-size:16px">${r.date||'—'}</td>
