@@ -3645,11 +3645,11 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
           <div class="form-grid entry-product-grid">
             <div class="form-group form-full">
               <label class="form-label">Product</label>
-              <select class="form-control restock-product"><option value="">Select Product...</option></select>
+              <select class="form-control restock-product" onchange="onRestockProductChange(this)"><option value="">Select Product...</option></select>
             </div>
             <div class="form-group">
               <label class="form-label">Case Quantity</label>
-              <input type="number" min="0" class="form-control restock-cases" placeholder="0"/>
+              <input type="number" min="0" class="form-control restock-cases" placeholder="0" oninput="onRestockCasesChange(this)"/>
             </div>
             <div class="form-group">
               <label class="form-label">Pack Quantity</label>
@@ -5112,6 +5112,7 @@ function updatePreview(){
 }
 let restockProductsLoaded = false;
 let restockSaveInProgress = false;
+const restockPacksPerCase = {};
 
 async function loadRestockProducts() {
   if (restockProductsLoaded) return;
@@ -5119,11 +5120,31 @@ async function loadRestockProducts() {
     const response = await fetch(SCRIPT_URL + '?action=getV2Bootstrap');
     const result = await response.json();
     if (!response.ok || !result.success) throw new Error(result.error || 'Could not load active products.');
-    const products = (result.products || []).map(product => product.name).filter(Boolean);
+    const productRecords = result.products || [];
+    const products = productRecords.map(product => {
+      restockPacksPerCase[product.name] = Number(product.packsPerCase) || 0;
+      return product.name;
+    }).filter(Boolean);
     document.querySelectorAll('.restock-product').forEach(select => populateProductSelect(select, products));
     restockProductsLoaded = true;
   } catch (error) {
     showToast('Could not load restock products: ' + (error.message || error), 'error');
+  }
+}
+
+function onRestockProductChange(select) {
+  const line = select.closest('[data-restock-line]');
+  const casesInput = line.querySelector('.restock-cases');
+  if (Number(casesInput.value) > 0) onRestockCasesChange(casesInput);
+}
+
+function onRestockCasesChange(input) {
+  const line = input.closest('[data-restock-line]');
+  const product = line.querySelector('.restock-product').value;
+  const cases = Number(input.value) || 0;
+  const packsPerCase = Number(restockPacksPerCase[product]) || 0;
+  if (product && cases >= 0 && packsPerCase > 0) {
+    line.querySelector('.restock-packs').value = cases * packsPerCase;
   }
 }
 
