@@ -124,9 +124,34 @@ function succeeded(result) {
   return Boolean(result) && !result.error && result.success !== false && !result.__status;
 }
 
+function requiresExplicitCasePriceBackend(body) {
+  const entries = Array.isArray(body?.entries) ? body.entries : [body || {}];
+  return entries.some(entry => {
+    const buyer = String(entry?.buyer || '').trim().toUpperCase();
+    const unit = String(entry?.priceUnit || '').trim().toUpperCase();
+    return unit === 'CASE' && !buyer.includes('SM');
+  });
+}
+
 async function dualWrite(action, body) {
   const requestId = String(body.requestId || randomUUID());
   const payload = { ...body, requestId };
+  if (requiresExplicitCasePriceBackend(payload)) {
+    const health = await forwardToAppsScript(
+      ORIGINAL_APPS_SCRIPT_URL, ORIGINAL_API_TOKEN, 'health', {}, 'Original'
+    );
+    if (!succeeded(health) || health.version !== '2026-07-13.16') {
+      return {
+        success: false,
+        error: 'Case-priced buyers other than SM require Original backend 2026-07-13.16 before saving. No Sheet was changed.',
+        requestId,
+        sync: {
+          original: { success: false, skipped: true },
+          v2: { success: false, skipped: true }
+        }
+      };
+    }
+  }
   const original = await forwardToAppsScript(
     ORIGINAL_APPS_SCRIPT_URL, ORIGINAL_API_TOKEN, action, payload, "Original"
   );
@@ -181,7 +206,7 @@ module.exports = async function handler(req, res) {
     let result;
     if (action === "appendRestocks") {
       const health = await getV2Health();
-      result = ["2026-07-13.10", "2026-07-13.11", "2026-07-13.12", "2026-07-13.13", "2026-07-13.14", "2026-07-13.15"].includes(health.version)
+      result = ["2026-07-13.10", "2026-07-13.11", "2026-07-13.12", "2026-07-13.13", "2026-07-13.14", "2026-07-13.15", "2026-07-13.16"].includes(health.version)
         ? await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2")
         : { __status: 503, success: false, error: "Restock is temporarily paused while the formula-safe backend repair is being deployed." };
     } else if (["repairRestockDamage", "repairRestockRows", "refreshProductView", "formatV2", "applyRequestedLayout", "applyApprovedSmPrices"].includes(action)) {

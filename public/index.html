@@ -3770,6 +3770,7 @@ Object.values(PRICES).forEach(buyerPrices => {
   buyerPrices.PERSONAL = buyerPrices.PERSONAL ?? buyerPrices['SAMPLE/PERSONAL'];
   delete buyerPrices['SAMPLE/PERSONAL'];
 });
+const PRICE_UNITS = {};
 const PACKS_PER_CASE = {
   'Bathroom Tissue 4s Fluffy':       12,
   'Bathroom Tissue 9s Fluffy':       12,
@@ -3849,6 +3850,43 @@ let currentPage = 1;
 const PAGE_SIZE = 25;
 let sortKey = 'date', sortDir = -1;
 let demoLoaded  = false;
+let v2ReferenceLoadPromise = null;
+
+async function loadV2ReferenceData(force = false) {
+  if (v2ReferenceLoadPromise && !force) return v2ReferenceLoadPromise;
+  v2ReferenceLoadPromise = (async () => {
+    const response = await fetch(SCRIPT_URL + '?action=getV2Bootstrap');
+    const result = await response.json();
+    if (!response.ok || !result.success) throw new Error(result.error || 'Could not load Product Master and Buyer Prices.');
+    (result.products || []).forEach(product => {
+      const name = String(product.name || '').trim();
+      if (!name) return;
+      if (!PRICES[name]) PRICES[name] = {};
+      PACKS_PER_CASE[name] = Number(product.packsPerCase) || 0;
+      COSTS[name] = Number(product.defaultCost) || 0;
+    });
+    (result.prices || []).forEach(record => {
+      const product = String(record.product || '').trim();
+      const buyer = String(record.buyer || '').trim().toUpperCase();
+      if (!product || !buyer) return;
+      if (!PRICES[product]) PRICES[product] = {};
+      if (!PRICE_UNITS[product]) PRICE_UNITS[product] = {};
+      PRICES[product][buyer] = Number(record.price) || 0;
+      PRICE_UNITS[product][buyer] = String(record.priceUnit || 'PACK').trim().toUpperCase() === 'CASE' ? 'CASE' : 'PACK';
+    });
+    BUYERS = normalizeBuyerList(BUYERS.concat(result.buyers || [], (result.prices || []).map(record => record.buyer)));
+    populateDropdowns();
+    renderBuyerPills();
+    renderPriceReference();
+    getEntryLineElements().forEach(line => autoFillPrice(getEntryLineValue(line, 'product'), document.getElementById('e-buyer').value, line));
+    updatePreview();
+    return result;
+  })().catch(error => {
+    showToast('Could not refresh Buyer Prices: ' + (error.message || error), 'error');
+    throw error;
+  }).finally(() => { v2ReferenceLoadPromise = null; });
+  return v2ReferenceLoadPromise;
+}
 
 // ===============================================
 //  INIT
@@ -3856,6 +3894,7 @@ let demoLoaded  = false;
 document.addEventListener('DOMContentLoaded', () => {
   setTodayDate();
   populateDropdowns();
+  loadV2ReferenceData().catch(() => {});
   renderBuyerPills();
   renderPriceReference();
   updatePreview();
@@ -3905,6 +3944,7 @@ function populateDropdowns() {
 
 function populateProductSelect(el, products = Object.keys(PRICES)) {
   if (!el) return;
+  const existingValue = el.value;
   const first = el.options[0] || new Option('Select Product...', '');
   el.innerHTML = '';
   el.appendChild(first);
@@ -3916,6 +3956,7 @@ function populateProductSelect(el, products = Object.keys(PRICES)) {
     (p.includes('Plush') ? plush : fluffy).appendChild(opt);
   });
   el.appendChild(fluffy); el.appendChild(plush);
+  if ([...el.options].some(option => option.value === existingValue)) el.value = existingValue;
 }
 
 function populateSearchProductFilters(products = Object.keys(PRICES)) {
@@ -3959,6 +4000,7 @@ function populateSearchProductFilters(products = Object.keys(PRICES)) {
 function populateBuyerSelect(id) {
   const el = document.getElementById(id);
   if (!el) return;
+  const existingValue = el.value;
   const first = el.options[0];
   el.innerHTML = '';
   el.appendChild(first);
@@ -3967,6 +4009,7 @@ function populateBuyerSelect(id) {
     opt.value = b; opt.textContent = b;
     el.appendChild(opt);
   });
+  if ([...el.options].some(option => option.value === existingValue)) el.value = existingValue;
 }
 
 function addSearchProductFilter(value = '') {
@@ -4054,7 +4097,7 @@ function navigate(page) {
   document.querySelector(`[onclick="navigate('${page}')"]`).classList.add('active');
   document.getElementById('topbarTitle').textContent = PAGE_TITLES[page];
   if (page === 'summary') renderSummary();
-  if (page === 'entry') renderEntryRecent();
+  if (page === 'entry') { renderEntryRecent(); loadV2ReferenceData(true).catch(() => {}); }
   if (page === 'restock') loadRestockProducts();
   closeSidebar();
   window.requestAnimationFrame(() => {
@@ -4857,6 +4900,11 @@ function onProductChange(el){
   const buyer=document.getElementById('e-buyer').value;
   autoFillPrice(product,buyer,line);
 }
+function getEntryPriceUnit(product,buyer){
+  const configured = PRICE_UNITS[product]?.[buyer];
+  if(configured==='CASE'||configured==='PACK') return configured;
+  return String(buyer||'').includes('SM') ? 'CASE' : 'PACK';
+}
 function autoFillPrice(product,buyer,line){
   line = line || getEntryLineElements()[0];
   if(!line) return;
@@ -4870,8 +4918,8 @@ function autoFillPrice(product,buyer,line){
     updatePreview();
     return;
   }
-  const isSM = buyer.includes('SM');
-  if(priceLabel) priceLabel.textContent = isSM ? 'Price per Case (₱)' : 'Price per Pack (₱)';
+  const priceUnit = getEntryPriceUnit(product,buyer);
+  if(priceLabel) priceLabel.textContent = priceUnit === 'CASE' ? 'Price per Case (₱)' : 'Price per Pack (₱)';
   if(!product||!buyer) {
     if(hint) hint.textContent='Select a product and buyer to auto-fill price.';
     updatePreview();
@@ -4914,10 +4962,11 @@ function getEntryLineValue(line, field){
   return el ? el.value : '';
 }
 function calculateEntryLineTotal(line, buyer=document.getElementById('e-buyer').value){
+  const product=getEntryLineValue(line, 'product');
   const packs=parseFloat(getEntryLineValue(line, 'packs'))||0;
   const cases=parseFloat(getEntryLineValue(line, 'cases'))||0;
   const price=parseFloat(getEntryLineValue(line, 'price'))||0;
-  return (buyer.includes('SM') ? cases : packs) * price;
+  return (getEntryPriceUnit(product,buyer)==='CASE' ? cases : packs) * price;
 }
 function getWarehouseForProduct(product) {
   const value = String(product || '');
@@ -5104,7 +5153,7 @@ function updatePreview(){
   document.getElementById('prev-line-count').textContent=String(lines.length);
   preview.innerHTML=displayLines.map((item,index)=>{
     const product=item.product ? displayProductName(item.product) : 'Select Product';
-    const priceLabel=buyer.includes('SM')?'Case price':'Pack price';
+    const priceLabel=getEntryPriceUnit(item.product,buyer)==='CASE'?'Case price':'Pack price';
     const warehouseLabel=item.product ? formatWarehouseLabel(item.warehouse) : '—';
     return `
       <div class="entry-preview-line${noRevenueBuyer ? ' is-no-price' : ''}">
@@ -5280,6 +5329,7 @@ async function submitEntry() {
             packs: item.packs,
             cases: item.cases,
             price: item.price,
+            priceUnit: getEntryPriceUnit(item.product,buyer),
             warehouse: item.warehouse
           }))
         })
@@ -5302,6 +5352,7 @@ async function submitEntry() {
                 packs: item.packs,
                 cases: item.cases,
                 price: item.price,
+                priceUnit: getEntryPriceUnit(item.product,buyer),
                 warehouse: item.warehouse
               })
             });
