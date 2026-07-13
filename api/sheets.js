@@ -210,7 +210,7 @@ module.exports = async function handler(req, res) {
       result = ["2026-07-13.10", "2026-07-13.11", "2026-07-13.12", "2026-07-13.13", "2026-07-13.14", "2026-07-13.15", "2026-07-13.16"].includes(health.version)
         ? await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2")
         : { __status: 503, success: false, error: "Restock is temporarily paused while the formula-safe backend repair is being deployed." };
-    } else if (["repairRestockDamage", "repairRestockRows", "repairV2OrderCosts", "repairMissingSummaryRows", "moveBuyerRowsToTop", "applyDateOrderAndPaymentTerms", "refreshProductView", "refreshLatestFirstViews", "formatV2", "applyRequestedLayout", "applyApprovedSmPrices"].includes(action)) {
+    } else if (["repairRestockDamage", "repairRestockRows", "repairV2OrderCosts", "repairMissingSummaryRows", "moveBuyerRowsToTop", "applyDateOrderAndPaymentTerms", "buildWarehouseTrackerV2", "refreshProductView", "refreshLatestFirstViews", "formatV2", "applyRequestedLayout", "applyApprovedSmPrices"].includes(action)) {
       result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2");
     } else if (action === "getV2Bootstrap") {
       result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2");
