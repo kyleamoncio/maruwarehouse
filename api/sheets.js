@@ -17,6 +17,7 @@ function sendJson(res, status, body) {
   setCors(res);
   res.statusCode = status;
   res.setHeader("Content-Type", "application/json; charset=utf-8");
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
   res.end(JSON.stringify(body));
 }
 
