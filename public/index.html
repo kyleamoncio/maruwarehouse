@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>MARU — Warehouse Portal</title>
+<title>MARU — Warehouse Portal V2 Test</title>
 <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
 <link rel="icon" type="image/svg+xml" href="favicon.svg" />
 <link rel="shortcut icon" href="favicon.ico" />
@@ -3791,8 +3791,9 @@ let demoLoaded  = false;
 // ===============================================
 //  INIT
 // ===============================================
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   setTodayDate();
+  await loadV2Bootstrap();
   populateDropdowns();
   renderBuyerPills();
   renderPriceReference();
@@ -3803,6 +3804,45 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('scroll', syncTopbarScrollState, { passive: true });
   loadAllData();
 });
+
+async function loadV2Bootstrap() {
+  try {
+    const response = await fetch(SCRIPT_URL + '?action=getV2Bootstrap');
+    const payload = await response.json();
+    if (!response.ok || payload.error || payload.version !== 'warehouse-v2') {
+      throw new Error(payload.error || 'V2 bootstrap was not returned');
+    }
+
+    const products = Array.isArray(payload.products) ? payload.products : [];
+    const prices = Array.isArray(payload.prices) ? payload.prices : [];
+    if (!products.length) throw new Error('V2 PRODUCT MASTER is empty');
+
+    Object.keys(PRICES).forEach(key => delete PRICES[key]);
+    Object.keys(PACKS_PER_CASE).forEach(key => delete PACKS_PER_CASE[key]);
+    Object.keys(COSTS).forEach(key => delete COSTS[key]);
+
+    products.forEach(product => {
+      const name = String(product.name || '').trim();
+      if (!name) return;
+      PRICES[name] = {};
+      PACKS_PER_CASE[name] = Number(product.packsPerCase) || 0;
+      COSTS[name] = Number(product.defaultCost) || 0;
+    });
+
+    prices.forEach(rule => {
+      const product = String(rule.product || '').trim();
+      const buyer = String(rule.buyer || '').trim();
+      if (!product || !buyer || !PRICES[product]) return;
+      PRICES[product][buyer] = Number(rule.price) || 0;
+    });
+
+    BUYERS = normalizeBuyerList(payload.buyers);
+    localStorage.setItem('maru_buyers', JSON.stringify(BUYERS));
+  } catch (error) {
+    console.warn('V2 bootstrap unavailable; keeping built-in catalog as a temporary fallback.', error);
+    showToast('V2 product setup could not be loaded: ' + (error?.message || 'Unknown error'), 'error');
+  }
+}
 
 function bindDatePickerOpeners() {
   document.addEventListener('pointerdown', event => {
