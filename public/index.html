@@ -3207,6 +3207,10 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
       New Entry
     </div>
+    <div class="nav-item" onclick="navigate('restock')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="8" cy="7" r="3"/><path d="M17 14v6M14 17h6"/></svg>
+      Restock
+    </div>
     <div class="nav-item" onclick="navigate('settings')">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       Settings
@@ -3619,6 +3623,49 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
   </div>
 </div>
 
+<!-- == RESTOCK == -->
+<div id="page-restock" class="page">
+  <div class="page-header"><div class="page-header-left"><h1>Restock</h1></div></div>
+  <div class="card entry-details-card">
+    <div class="card-header entry-details-header">
+      <div class="card-title">Restock Details</div>
+      <button class="btn btn-secondary entry-add-product-top" type="button" onclick="addRestockLine()">+ Add Product</button>
+    </div>
+    <div class="card-body">
+      <div class="form-group" style="max-width:280px;margin-bottom:18px">
+        <label class="form-label">Date</label>
+        <input type="date" class="form-control" id="r-date"/>
+      </div>
+      <div class="entry-lines" id="restockLines">
+        <div class="entry-line" data-restock-line>
+          <div class="entry-line-head">
+            <div class="entry-line-title">Product 1</div>
+            <button class="btn btn-secondary entry-line-remove" type="button" onclick="removeRestockLine(this)" style="display:none">Remove</button>
+          </div>
+          <div class="form-grid entry-product-grid">
+            <div class="form-group form-full">
+              <label class="form-label">Product</label>
+              <select class="form-control restock-product"><option value="">Select Product...</option></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Case Quantity</label>
+              <input type="number" min="0" class="form-control restock-cases" placeholder="0"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Pack Quantity</label>
+              <input type="number" min="1" class="form-control restock-packs" placeholder="0"/>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button id="restockSubmit" class="btn btn-primary entry-submit-button" type="button" onclick="submitRestock()" style="margin-top:14px;width:100%">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+    Submit Restock
+  </button>
+</div>
+
     <!-- == SETTINGS == -->
     <div id="page-settings" class="page">
       <div class="page-header">
@@ -3825,7 +3872,10 @@ function bindDatePickerOpeners() {
 }
 
 function setTodayDate() {
-  document.getElementById('e-date').value = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('e-date').value = today;
+  const restockDate = document.getElementById('r-date');
+  if (restockDate) restockDate.value = today;
 }
 
 function populateDropdowns() {
@@ -3978,7 +4028,7 @@ function updateConnectionStatus() {
 // ===============================================
 //  NAVIGATION
 // ===============================================
-const PAGE_TITLES = { dashboard:'Dashboard', alldata:'All Data', summary:'Summary', search:'Search', entry:'New Entry', settings:'Settings' };
+const PAGE_TITLES = { dashboard:'Dashboard', alldata:'All Data', summary:'Summary', search:'Search', entry:'New Entry', restock:'Restock', settings:'Settings' };
 
 function navigate(page) {
   window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
@@ -3991,6 +4041,7 @@ function navigate(page) {
   document.getElementById('topbarTitle').textContent = PAGE_TITLES[page];
   if (page === 'summary') renderSummary();
   if (page === 'entry') renderEntryRecent();
+  if (page === 'restock') loadRestockProducts();
   closeSidebar();
   window.requestAnimationFrame(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
@@ -5059,6 +5110,95 @@ function updatePreview(){
   document.getElementById('prev-total').textContent='₱'+fmtNum(gross);
   updateEntryLineStates();
 }
+let restockProductsLoaded = false;
+let restockSaveInProgress = false;
+
+async function loadRestockProducts() {
+  if (restockProductsLoaded) return;
+  try {
+    const response = await fetch(SCRIPT_URL + '?action=getV2Bootstrap');
+    const result = await response.json();
+    if (!response.ok || !result.success) throw new Error(result.error || 'Could not load active products.');
+    const products = (result.products || []).map(product => product.name).filter(Boolean);
+    document.querySelectorAll('.restock-product').forEach(select => populateProductSelect(select, products));
+    restockProductsLoaded = true;
+  } catch (error) {
+    showToast('Could not load restock products: ' + (error.message || error), 'error');
+  }
+}
+
+function getRestockLines() {
+  return Array.from(document.querySelectorAll('[data-restock-line]'));
+}
+
+function renumberRestockLines() {
+  const lines = getRestockLines();
+  lines.forEach((line,index) => {
+    line.querySelector('.entry-line-title').textContent = `Product ${index + 1}`;
+    line.querySelector('.entry-line-remove').style.display = lines.length === 1 ? 'none' : 'inline-flex';
+  });
+}
+
+async function addRestockLine() {
+  await loadRestockProducts();
+  const host = document.getElementById('restockLines');
+  const line = getRestockLines()[0].cloneNode(true);
+  line.querySelectorAll('select,input').forEach(element => { element.value = ''; });
+  host.appendChild(line);
+  renumberRestockLines();
+}
+
+function removeRestockLine(button) {
+  if (getRestockLines().length <= 1) return;
+  button.closest('[data-restock-line]').remove();
+  renumberRestockLines();
+}
+
+async function submitRestock() {
+  if (restockSaveInProgress) return;
+  const date = document.getElementById('r-date').value;
+  const entries = getRestockLines().map(line => ({
+    product: line.querySelector('.restock-product').value,
+    cases: Number(line.querySelector('.restock-cases').value) || 0,
+    packs: Number(line.querySelector('.restock-packs').value) || 0,
+    date
+  }));
+  if (!date || entries.some(entry => !entry.product || entry.packs <= 0 || entry.cases < 0)) {
+    showToast('Please select each Product and enter a Pack Quantity greater than zero.', 'error');
+    return;
+  }
+  restockSaveInProgress = true;
+  const button = document.getElementById('restockSubmit');
+  button.disabled = true;
+  button.textContent = 'Saving Restock...';
+  try {
+    const response = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'appendRestocks', entries })
+    });
+    const result = await response.json();
+    if (!response.ok || !result.success) throw new Error(result.error || 'Restock failed.');
+    if (result.sync && result.sync.v2 && !result.sync.v2.success) {
+      showToast('Original Sheet restocked. V2 sync needs attention: ' + (result.sync.v2.error || 'Unknown V2 error'), 'warning');
+    } else {
+      showToast(entries.length === 1 ? 'Restock added to both Sheets!' : `${entries.length} restock items added to both Sheets!`, 'success');
+    }
+    const first = getRestockLines()[0];
+    getRestockLines().slice(1).forEach(line => line.remove());
+    first.querySelector('.restock-product').value = '';
+    first.querySelector('.restock-cases').value = '';
+    first.querySelector('.restock-packs').value = '';
+    renumberRestockLines();
+  } catch (error) {
+    showToast('Could not save restock: ' + (error.message || error), 'error');
+  } finally {
+    restockSaveInProgress = false;
+    button.disabled = false;
+    button.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Submit Restock';
+  }
+}
+
 async function submitEntry() {
   if (entrySaveInProgress) return;
 

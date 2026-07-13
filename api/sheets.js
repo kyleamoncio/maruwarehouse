@@ -168,11 +168,18 @@ module.exports = async function handler(req, res) {
   try {
     const body = req.method === "POST" ? await readRequestBody(req) : {};
     const action = getAction(req, body);
-    const result = req.method === "POST" && WRITE_ACTIONS.has(action)
-      ? await dualWrite(action, body)
-      : await forwardToAppsScript(
-          ORIGINAL_APPS_SCRIPT_URL, ORIGINAL_API_TOKEN, action, body, "Original"
-        );
+    let result;
+    if (action === "appendRestocks") {
+      result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2");
+    } else if (action === "getV2Bootstrap") {
+      result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2");
+    } else if (req.method === "POST" && WRITE_ACTIONS.has(action)) {
+      result = await dualWrite(action, body);
+    } else {
+      result = await forwardToAppsScript(
+        ORIGINAL_APPS_SCRIPT_URL, ORIGINAL_API_TOKEN, action, body, "Original"
+      );
+    }
     const status = result?.__status || 200;
     if (result?.__status) delete result.__status;
     return sendJson(res, status, result);
