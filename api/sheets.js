@@ -181,7 +181,7 @@ module.exports = async function handler(req, res) {
     let result;
     if (action === "appendRestocks") {
       const health = await getV2Health();
-      result = ["2026-07-13.10", "2026-07-13.11", "2026-07-13.12", "2026-07-13.13"].includes(health.version)
+      result = ["2026-07-13.10", "2026-07-13.11", "2026-07-13.12", "2026-07-13.13", "2026-07-13.14"].includes(health.version)
         ? await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2")
         : { __status: 503, success: false, error: "Restock is temporarily paused while the formula-safe backend repair is being deployed." };
     } else if (["repairRestockDamage", "repairRestockRows", "refreshProductView", "formatV2"].includes(action)) {
