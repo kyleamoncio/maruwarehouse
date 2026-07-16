@@ -134,6 +134,11 @@ function requiresExplicitCasePriceBackend(body) {
   });
 }
 
+function shouldSkipOriginalLegacy(body) {
+  const entries = Array.isArray(body?.entries) ? body.entries : [body || {}];
+  return entries.some(entry => String(entry?.product || '').trim() === 'Wet Wipes 60s Plush');
+}
+
 async function dualWrite(action, body) {
   const requestId = String(body.requestId || randomUUID());
   const payload = { ...body, requestId };
@@ -165,12 +170,12 @@ async function dualWrite(action, body) {
     };
   }
 
-  if (body.v2Only === true) {
+  if (body.v2Only === true || shouldSkipOriginalLegacy(body)) {
     return {
       ...v2Result,
       success: true,
       requestId,
-      sync: {v2:{success:true},original:{success:false,skipped:true,error:"V2-only write requested."}}
+      sync: {v2:{success:true},original:{success:false,skipped:true,error:"Original legacy write skipped because this order contains a V2-only product."}}
     };
   }
 
