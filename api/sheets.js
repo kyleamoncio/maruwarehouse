@@ -137,61 +137,59 @@ function requiresExplicitCasePriceBackend(body) {
 async function dualWrite(action, body) {
   const requestId = String(body.requestId || randomUUID());
   const payload = { ...body, requestId };
-  if (requiresExplicitCasePriceBackend(payload)) {
-    const health = await forwardToAppsScript(
-      ORIGINAL_APPS_SCRIPT_URL, ORIGINAL_API_TOKEN, 'health', {}, 'Original', 4000
-    );
-    if (!succeeded(health) || !["2026-07-13.16", "2026-07-13.17", "2026-07-13.18"].includes(health.version)) {
-      return {
-        success: false,
-        error: 'Case-priced buyers other than SM require Original backend 2026-07-13.16 or newer before saving. No Sheet was changed.',
-        requestId,
-        sync: {
-          original: { success: false, skipped: true },
-          v2: { success: false, skipped: true }
-        }
-      };
-    }
-  }
-  const original = await forwardToAppsScript(
-    ORIGINAL_APPS_SCRIPT_URL, ORIGINAL_API_TOKEN, action, payload, "Original", 18000
-  );
 
-  if (!succeeded(original)) {
+  let v2Result;
+  try {
+    v2Result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, payload, "V2", 20000);
+  } catch (error) {
     return {
-      ...original,
       success: false,
+      error: `V2 write failed: ${error instanceof Error ? error.message : String(error)}`,
       requestId,
       sync: {
-        original: { success: false, error: original?.error || "Original write failed." },
-        v2: { success: false, skipped: true, error: "V2 was not attempted because the original write failed." }
+        v2: { success: false, error: error instanceof Error ? error.message : String(error) },
+        original: { success: false, skipped: true, error: "Original was not attempted because V2 is now the required primary write." }
       }
     };
   }
 
-  let v2;
-  if (!V2_APPS_SCRIPT_URL) {
-    v2 = { success: false, skipped: true, error: "V2 sync is not configured yet." };
-  } else {
-    try {
-      const result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, payload, "V2", 5000);
-      v2 = succeeded(result)
-        ? { success: true, result }
-        : { success: false, error: result?.error || "V2 write failed.", result };
-    } catch (error) {
-      v2 = { success: false, error: error instanceof Error ? error.message : String(error) };
-    }
+  if (!succeeded(v2Result)) {
+    return {
+      ...v2Result,
+      success: false,
+      requestId,
+      sync: {
+        v2: { success: false, error: v2Result?.error || "V2 write failed." },
+        original: { success: false, skipped: true, error: "Original was not attempted because V2 failed." }
+      }
+    };
+  }
+
+  if (body.v2Only === true) {
+    return {
+      ...v2Result,
+      success: true,
+      requestId,
+      sync: {v2:{success:true},original:{success:false,skipped:true,error:"V2-only write requested."}}
+    };
+  }
+
+  let original;
+  try {
+    const result = await forwardToAppsScript(ORIGINAL_APPS_SCRIPT_URL, ORIGINAL_API_TOKEN, action, payload, "Original", 5000);
+    original = succeeded(result)
+      ? {success:true,result}
+      : {success:false,error:result?.error || "Original legacy write failed.",result};
+  } catch (error) {
+    original = {success:false,error:error instanceof Error ? error.message : String(error)};
   }
 
   return {
-    ...original,
+    ...v2Result,
     success: true,
     requestId,
-    sync: {
-      original: { success: true },
-      v2
-    },
-    warning: v2.success ? undefined : `Original Sheet saved successfully, but V2 sync failed: ${v2.error}`
+    sync: {v2:{success:true},original},
+    warning: original.success ? undefined : `Saved successfully in V2. Original legacy sync was skipped or failed: ${original.error}`
   };
 }
 
