@@ -134,9 +134,14 @@ function requiresExplicitCasePriceBackend(body) {
   });
 }
 
-function shouldSkipOriginalLegacy(body) {
-  const entries = Array.isArray(body?.entries) ? body.entries : [body || {}];
-  return entries.some(entry => String(entry?.product || '').trim() === 'Wet Wipes 60s Plush');
+function originalLegacyPayload(action, body) {
+  if (action === 'appendProducts') {
+    const entries = Array.isArray(body?.entries) ? body.entries : [];
+    const supportedEntries = entries.filter(entry => String(entry?.product || '').trim() !== 'Wet Wipes 60s Plush');
+    return supportedEntries.length ? {...body, entries:supportedEntries} : null;
+  }
+  if (action === 'appendToProduct' && String(body?.product || '').trim() === 'Wet Wipes 60s Plush') return null;
+  return body;
 }
 
 async function dualWrite(action, body) {
@@ -170,18 +175,28 @@ async function dualWrite(action, body) {
     };
   }
 
-  if (body.v2Only === true || shouldSkipOriginalLegacy(body)) {
+  if (body.v2Only === true) {
     return {
       ...v2Result,
       success: true,
       requestId,
-      sync: {v2:{success:true},original:{success:false,skipped:true,error:"Original legacy write skipped because this order contains a V2-only product."}}
+      sync: {v2:{success:true},original:{success:false,skipped:true,error:"V2-only write requested."}}
+    };
+  }
+
+  const legacyPayload = originalLegacyPayload(action, payload);
+  if (!legacyPayload) {
+    return {
+      ...v2Result,
+      success: true,
+      requestId,
+      sync: {v2:{success:true},original:{success:false,skipped:true,error:"Wet Wipes 60s Plush is V2-only and was intentionally skipped in Original."}}
     };
   }
 
   let original;
   try {
-    const result = await forwardToAppsScript(ORIGINAL_APPS_SCRIPT_URL, ORIGINAL_API_TOKEN, action, payload, "Original", 5000);
+    const result = await forwardToAppsScript(ORIGINAL_APPS_SCRIPT_URL, ORIGINAL_API_TOKEN, action, legacyPayload, "Original", 5000);
     original = succeeded(result)
       ? {success:true,result}
       : {success:false,error:result?.error || "Original legacy write failed.",result};
