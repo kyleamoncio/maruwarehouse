@@ -70,13 +70,13 @@ async function fetchLegacyGetAllData() {
   }
 }
 
-async function forwardToAppsScript(url, token, action, body, label) {
+async function forwardToAppsScript(url, token, action, body, label, timeoutMs = 25000) {
   if (!url) throw new Error(`Missing ${label} Apps Script URL.`);
   if (!token) throw new Error(`Missing ${label} API token.`);
   if (!action) throw new Error("Missing action.");
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 25000);
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
   let response;
   try {
     response = await fetch(url, {
@@ -88,7 +88,7 @@ async function forwardToAppsScript(url, token, action, body, label) {
     });
   } catch (error) {
     if (error && error.name === "AbortError") {
-      throw new Error(`${label} Apps Script timed out after 25 seconds.`);
+      throw new Error(`${label} Apps Script timed out after ${Math.round(timeoutMs / 1000)} seconds.`);
     }
     throw error;
   } finally {
@@ -139,7 +139,7 @@ async function dualWrite(action, body) {
   const payload = { ...body, requestId };
   if (requiresExplicitCasePriceBackend(payload)) {
     const health = await forwardToAppsScript(
-      ORIGINAL_APPS_SCRIPT_URL, ORIGINAL_API_TOKEN, 'health', {}, 'Original'
+      ORIGINAL_APPS_SCRIPT_URL, ORIGINAL_API_TOKEN, 'health', {}, 'Original', 4000
     );
     if (!succeeded(health) || !["2026-07-13.16", "2026-07-13.17", "2026-07-13.18"].includes(health.version)) {
       return {
@@ -154,7 +154,7 @@ async function dualWrite(action, body) {
     }
   }
   const original = await forwardToAppsScript(
-    ORIGINAL_APPS_SCRIPT_URL, ORIGINAL_API_TOKEN, action, payload, "Original"
+    ORIGINAL_APPS_SCRIPT_URL, ORIGINAL_API_TOKEN, action, payload, "Original", 18000
   );
 
   if (!succeeded(original)) {
@@ -174,7 +174,7 @@ async function dualWrite(action, body) {
     v2 = { success: false, skipped: true, error: "V2 sync is not configured yet." };
   } else {
     try {
-      const result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, payload, "V2");
+      const result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, payload, "V2", 5000);
       v2 = succeeded(result)
         ? { success: true, result }
         : { success: false, error: result?.error || "V2 write failed.", result };

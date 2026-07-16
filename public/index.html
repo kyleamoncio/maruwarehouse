@@ -5323,6 +5323,17 @@ async function submitRestock() {
   }
 }
 
+async function readJsonResponse(response, label='Sheets') {
+  const text = await response.text();
+  try {
+    return JSON.parse(text);
+  } catch (_) {
+    const preview = String(text || '').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0,180);
+    const detail = preview && !/^an error occurred/i.test(preview) ? ` Response: ${preview}` : '';
+    throw new Error(`${label} returned an invalid response${response.status ? ` (HTTP ${response.status})` : ''}.${detail} Please verify the Sheet before retrying.`);
+  }
+}
+
 async function submitEntry() {
   if (entrySaveInProgress) return;
 
@@ -5374,7 +5385,7 @@ async function submitEntry() {
           }))
         })
       });
-      const saveResult = await saveResponse.json();
+      const saveResult = await readJsonResponse(saveResponse, 'Sheet save');
 
       if (!saveResult.success) {
         if (saveResult.error === 'Unknown action') {
@@ -5396,7 +5407,7 @@ async function submitEntry() {
                 warehouse: item.warehouse
               })
             });
-            fallbackResults.push(await fallbackResponse.json());
+            fallbackResults.push(await readJsonResponse(fallbackResponse, 'Fallback Sheet save'));
           }
 
           const failedFallback = fallbackResults.find(result => !result.success);
@@ -5415,18 +5426,18 @@ async function submitEntry() {
       }
     };
 
-    applySavedEntriesLocally(newEntries);
-    resetEntryFormFields();
-    window.setTimeout(() => {
-      finishEntrySaveOverlay('success', 'Entry sent to Sheets. It may take a few seconds to appear there.');
+    try {
+      await saveInBackground();
+      applySavedEntriesLocally(newEntries);
+      resetEntryFormFields();
+      finishEntrySaveOverlay('success', 'Entry confirmed in Sheets.');
+    } catch (e) {
+      finishEntrySaveOverlay('error', e?.message || 'Unknown error');
+      showToast('Sheets error - entry was kept on screen. Verify Sheets before retrying: ' + (e?.message || 'Unknown error'), 'error');
+    } finally {
       entrySaveInProgress = false;
       setEntrySubmitBusy(false);
-    }, 350);
-
-    saveInBackground().catch((e) => {
-      finishEntrySaveOverlay('error', e?.message || 'Unknown error');
-      showToast('Sheets error - please verify this entry in Sheets: ' + (e?.message || 'Unknown error'), 'error');
-    });
+    }
     return;
   } else {
     applySavedEntriesLocally(newEntries);
