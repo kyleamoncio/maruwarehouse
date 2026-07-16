@@ -5008,9 +5008,8 @@ function calculateEntryLineTotal(line, buyer=document.getElementById('e-buyer').
   return (getEntryPriceUnit(product,buyer)==='CASE' ? cases : packs) * price;
 }
 function getWarehouseForProduct(product, buyer=document.getElementById('e-buyer')?.value || '') {
-  const buyerKey = String(buyer || '').toUpperCase().replace(/[^A-Z0-9]+/g,' ').replace(/\s+/g,' ').trim();
-  if (buyerKey === 'FAST LOGISITCS CORPORATION' || buyerKey === 'FAST LOGISTICS CORPORATION') return 'FAST CARGO';
   const value = String(product || '');
+  if (value === 'Wet Wipes 30s Plush' || value === 'Wet Wipes 60s Plush') return 'FAST CARGO';
   const isBathroomTissue = value.includes('Bathroom Tissue');
   const isExcludedPlushBulk = value === 'Bathroom Tissue 20s Plush' || value === 'Bathroom Tissue 30s Plush';
   return isBathroomTissue && !isExcludedPlushBulk ? 'QC' : 'PASIG';
