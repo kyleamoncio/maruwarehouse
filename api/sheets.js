@@ -141,7 +141,7 @@ async function dualWrite(action, body) {
     const health = await forwardToAppsScript(
       ORIGINAL_APPS_SCRIPT_URL, ORIGINAL_API_TOKEN, 'health', {}, 'Original'
     );
-    if (!succeeded(health) || !["2026-07-13.16", "2026-07-13.17"].includes(health.version)) {
+    if (!succeeded(health) || !["2026-07-13.16", "2026-07-13.17", "2026-07-13.18"].includes(health.version)) {
       return {
         success: false,
         error: 'Case-priced buyers other than SM require Original backend 2026-07-13.16 or newer before saving. No Sheet was changed.',

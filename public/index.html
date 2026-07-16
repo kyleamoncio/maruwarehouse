@@ -5007,14 +5007,16 @@ function calculateEntryLineTotal(line, buyer=document.getElementById('e-buyer').
   const price=parseFloat(getEntryLineValue(line, 'price'))||0;
   return (getEntryPriceUnit(product,buyer)==='CASE' ? cases : packs) * price;
 }
-function getWarehouseForProduct(product) {
+function getWarehouseForProduct(product, buyer=document.getElementById('e-buyer')?.value || '') {
+  const buyerKey = String(buyer || '').toUpperCase().replace(/[^A-Z0-9]+/g,' ').replace(/\s+/g,' ').trim();
+  if (buyerKey === 'FAST LOGISITCS CORPORATION' || buyerKey === 'FAST LOGISTICS CORPORATION') return 'FAST CARGO';
   const value = String(product || '');
   const isBathroomTissue = value.includes('Bathroom Tissue');
   const isExcludedPlushBulk = value === 'Bathroom Tissue 20s Plush' || value === 'Bathroom Tissue 30s Plush';
   return isBathroomTissue && !isExcludedPlushBulk ? 'QC' : 'PASIG';
 }
 function formatWarehouseLabel(warehouse) {
-  return warehouse === 'QC' ? 'QC' : 'Pasig';
+  return warehouse === 'FAST CARGO' ? 'Fast Cargo' : warehouse === 'QC' ? 'QC' : 'Pasig';
 }
 function isEntryLineStarted(line){
   return ['product','packs','cases','price'].some(field => String(getEntryLineValue(line, field) || '').trim());
@@ -5049,7 +5051,7 @@ function collectEntryLines(){
       packs,
       cases,
       price,
-      warehouse: getWarehouseForProduct(product),
+      warehouse: getWarehouseForProduct(product,buyer),
       total: calculateEntryLineTotal(line, buyer)
     };
   });
