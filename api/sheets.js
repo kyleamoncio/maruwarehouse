@@ -225,10 +225,10 @@ module.exports = async function handler(req, res) {
     let result;
     if (action === "appendRestocks") {
       const health = await getV2Health();
-      result = ["2026-07-13.10", "2026-07-13.11", "2026-07-13.12", "2026-07-13.13", "2026-07-13.14", "2026-07-13.15", "2026-07-13.16", "2026-07-13.17", "2026-07-13.18", "2026-07-13.19", "2026-07-13.20", "2026-07-13.21", "2026-07-13.22", "2026-07-13.23", "2026-07-13.24", "2026-07-13.25", "2026-07-13.26"].includes(health.version)
+      result = ["2026-07-13.10", "2026-07-13.11", "2026-07-13.12", "2026-07-13.13", "2026-07-13.14", "2026-07-13.15", "2026-07-13.16", "2026-07-13.17", "2026-07-13.18", "2026-07-13.19", "2026-07-13.20", "2026-07-13.21", "2026-07-13.22", "2026-07-13.23", "2026-07-13.24", "2026-07-13.25", "2026-07-13.26", "2026-07-13.27"].includes(health.version)
         ? await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2")
         : { __status: 503, success: false, error: "Restock is temporarily paused while the formula-safe backend repair is being deployed." };
-    } else if (["repairRestockDamage", "repairRestockRows", "repairV2OrderCosts", "repairMissingSummaryRows", "repairSummaryIdentityFromOfficial", "moveBuyerRowsToTop", "applyDateOrderAndPaymentTerms", "buildWarehouseTrackerV2", "refreshProductView", "refreshLatestFirstViews", "formatV2", "applyRequestedLayout", "applyApprovedSmPrices"].includes(action)) {
+    } else if (["repairRestockDamage", "repairRestockRows", "repairV2OrderCosts", "repairMissingSummaryRows", "removeSampleSummaryRows", "repairSummaryIdentityFromOfficial", "moveBuyerRowsToTop", "applyDateOrderAndPaymentTerms", "buildWarehouseTrackerV2", "refreshProductView", "refreshLatestFirstViews", "formatV2", "applyRequestedLayout", "applyApprovedSmPrices"].includes(action)) {
       result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2");
     } else if (action === "getV2Bootstrap") {
       result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2");
