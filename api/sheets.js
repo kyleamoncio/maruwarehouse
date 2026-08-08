@@ -6,6 +6,7 @@ const ORIGINAL_API_TOKEN = process.env.WAREHOUSE_PORTAL_API_TOKEN || "";
 const V2_API_TOKEN = process.env.WAREHOUSE_PORTAL_V2_API_TOKEN || ORIGINAL_API_TOKEN;
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || "*";
 const WRITE_ACTIONS = new Set(["appendProducts", "appendToProduct"]);
+const ORDER_SAFE_V2_VERSIONS = new Set(["2026-07-30.35", "2026-08-01.36", "2026-08-01.37", "2026-08-01.38", "2026-08-01.39", "2026-08-01.40", "2026-08-01.41", "2026-08-08.42"]);
 
 function setCors(res) {
   res.setHeader("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
@@ -46,12 +47,27 @@ function getAction(req, body) {
 
 async function getV2Health() {
   if (!V2_APPS_SCRIPT_URL) return { success: false, error: "V2 URL is not configured." };
-  const url = new URL(V2_APPS_SCRIPT_URL);
-  url.searchParams.set("action", "health");
-  const response = await fetch(url.toString(), { method: "GET", redirect: "follow" });
-  const text = await response.text();
-  try { return JSON.parse(text); }
-  catch (_) { return { success: false, error: `V2 health returned non-JSON (${response.status}).` }; }
+  try {
+    const health = await forwardToAppsScript(
+      V2_APPS_SCRIPT_URL,
+      V2_API_TOKEN,
+      "health",
+      {},
+      "V2 health",
+      15000
+    );
+    if (health?.version) return health;
+  } catch (error) {
+    // Older deployments do not expose POST health; use their authenticated bootstrap below.
+  }
+  return forwardToAppsScript(
+    V2_APPS_SCRIPT_URL,
+    V2_API_TOKEN,
+    "getV2Bootstrap",
+    {},
+    "V2 health fallback",
+    45000
+  );
 }
 
 async function fetchLegacyGetAllData() {
@@ -144,13 +160,34 @@ function originalLegacyPayload(action, body) {
   return body;
 }
 
+function canonicalOriginalPayload(action, body, v2Result) {
+  const canonicalEntries = Array.isArray(v2Result?.canonicalEntries) ? v2Result.canonicalEntries : null;
+  if (!canonicalEntries || !canonicalEntries.length) return originalLegacyPayload(action, body);
+  if (action === 'appendProducts') return originalLegacyPayload(action, {...body, entries:canonicalEntries});
+  if (action === 'appendToProduct') return originalLegacyPayload(action, {...body, ...canonicalEntries[0]});
+  return originalLegacyPayload(action, body);
+}
+
 async function dualWrite(action, body) {
   const requestId = String(body.requestId || randomUUID());
   const payload = { ...body, requestId };
 
+  if (action === "appendProducts" || action === "appendToProduct") {
+    const health = await getV2Health();
+    if (!ORDER_SAFE_V2_VERSIONS.has(health.version)) {
+      return {
+        __status: 503,
+        success: false,
+        blocked: true,
+        error: `Order save blocked: V2 ${health.version || "unknown"} is not a supported document-safe backend. Deploy a supported V2 backend before saving; no V2 or Original rows were written.`,
+        requestId
+      };
+    }
+  }
+
   let v2Result;
   try {
-    v2Result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, payload, "V2", 20000);
+    v2Result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, payload, "V2", 45000);
   } catch (error) {
     return {
       success: false,
@@ -175,6 +212,15 @@ async function dualWrite(action, body) {
     };
   }
 
+  if (v2Result.duplicate === true) {
+    return {
+      ...v2Result,
+      success: true,
+      requestId,
+      sync: {v2:{success:true,duplicate:true},original:{success:false,skipped:true,error:"Exact retry already exists in V2; Original was not called."}}
+    };
+  }
+
   if (body.v2Only === true) {
     return {
       ...v2Result,
@@ -184,7 +230,7 @@ async function dualWrite(action, body) {
     };
   }
 
-  const legacyPayload = originalLegacyPayload(action, payload);
+  const legacyPayload = canonicalOriginalPayload(action, payload, v2Result);
   if (!legacyPayload) {
     return {
       ...v2Result,
@@ -225,15 +271,23 @@ module.exports = async function handler(req, res) {
     let result;
     if (action === "appendRestocks") {
       const health = await getV2Health();
-      result = ["2026-07-13.10", "2026-07-13.11", "2026-07-13.12", "2026-07-13.13", "2026-07-13.14", "2026-07-13.15", "2026-07-13.16", "2026-07-13.17", "2026-07-13.18", "2026-07-13.19", "2026-07-13.20", "2026-07-13.21", "2026-07-13.22", "2026-07-13.23", "2026-07-13.24", "2026-07-13.25", "2026-07-13.26", "2026-07-13.27"].includes(health.version)
+      result = ["2026-07-13.10", "2026-07-13.11", "2026-07-13.12", "2026-07-13.13", "2026-07-13.14", "2026-07-13.15", "2026-07-13.16", "2026-07-13.17", "2026-07-13.18", "2026-07-13.19", "2026-07-13.20", "2026-07-13.21", "2026-07-13.22", "2026-07-13.23", "2026-07-13.24", "2026-07-13.25", "2026-07-13.26", "2026-07-13.27", "2026-07-24.28", "2026-07-24.29", "2026-07-29.30", "2026-07-29.31", "2026-07-29.32", "2026-07-29.33", "2026-07-30.34", "2026-07-30.35", "2026-08-01.36", "2026-08-01.37", "2026-08-01.38", "2026-08-01.39", "2026-08-01.40", "2026-08-01.41", "2026-08-08.42"].includes(health.version)
         ? await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2")
         : { __status: 503, success: false, error: "Restock is temporarily paused while the formula-safe backend repair is being deployed." };
-    } else if (["repairRestockDamage", "repairRestockRows", "repairV2OrderCosts", "repairMissingSummaryRows", "removeSampleSummaryRows", "repairSummaryIdentityFromOfficial", "moveBuyerRowsToTop", "applyDateOrderAndPaymentTerms", "buildWarehouseTrackerV2", "refreshProductView", "refreshLatestFirstViews", "formatV2", "applyRequestedLayout", "applyApprovedSmPrices"].includes(action)) {
+    } else if (["setupPersonalTab", "setupViews"].includes(action)) {
+      result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2", 55000);
+    } else if (["repairRestockDamage", "repairRestockRows", "repairV2OrderCosts", "repairPersonalSrpPricing", "repairMissingSummaryRows", "repairRecentSummaryRows", "removeSampleSummaryRows", "repairSummaryIdentityFromOfficial", "moveBuyerRowsToTop", "applyDateOrderAndPaymentTerms", "buildWarehouseTrackerV2", "refreshProductView", "refreshLatestFirstViews", "formatV2", "applyRequestedLayout", "applyApprovedSmPrices", "ensureSummaryDocumentColumns"].includes(action)) {
       result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2");
     } else if (action === "getV2Bootstrap") {
+      result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2", 55000);
+    } else if (action === "getSummaryDocuments") {
       result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2");
     } else if (req.method === "POST" && WRITE_ACTIONS.has(action)) {
       result = await dualWrite(action, body);
+    } else if (action === "getAllData") {
+      result = await forwardToAppsScript(
+        ORIGINAL_APPS_SCRIPT_URL, ORIGINAL_API_TOKEN, action, body, "Original", 55000
+      );
     } else {
       result = await forwardToAppsScript(
         ORIGINAL_APPS_SCRIPT_URL, ORIGINAL_API_TOKEN, action, body, "Original"

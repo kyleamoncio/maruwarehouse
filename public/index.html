@@ -890,42 +890,49 @@ table {
 
 #summaryTable {
   table-layout: fixed;
+  min-width: 0;
 }
 
 #summaryTable th,
 #summaryTable td {
-  padding-left: 14px;
-  padding-right: 14px;
+  padding-left: 12px;
+  padding-right: 12px;
 }
 
 #summaryTable th:first-child,
 #summaryTable td:first-child {
-  padding-left: 24px;
+  padding-left: 18px;
 }
 
 #summaryTable th:last-child,
 #summaryTable td:last-child {
-  padding-right: 24px;
+  padding-right: 18px;
 }
 
 #summaryTable th:nth-child(1),
-#summaryTable td:nth-child(1) { width: 9%; }
+#summaryTable td:nth-child(1) { width: 8%; }
 #summaryTable th:nth-child(2),
-#summaryTable td:nth-child(2) { width: 12%; }
+#summaryTable td:nth-child(2) { width: 11%; }
 #summaryTable th:nth-child(3),
-#summaryTable td:nth-child(3) { width: 10%; }
+#summaryTable td:nth-child(3) { width: 8%; }
 #summaryTable th:nth-child(4),
-#summaryTable td:nth-child(4) { width: 7%; }
+#summaryTable td:nth-child(4) { width: 6%; }
 #summaryTable th:nth-child(5),
-#summaryTable td:nth-child(5) { width: 22%; }
+#summaryTable td:nth-child(5) { width: 17%; }
 #summaryTable th:nth-child(6),
-#summaryTable td:nth-child(6) { width: 11%; }
+#summaryTable td:nth-child(6) { width: 9%; }
 #summaryTable th:nth-child(7),
-#summaryTable td:nth-child(7) { width: 9%; }
+#summaryTable td:nth-child(7) { width: 8%; }
 #summaryTable th:nth-child(8),
-#summaryTable td:nth-child(8) { width: 10%; }
+#summaryTable td:nth-child(8) { width: 9%; }
 #summaryTable th:nth-child(9),
-#summaryTable td:nth-child(9) { width: 10%; }
+#summaryTable td:nth-child(9) { width: 9%; }
+#summaryTable th:nth-child(10),
+#summaryTable td:nth-child(10),
+#summaryTable th:nth-child(11),
+#summaryTable td:nth-child(11),
+#summaryTable th:nth-child(12),
+#summaryTable td:nth-child(12) { width: 5%; }
 
 #page-search .table-wrap table { table-layout: fixed; }
 #page-search th:nth-child(1), #page-search td:nth-child(1) { width: 10%; }
@@ -1115,7 +1122,8 @@ table {
 }
 
 #page-summary .summary-terminal-wrap {
-  overflow: visible;
+  overflow-x: auto;
+  overflow-y: visible;
   background: transparent;
 }
 
@@ -1140,7 +1148,7 @@ table {
   margin-top: 56px;
   margin-left: 0 !important;
   margin-right: 0 !important;
-  transform: translateX(var(--summary-rail-shift));
+  transform: none;
 }
 
 #page-summary .summary-terminal-body,
@@ -1161,27 +1169,31 @@ table {
 
 #page-summary #summaryTable thead,
 #page-summary #summaryTable thead tr {
-  position: sticky;
-  top: 76px;
-  z-index: 90;
-  background: var(--bg);
+  position: static;
+  background: var(--panel-outer);
 }
 
 #page-summary #summaryTable thead th {
   position: sticky;
   top: 76px;
   z-index: 91;
-  background: var(--bg);
+  background: var(--panel-outer);
   color: var(--text-muted);
   border-top: 1px solid rgba(242, 238, 229, 0.1);
   border-bottom: 1px solid rgba(242, 238, 229, 0.1);
   border-right: 0;
   backdrop-filter: none;
-  box-shadow:
-    0 -1px 0 rgba(242, 238, 229, 0.07),
-    0 1px 0 rgba(242, 238, 229, 0.07);
+  box-shadow: none;
   padding-top: 12px;
   padding-bottom: 12px;
+}
+
+#page-summary #summaryTable thead th:first-child {
+  border-left: 1px solid rgba(242, 238, 229, 0.1);
+}
+
+#page-summary #summaryTable thead th:last-child {
+  border-right: 1px solid rgba(242, 238, 229, 0.1);
 }
 
 #page-summary #summaryTable tbody tr {
@@ -1614,19 +1626,19 @@ select.form-control option {
    ENTRY PAGE
 ----------------------------------------- */
 #page-entry .two-col {
-  align-items: stretch !important;
+  align-items: start !important;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 }
 
 #page-entry .entry-preview-col {
   display: flex;
   flex-direction: column;
-  min-height: 100%;
+  min-height: 0;
 }
 
 #page-entry .entry-preview-card {
-  height: 100%;
-  min-height: 100%;
+  height: auto;
+  min-height: 0;
 }
 
 #page-entry .entry-preview-card .card-body {
@@ -3150,7 +3162,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
 #sidebar{width:236px!important;min-width:236px!important;flex:0 0 236px!important;height:100vh!important;padding:50px 10px 12px!important;background:rgba(5,5,5,.98)!important;border-right:1px solid #2A2D2F!important;overflow:hidden!important;gap:0!important}.sidebar-close-control{display:flex!important;position:absolute!important;top:8px!important;left:14px!important;z-index:5!important;width:18px!important;height:18px!important;min-height:18px!important;align-items:center!important;justify-content:center!important;padding:0!important;border:0!important;background:transparent!important;color:rgba(220,220,220,.62)!important;box-shadow:none!important}.sidebar-close-pane{width:13px!important;height:13px!important;border:1px solid currentColor!important;border-radius:3px!important;opacity:.78!important;position:relative!important}.sidebar-close-pane::before{content:"";position:absolute;top:2px;bottom:2px;left:4px;border-left:1px solid currentColor}.sidebar-close-arrow{display:none!important}.sidebar-close-control:hover{background:transparent!important;color:#e8e8e3!important}
 #sidebarToggle{display:none!important;position:fixed!important;top:8px!important;left:14px!important;z-index:80!important;width:18px!important;height:18px!important;min-height:18px!important;padding:0!important;border:0!important;background:transparent!important;color:rgba(220,220,220,.62)!important;box-shadow:none!important}#sidebarToggle.visible{display:flex!important}#sidebarToggle svg{width:16px!important;height:16px!important}#sidebar.collapsed{width:0!important;min-width:0!important;flex-basis:0!important;padding-left:0!important;padding-right:0!important;opacity:0!important;pointer-events:none!important;border-right-color:transparent!important}#sidebar.collapsed~#main #content{width:min(1280px,calc(100vw - 46px))!important}#sidebar.collapsed~#main{width:100vw!important}
 .topbar-brand{position:absolute!important;top:11px!important;left:118px!important;transform:translateX(-50%)!important;height:18px!important;width:auto!important}.topbar-brand img{display:block!important;width:78px!important;max-width:78px!important;height:16px!important;max-height:16px!important;object-fit:contain!important;opacity:.92!important}.topbar-nav{display:flex!important;flex-direction:column!important;width:215px!important;margin:0!important;padding:0!important;gap:2px!important}.topbar-nav::before{display:block!important;height:33px!important;margin:0 7px 9px!important;padding:16px 8px 7px!important;color:rgba(160,160,160,.48)!important;font-family:var(--mono)!important;font-size:10px!important;font-weight:650!important;line-height:1!important;letter-spacing:.18em!important}.sidebar-footer{display:none!important;border:0!important;margin:0!important;padding:0!important}.nav-item{width:215px!important;height:30px!important;min-height:30px!important;margin:0 0 3px!important;padding:0 9px!important;gap:10px!important;border:0!important;border-radius:4px!important;background:transparent!important;color:rgba(220,220,220,.76)!important;font-family:var(--font)!important;font-size:13px!important;font-weight:560!important;line-height:30px!important;transition:background .12s ease,color .12s ease!important}.nav-icon{width:20px!important;height:20px!important;min-width:20px!important;color:rgba(255,255,255,.74)!important;opacity:1!important}.nav-item:hover{background:rgba(255,255,255,.07)!important;color:#fff!important}.nav-item.active{background:rgba(232,232,227,.06)!important;color:#e8e8e3!important;font-weight:720!important}
-#content:has(#page-summary.active){width:min(1320px,calc(100vw - 236px - 44px))!important;max-width:1320px!important;padding-left:0!important;padding-right:0!important}#page-summary .page-header{margin:0 0 12px!important;padding:0!important}#page-summary .summary-terminal-card{overflow:visible!important;margin:0!important;border-color:#2A2D2F!important}#page-summary .summary-terminal-body{padding:0!important;margin:0!important;overflow:visible!important}#page-summary .summary-terminal-wrap{overflow-x:auto!important;overflow-y:visible!important;margin:0!important;padding:0 16px 8px!important;background:#0E1011!important}#summaryTable{table-layout:fixed!important;width:100%!important;min-width:0!important;border-collapse:collapse!important;margin:0!important}#summaryTable thead,#summaryTable thead tr{height:44px!important;min-height:44px!important;background:transparent!important;overflow:visible!important}#summaryTable thead th{height:44px!important;min-height:44px!important;padding:14px 12px 12px!important;line-height:1.2!important;vertical-align:middle!important;overflow:visible!important;white-space:nowrap!important;text-overflow:clip!important;color:#9F9F99!important;font-family:var(--mono)!important;font-size:9.5px!important;font-weight:700!important;letter-spacing:.08em!important;border-bottom:1px solid rgba(232,232,227,.12)!important}#summaryTable tbody td{padding:14px 12px!important;color:#E6E6E6!important;font-size:11.75px!important;line-height:1.35!important;vertical-align:middle!important;word-break:normal!important;overflow-wrap:anywhere!important}#summaryTable th:first-child,#summaryTable td:first-child{padding-left:4px!important}#summaryTable th:last-child,#summaryTable td:last-child{padding-right:4px!important}#summaryTable th:nth-child(1){width:11%!important}#summaryTable th:nth-child(2){width:13%!important}#summaryTable th:nth-child(3){width:10%!important}#summaryTable th:nth-child(4){width:10%!important}#summaryTable th:nth-child(5){width:18%!important}#summaryTable th:nth-child(6),#summaryTable th:nth-child(7),#summaryTable th:nth-child(8){width:8%!important}#summaryTable th:nth-child(9){width:14%!important}#summaryTable td:nth-child(9){white-space:normal!important;overflow-wrap:normal!important;word-break:normal!important;font-size:11.25px!important;line-height:1.25!important}
+#content:has(#page-summary.active){width:min(1320px,calc(100vw - 236px - 44px))!important;max-width:1320px!important;padding-left:0!important;padding-right:0!important}#page-summary .page-header{margin:0 0 12px!important;padding:0!important}#page-summary .summary-terminal-card{overflow:visible!important;margin:0!important;border-color:#2A2D2F!important}#page-summary .summary-terminal-body{padding:0!important;margin:0!important;overflow:visible!important}#page-summary .summary-terminal-wrap{overflow-x:auto!important;overflow-y:visible!important;margin:0!important;padding:0 0 8px!important;background:#0E1011!important}#summaryTable{table-layout:fixed!important;width:100%!important;min-width:0!important;border-collapse:collapse!important;margin:0!important}#summaryTable thead,#summaryTable thead tr{height:44px!important;min-height:44px!important;background:#0C0F10!important;overflow:visible!important}#summaryTable thead th{height:44px!important;min-height:44px!important;padding:14px 6px 12px!important;line-height:1.2!important;vertical-align:middle!important;overflow:visible!important;white-space:nowrap!important;text-overflow:clip!important;color:#9F9F99!important;background:#0C0F10!important;font-family:var(--mono)!important;font-size:9.5px!important;font-weight:700!important;letter-spacing:.08em!important;border-bottom:1px solid rgba(232,232,227,.12)!important}#summaryTable tbody td{padding:14px 6px!important;color:#E6E6E6!important;font-size:11px!important;line-height:1.35!important;vertical-align:middle!important;word-break:normal!important;overflow-wrap:anywhere!important}#summaryTable th:first-child,#summaryTable td:first-child{padding-left:4px!important}#summaryTable th:last-child,#summaryTable td:last-child{padding-right:4px!important}#summaryTable th:nth-child(1){width:8%!important}#summaryTable th:nth-child(2){width:11%!important}#summaryTable th:nth-child(3){width:8%!important}#summaryTable th:nth-child(4){width:6%!important}#summaryTable th:nth-child(5){width:17%!important}#summaryTable th:nth-child(6){width:9%!important}#summaryTable th:nth-child(7){width:8%!important}#summaryTable th:nth-child(8){width:9%!important}#summaryTable th:nth-child(9){width:9%!important}#summaryTable th:nth-child(10),#summaryTable th:nth-child(11),#summaryTable th:nth-child(12){width:5%!important}#summaryTable td:nth-child(2) .badge{max-width:100%!important;padding:2px 5px!important;font-size:9px!important}#summaryTable td:nth-child(6),#summaryTable td:nth-child(7),#summaryTable td:nth-child(8){white-space:nowrap!important;font-size:10.5px!important}#summaryTable td:nth-child(9){white-space:normal!important;overflow-wrap:normal!important;word-break:normal!important;font-size:10.5px!important;line-height:1.25!important}#summaryTable td:nth-child(10),#summaryTable td:nth-child(11),#summaryTable td:nth-child(12){padding-left:3px!important;padding-right:3px!important;font-size:9px!important;white-space:nowrap!important}
 #page-search .search-summary-products,#page-search .empty-state h3,#page-search .empty-state p{display:none!important}
 #page-entry .entry-product-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important;align-items:end!important}#page-entry .entry-product-grid .form-full{grid-column:1 / -1!important}#page-entry .entry-price-group,#page-entry .form-group:has(.entry-price){grid-column:auto!important}#page-entry .entry-price-hint{display:none!important}#page-entry .entry-line.is-no-price .entry-product-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}#page-entry .entry-line.is-no-price .entry-price-group,#page-entry .entry-line.is-no-price .form-group:has(.entry-price){display:block!important;visibility:hidden!important}
 /* TARGETED UI FIX 2026-07-02B: keep search metrics inside panels and flatten Summary rows. */
@@ -3158,11 +3170,14 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
 #page-search .search-summary-item{min-width:0!important;overflow:hidden!important;background:#111316!important;border-color:#2A2D2F!important}
 #page-search .search-summary-item strong{display:block!important;max-width:100%!important;overflow:hidden!important;text-overflow:clip!important;white-space:nowrap!important;font-size:clamp(22px,1.55vw,28px)!important;line-height:1.05!important;letter-spacing:-.04em!important}
 #page-search .search-summary-item span{font-size:10px!important;letter-spacing:.11em!important}
-#page-summary .summary-terminal-card,#page-summary .summary-terminal-body,#page-summary .summary-terminal-wrap,#page-summary #summaryTable,#page-summary #summaryTable thead,#page-summary #summaryTable tbody,#page-summary #summaryTable tr,#page-summary #summaryTable th,#page-summary #summaryTable td{background:#0E1011!important;box-shadow:none!important}
+#page-summary .summary-terminal-card,#page-summary .summary-terminal-body,#page-summary .summary-terminal-wrap{background:transparent!important;box-shadow:none!important}
+#page-summary #summaryTable,#page-summary #summaryTable tbody,#page-summary #summaryTable tr,#page-summary #summaryTable td{background:#0E1011!important;box-shadow:none!important}
+#page-summary #summaryTable thead,#page-summary #summaryTable thead tr,#page-summary #summaryTable thead th{background:#0C0F10!important;box-shadow:none!important}
 #page-summary #summaryTable{border-collapse:collapse!important;border-spacing:0!important}
 #page-summary #summaryTable tbody tr,#page-summary #summaryTable tbody tr:nth-child(even),#page-summary #summaryTable tbody tr:nth-child(odd),#page-summary #summaryTable tbody td{background:#0E1011!important}
-#page-summary #summaryTable tbody tr:hover,#page-summary #summaryTable tbody tr:hover td{background:#0E1011!important}
+#page-summary #summaryTable tbody tr:hover>td{background:#151819!important}
 #page-summary #summaryTable th{border-bottom:1px solid rgba(232,232,227,.16)!important}
+#page-summary #summaryTable thead th{position:static!important;top:auto!important;z-index:auto!important}
 #page-summary #summaryTable td{border-bottom:1px solid rgba(232,232,227,.08)!important}
 #page-summary #summaryTable tbody tr:last-child td{border-bottom:0!important}
 
@@ -3208,6 +3223,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
   }
 }
 </style>
+<link rel="stylesheet" href="/po-feature.css"/>
 </head>
 <body>
 
@@ -3435,9 +3451,12 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
             <th>Cost</th>
             <th>Net Total</th>
             <th>Due By</th>
+            <th class="summary-doc-col">PDF</th>
+            <th class="summary-doc-col">SI</th>
+            <th class="summary-doc-col">DR</th>
           </tr></thead>
           <tbody id="summaryBody">
-            <tr><td colspan="9"><div class="empty-state"><div class="empty-icon">📂</div><h3>No summary data</h3><p>Load live data to show PO/SI groups.</p></div></td></tr>
+            <tr><td colspan="12"><div class="empty-state"><div class="empty-icon">📂</div><h3>No summary data</h3><p>Load live data to show PO/SI groups.</p></div></td></tr>
           </tbody>
         </table>
       </div>
@@ -3550,6 +3569,14 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
     </div>
   </div>
 
+  <section class="card entry-upload-panel" id="entryUploadPanel" data-supported-states="Not uploaded|Uploading|Extracting|Needs review|Ready to preview|Ready to download|Failed">
+    <div class="card-header"><div class="card-title">Upload</div><span class="po-state is-idle" id="poDocumentState">Not uploaded</span></div>
+    <div class="card-body">
+      <div class="entry-po-actions" id="poApp"><input id="poFileInput" type="file" accept="application/pdf,.pdf" hidden><label class="btn btn-primary" for="poFileInput" id="poUploadButton"><span aria-hidden="true">⇧</span> Upload PO</label><button class="btn btn-secondary" id="poViewButton" type="button" onclick="WarehousePO.viewOriginal()" disabled><span class="po-pdf-icon" aria-hidden="true">PDF</span> View PO PDF</button><button class="btn btn-secondary" id="poPreviewButton" type="button" onclick="WarehousePO.openPreview('SI')" disabled>Preview SI/DR</button><button class="btn btn-secondary" id="poDownloadSi" data-po-download="SI" type="button" onclick="WarehousePO.downloadCurrent('SI')" disabled><span class="po-pdf-icon" aria-hidden="true">PDF</span> Download SI Print PDF</button><button class="btn btn-secondary" id="poDownloadDr" data-po-download="DR" type="button" onclick="WarehousePO.downloadCurrent('DR')" disabled><span class="po-pdf-icon" aria-hidden="true">PDF</span> Download DR Print PDF</button></div>
+      <div class="entry-po-feedback"><span id="poSelectedFilename">No PDF selected.</span><div class="po-progress" id="poProgress" hidden><span></span></div><span id="poUploadMessage"></span></div>
+    </div>
+  </section>
+
   <div class="two-col">
     <div class="card entry-details-card">
       <div class="card-header entry-details-header">
@@ -3571,9 +3598,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
           </div>
           <div class="form-group">
             <label class="form-label">Order By</label>
-            <select class="form-control" id="e-buyer" onchange="onBuyerChange()">
-              <option value="">Buyer</option>
-            </select>
+            <select class="form-control" id="e-buyer" onchange="onBuyerChange()"><option value="">Buyer</option></select>
           </div>
           <div class="entry-lines" id="entryLines">
             <div class="entry-products-toolbar">
@@ -3629,18 +3654,22 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
             <span class="price-preview-label">Gross Total</span>
             <span class="price-preview-value" id="prev-total">₱0.00</span>
           </div>
+          <div class="po-total-check" id="poTotalCheck" hidden>
+            <span>Extracted PO Total <strong id="poExtractedTotal">₱0.00</strong></span>
+            <span>Calculated Total <strong id="poCalculatedTotal">₱0.00</strong></span>
+            <span class="po-total-result" id="poTotalResult">—</span>
+          </div>
         </div>
       </div>
+      <button class="btn btn-primary entry-submit-button" id="entrySubmitButton" onclick="submitEntry()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Submit Entry
+      </button>
     </div>
   </div>
 
-  <button class="btn btn-primary entry-submit-button" onclick="submitEntry()">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-    Submit Entry
-  </button>
-
   <!-- Recent Entries Table -->
-  <div class="card" style="margin-top:14px">
+  <div class="card entry-recent-card" style="margin-top:14px">
     <div class="card-header">
       <div class="card-title">Recent Entries</div>
       <div class="card-subtitle">Last 15 records</div>
@@ -3667,6 +3696,9 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
     </div>
   </div>
 </div>
+
+
+<div class="po-document-modal" id="poDocumentModal" hidden role="dialog" aria-modal="true" aria-labelledby="poDocumentModalTitle"><div class="po-document-dialog"><div class="po-document-modal-head"><div><strong id="poDocumentModalTitle">Documents</strong><div class="card-subtitle" id="poDocumentModalMeta"></div></div><button class="btn btn-secondary" type="button" onclick="WarehousePO.closeModal()">Close</button></div><div class="po-document-tabs"><button class="btn btn-secondary" id="poModalSiTab" onclick="WarehousePO.switchPreview('SI')">SI Preview</button><button class="btn btn-secondary" id="poModalDrTab" onclick="WarehousePO.switchPreview('DR')">DR Preview</button><span class="po-document-tab-spacer"></span><button class="btn btn-secondary" type="button" data-po-download="SI" onclick="WarehousePO.downloadCurrent('SI')">Download SI Print PDF</button><button class="btn btn-secondary" type="button" data-po-download="DR" onclick="WarehousePO.downloadCurrent('DR')">Download DR Print PDF</button></div><iframe id="poDocumentFrame" class="po-document-frame" title="PO, SI, or DR PDF preview"></iframe></div></div>
 
 <!-- == RESTOCK == -->
 <div id="page-restock" class="page">
@@ -3772,35 +3804,30 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
 //  CONFIGURATION  (unchanged from original)
 // ===============================================
 const PRICES = {
-  'Bathroom Tissue 4s Fluffy':  { 'WATSONS GANADO':86.40,'WATSONS PAMPANGA':86.40,'WATSONS CEBU':86.40,'SM HYPERMARKET':936,'SAMPLE/PERSONAL':0 },
-  'Bathroom Tissue 9s Fluffy':  { 'WATSONS GANADO':186.48,'WATSONS PAMPANGA':186.48,'WATSONS CEBU':186.48,'SM HYPERMARKET':2020.20,'SAMPLE/PERSONAL':0 },
-  'Bathroom Tissue 12s Fluffy': { 'WATSONS GANADO':224.64,'WATSONS PAMPANGA':224.64,'WATSONS CEBU':224.64,'SM HYPERMARKET':777.4,'SAMPLE/PERSONAL':0 },
-  'Kitchen Towel Fluffy':       { 'WATSONS GANADO':108.00,'WATSONS PAMPANGA':108.00,'WATSONS CEBU':108.00,'SAMPLE/PERSONAL':0 },
-  'Paper Towel Fluffy':         { 'WATSONS GANADO':128.88,'WATSONS PAMPANGA':128.88,'WATSONS CEBU':128.88,'SAMPLE/PERSONAL':0 },
-  'Cotton Buds Fluffy':         { 'WATSONS GANADO':49.68,'WATSONS PAMPANGA':49.68,'WATSONS CEBU':49.68,'SM HYPERMARKET':10256.93,'SAMPLE/PERSONAL':0 },
-  'Cotton Pads Fluffy':         { 'WATSONS GANADO':128.88,'WATSONS PAMPANGA':128.88,'WATSONS CEBU':128.88,'SM HYPERMARKET':7935.90,'SAMPLE/PERSONAL':0 },
-  'Bamboo Kitchen Towel Fluffy':{ 'WATSONS GANADO':143.28,'WATSONS PAMPANGA':143.28,'WATSONS CEBU':143.28,'SAMPLE/PERSONAL':0 },
-  'Bamboo Facial Tissue Fluffy':{ 'WATSONS GANADO':104.00,'WATSONS PAMPANGA':104.00,'WATSONS CEBU':104.00,'SAMPLE/PERSONAL':0 },
-  'Wet Wipes 30s Fluffy':       { 'WATSONS GANADO':151.20,'WATSONS PAMPANGA':151.20,'WATSONS CEBU':151.20,'SAMPLE/PERSONAL':0 },
-  'Wet Wipes 60s Fluffy':       { 'WATSONS GANADO':208.08,'WATSONS PAMPANGA':208.08,'WATSONS CEBU':208.08,'SAMPLE/PERSONAL':0 },
-  'Bathroom Tissue 4s Plush':   { 'WATSONS GANADO':84,'WATSONS PAMPANGA':84,'WATSONS CEBU':84,'SM HYPERMARKET':84,'SAMPLE/PERSONAL':0 },
-  'Bathroom Tissue 9s Plush':   { 'WATSONS GANADO':243.04,'WATSONS PAMPANGA':243.04,'WATSONS CEBU':243.04,'SM HYPERMARKET':243.04,'SAMPLE/PERSONAL':0 },
-  'Bathroom Tissue 12s Plush':  { 'WATSONS GANADO':282,'WATSONS PAMPANGA':282,'WATSONS CEBU':282,'SM HYPERMARKET':282,'SAMPLE/PERSONAL':0 },
-  'Bathroom Tissue 20s Plush':  { 'WATSONS GANADO':940.015,'WATSONS PAMPANGA':940.015,'WATSONS CEBU':940.015,'SM HYPERMARKET':940.015,'SAMPLE/PERSONAL':0 },
-  'Bathroom Tissue 30s Plush':  { 'WATSONS GANADO':1183.26,'WATSONS PAMPANGA':1183.26,'WATSONS CEBU':1183.26,'SM HYPERMARKET':1183.26,'SAMPLE/PERSONAL':0 },
-  'Kitchen Towel Plush':        { 'WATSONS GANADO':273.616,'WATSONS PAMPANGA':273.616,'WATSONS CEBU':273.616,'SM HYPERMARKET':273.616,'SAMPLE/PERSONAL':0 },
-  'Paper Towel Plush':          { 'WATSONS GANADO':128.52,'WATSONS PAMPANGA':128.52,'WATSONS CEBU':128.52,'SM HYPERMARKET':128.52,'SAMPLE/PERSONAL':0 },
-  'Wet Wipes 30s Plush':        { 'WATSONS GANADO':155.72,'WATSONS PAMPANGA':155.72,'WATSONS CEBU':155.72,'SM HYPERMARKET':155.72,'SAMPLE/PERSONAL':0 },
-  'Wet Wipes 60s Plush':        { 'WATSONS GANADO':194.24,'WATSONS PAMPANGA':194.24,'WATSONS CEBU':194.24,'SM HYPERMARKET':194.24,'SAMPLE/PERSONAL':0 },
-  'Cotton Buds (Plastic) Plush':   { 'WATSONS GANADO':45,'WATSONS PAMPANGA':45,'WATSONS CEBU':45,'SM HYPERMARKET':45,'SAMPLE/PERSONAL':0 },
-  'Cotton Buds (Container) Plush': { 'WATSONS GANADO':101.83,'WATSONS PAMPANGA':101.83,'WATSONS CEBU':101.83,'SM HYPERMARKET':101.83,'SAMPLE/PERSONAL':0 },
+  'Bathroom Tissue 4s Fluffy':  { 'WATSONS GANADO':86.40,'WATSONS PAMPANGA':86.40,'WATSONS CEBU':86.40,'SM HYPERMARKET':936,'PERSONAL':0 },
+  'Bathroom Tissue 9s Fluffy':  { 'WATSONS GANADO':186.48,'WATSONS PAMPANGA':186.48,'WATSONS CEBU':186.48,'SM HYPERMARKET':2020.20,'PERSONAL':0 },
+  'Bathroom Tissue 12s Fluffy': { 'WATSONS GANADO':224.64,'WATSONS PAMPANGA':224.64,'WATSONS CEBU':224.64,'SM HYPERMARKET':777.4,'PERSONAL':0 },
+  'Kitchen Towel Fluffy':       { 'WATSONS GANADO':108.00,'WATSONS PAMPANGA':108.00,'WATSONS CEBU':108.00,'PERSONAL':0 },
+  'Paper Towel Fluffy':         { 'WATSONS GANADO':128.88,'WATSONS PAMPANGA':128.88,'WATSONS CEBU':128.88,'PERSONAL':0 },
+  'Cotton Buds Fluffy':         { 'WATSONS GANADO':49.68,'WATSONS PAMPANGA':49.68,'WATSONS CEBU':49.68,'SM HYPERMARKET':10256.93,'PERSONAL':0 },
+  'Cotton Pads Fluffy':         { 'WATSONS GANADO':128.88,'WATSONS PAMPANGA':128.88,'WATSONS CEBU':128.88,'SM HYPERMARKET':7935.90,'PERSONAL':0 },
+  'Bamboo Kitchen Towel Fluffy':{ 'WATSONS GANADO':143.28,'WATSONS PAMPANGA':143.28,'WATSONS CEBU':143.28,'PERSONAL':0 },
+  'Bamboo Facial Tissue Fluffy':{ 'WATSONS GANADO':104.00,'WATSONS PAMPANGA':104.00,'WATSONS CEBU':104.00,'PERSONAL':0 },
+  'Wet Wipes 30s Fluffy':       { 'WATSONS GANADO':151.20,'WATSONS PAMPANGA':151.20,'WATSONS CEBU':151.20,'PERSONAL':0 },
+  'Wet Wipes 60s Fluffy':       { 'WATSONS GANADO':208.08,'WATSONS PAMPANGA':208.08,'WATSONS CEBU':208.08,'PERSONAL':0 },
+  'Bathroom Tissue 4s Plush':   { 'WATSONS GANADO':84,'WATSONS PAMPANGA':84,'WATSONS CEBU':84,'SM HYPERMARKET':84,'PERSONAL':0 },
+  'Bathroom Tissue 9s Plush':   { 'WATSONS GANADO':243.04,'WATSONS PAMPANGA':243.04,'WATSONS CEBU':243.04,'SM HYPERMARKET':243.04,'PERSONAL':0 },
+  'Bathroom Tissue 12s Plush':  { 'WATSONS GANADO':281.45625,'WATSONS PAMPANGA':281.45625,'WATSONS CEBU':281.45625,'SM HYPERMARKET':282,'PERSONAL':0 },
+  'Bathroom Tissue 20s Plush':  { 'WATSONS GANADO':940.015,'WATSONS PAMPANGA':940.015,'WATSONS CEBU':940.015,'SM HYPERMARKET':940.015,'PERSONAL':0 },
+  'Bathroom Tissue 30s Plush':  { 'WATSONS GANADO':1183.26,'WATSONS PAMPANGA':1183.26,'WATSONS CEBU':1183.26,'SM HYPERMARKET':1183.26,'PERSONAL':0 },
+  'Kitchen Towel Plush':        { 'WATSONS GANADO':273.616,'WATSONS PAMPANGA':273.616,'WATSONS CEBU':273.616,'SM HYPERMARKET':273.616,'PERSONAL':0 },
+  'Paper Towel Plush':          { 'WATSONS GANADO':128.52,'WATSONS PAMPANGA':128.52,'WATSONS CEBU':128.52,'SM HYPERMARKET':128.52,'PERSONAL':0 },
+  'Wet Wipes 30s Plush':        { 'WATSONS GANADO':155.72,'WATSONS PAMPANGA':155.72,'WATSONS CEBU':155.72,'SM HYPERMARKET':155.72,'PERSONAL':0 },
+  'Wet Wipes 60s Plush':        { 'WATSONS GANADO':194.24,'WATSONS PAMPANGA':194.24,'WATSONS CEBU':194.24,'SM HYPERMARKET':194.24,'PERSONAL':0 },
+  'Cotton Buds (Plastic) Plush':   { 'WATSONS GANADO':45,'WATSONS PAMPANGA':45,'WATSONS CEBU':45,'SM HYPERMARKET':45,'PERSONAL':0 },
+  'Cotton Buds (Container) Plush': { 'WATSONS GANADO':101.83,'WATSONS PAMPANGA':101.83,'WATSONS CEBU':101.83,'SM HYPERMARKET':101.83,'PERSONAL':0 },
 };
-Object.values(PRICES).forEach(buyerPrices => {
-  if (!buyerPrices || !Object.prototype.hasOwnProperty.call(buyerPrices, 'SAMPLE/PERSONAL')) return;
-  buyerPrices.SAMPLE = buyerPrices.SAMPLE ?? buyerPrices['SAMPLE/PERSONAL'];
-  buyerPrices.PERSONAL = buyerPrices.PERSONAL ?? buyerPrices['SAMPLE/PERSONAL'];
-  delete buyerPrices['SAMPLE/PERSONAL'];
-});
+
 const PRICE_UNITS = {};
 const PACKS_PER_CASE = {
   'Bathroom Tissue 4s Fluffy':       12,
@@ -3850,29 +3877,28 @@ const COSTS = {
   'Wet Wipes 30s Plush':             75.64,
   'Wet Wipes 60s Plush':            123.52,
 };
-const DEFAULT_BUYERS = ['WATSONS GANADO','WATSONS PAMPANGA','WATSONS CEBU','SM HYPERMARKET','SAMPLE','PERSONAL'];
+const DEFAULT_BUYERS = ['WATSONS GANADO','WATSONS PAMPANGA','WATSONS CEBU','SM HYPERMARKET','PERSONAL'];
+
+function canonicalPortalBuyer(value) {
+  const cleanValue = String(value || '').trim();
+  const normalized = cleanValue.toUpperCase().replace(/\s+/g, ' ');
+  if (['BUYER', 'ORDER BY'].includes(normalized)) return '';
+  return ['SAMPLE', 'SAMPLES', 'SAMPLE/PERSONAL', 'PERSONAL'].includes(normalized) ? 'PERSONAL' : cleanValue;
+}
 
 function normalizeBuyerList(buyers) {
   const source = Array.isArray(buyers) && buyers.length ? buyers : DEFAULT_BUYERS;
   const normalized = [];
-  const bottomBuyers = ['SAMPLE', 'PERSONAL'];
 
   source.forEach(buyer => {
-    const value = String(buyer || '').trim();
-    const nextValues = value === 'SAMPLE/PERSONAL' ? bottomBuyers : [value];
-
-    nextValues.forEach(nextValue => {
-      const cleanValue = String(nextValue || '').trim();
-      const typoKey = cleanValue.toUpperCase().replace(/[^A-Z0-9]/g, '');
-      if (typoKey === 'WASONSPAMPANGA') return;
-      if (cleanValue && !bottomBuyers.includes(cleanValue) && !normalized.includes(cleanValue)) normalized.push(cleanValue);
-    });
+    const cleanValue = canonicalPortalBuyer(buyer);
+    const typoKey = cleanValue.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (typoKey === 'WASONSPAMPANGA') return;
+    if (cleanValue && cleanValue !== 'PERSONAL' && !normalized.includes(cleanValue)) normalized.push(cleanValue);
   });
 
-  bottomBuyers.forEach(buyer => {
-    if (source.some(value => String(value || '').toUpperCase().includes(buyer)) || DEFAULT_BUYERS.includes(buyer)) normalized.push(buyer);
-  });
-  return normalized.length ? normalized : [...DEFAULT_BUYERS];
+  normalized.push('PERSONAL');
+  return normalized;
 }
 
 // ===============================================
@@ -3890,21 +3916,43 @@ let sortKey = 'date', sortDir = -1;
 let demoLoaded  = false;
 let v2ReferenceLoadPromise = null;
 
+async function fetchV2BootstrapResult(fallbackMessage) {
+  let lastError;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const response = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'getV2Bootstrap' }),
+        cache: 'no-store'
+      });
+      const result = await response.json();
+      if (!response.ok || !result.success) throw new Error(result.error || fallbackMessage);
+      return result;
+    } catch (error) {
+      lastError = error;
+      if (attempt === 0) await new Promise(resolve => setTimeout(resolve, 750));
+    }
+  }
+  throw lastError || new Error(fallbackMessage);
+}
+
 async function loadV2ReferenceData(force = false) {
   if (v2ReferenceLoadPromise && !force) return v2ReferenceLoadPromise;
   v2ReferenceLoadPromise = (async () => {
-    const response = await fetch(SCRIPT_URL + '?action=getV2Bootstrap&_=' + Date.now(), { cache: 'no-store' });
-    const result = await response.json();
-    if (!response.ok || !result.success) throw new Error(result.error || 'Could not load Product Master and Buyer Prices.');
+    const result = await fetchV2BootstrapResult('Could not load Product Master and Buyer Prices.');
     (result.products || []).forEach(product => {
       const name = String(product.name || '').trim();
       if (!name) return;
       if (!PRICES[name]) PRICES[name] = {};
+      if (!PRICE_UNITS[name]) PRICE_UNITS[name] = {};
+      PRICES[name]['PERSONAL'] = Number(product.defaultSrp) || 0;
+      PRICE_UNITS[name]['PERSONAL'] = 'PACK';
       PACKS_PER_CASE[name] = Number(product.packsPerCase) || 0;
     });
     (result.prices || []).forEach(record => {
       const product = String(record.product || '').trim();
-      const buyer = String(record.buyer || '').trim().toUpperCase();
+      const buyer = canonicalPortalBuyer(record.buyer).toUpperCase();
       if (!product || !buyer) return;
       if (!PRICES[product]) PRICES[product] = {};
       if (!PRICE_UNITS[product]) PRICE_UNITS[product] = {};
@@ -4133,9 +4181,17 @@ function navigate(page) {
   document.getElementById('page-' + page).classList.add('active');
   document.querySelector(`[onclick="navigate('${page}')"]`).classList.add('active');
   document.getElementById('topbarTitle').textContent = PAGE_TITLES[page];
-  if (page === 'summary') renderSummary();
-  if (page === 'entry') { renderEntryRecent(); loadV2ReferenceData(true).catch(() => {}); }
+  if (page === 'summary') {
+    renderSummary();
+    if (window.WarehousePO) WarehousePO.init().then(() => WarehousePO.refreshTransactions()).then(renderSummary).catch(() => {});
+  }
+  if (page === 'entry') {
+    renderEntryRecent();
+    loadV2ReferenceData(true).catch(() => {});
+    if (window.WarehousePO) WarehousePO.init().catch(() => {});
+  }
   if (page === 'restock') loadRestockProducts();
+
   closeSidebar();
   window.requestAnimationFrame(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
@@ -4691,7 +4747,7 @@ function renderSummary() {
   const rows = buildSummaryRows();
 
   if (!rows.length) {
-    tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">📂</div><h3>No summary data</h3><p>Load live data to show PO/SI groups.</p></div></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="12"><div class="empty-state"><div class="empty-icon">📂</div><h3>No summary data</h3><p>Load live data to show PO/SI groups.</p></div></td></tr>';
     return;
   }
 
@@ -4708,6 +4764,7 @@ function renderSummary() {
       <td class="mono" style="white-space:nowrap;color:var(--red);">₱${fmtNum(item.cost)}</td>
       <td class="mono" style="white-space:nowrap;color:var(--green);">₱${fmtNum(item.netTotal)}</td>
       <td class="mono" style="white-space:nowrap;">${due}</td>
+      ${window.renderSummaryDocumentCells ? window.renderSummaryDocumentCells(item) : '<td class="summary-doc-col">No PO</td><td class="summary-doc-col">Pending</td><td class="summary-doc-col">Pending</td>'}
     </tr>`;
   }).join('');
 }
@@ -4935,6 +4992,10 @@ function onBuyerChange(){
 }
 function onProductChange(el){
   const line = el ? el.closest('[data-entry-line]') : getEntryLineElements()[0];
+  if (window.WarehousePO?.hasCurrentPo()) {
+    WarehousePO.reviewProductSelection(line);
+    return;
+  }
   const product=getEntryLineValue(line, 'product');
   const buyer=document.getElementById('e-buyer').value;
   autoFillPrice(product,buyer,line);
@@ -4953,7 +5014,7 @@ function autoFillPrice(product,buyer,line){
   const priceLabel = line.querySelector('.entry-price-label');
   if(isNoRevenueBuyer(buyer)){
     if(priceInput) priceInput.value='0';
-    if(hint) hint.textContent='No price needed for sample or personal entries.';
+    if(hint) hint.textContent='No price needed for sample entries.';
     updatePreview();
     return;
   }
@@ -4970,7 +5031,7 @@ function autoFillPrice(product,buyer,line){
   updatePreview();
 }
 function isNoRevenueBuyer(buyer){
-  return buyer==='SAMPLE'||buyer==='PERSONAL';
+  return buyer==='SAMPLE';
 }
 function syncEntryLinePriceMode(line,buyer=document.getElementById('e-buyer').value){
   if(!line) return;
@@ -5005,7 +5066,8 @@ function calculateEntryLineTotal(line, buyer=document.getElementById('e-buyer').
   const packs=parseFloat(getEntryLineValue(line, 'packs'))||0;
   const cases=parseFloat(getEntryLineValue(line, 'cases'))||0;
   const price=parseFloat(getEntryLineValue(line, 'price'))||0;
-  return (getEntryPriceUnit(product,buyer)==='CASE' ? cases : packs) * price;
+  const poWorkflow=Boolean(window.WarehousePO?.hasCurrentPo()&&line.dataset.poSourceIndex!==undefined);
+  return WarehousePOEntry.entryLineAmount({packs,cases,price,priceUnit:getEntryPriceUnit(product,buyer),poWorkflow});
 }
 function getWarehouseForProduct(product, buyer=document.getElementById('e-buyer')?.value || '') {
   const value = String(product || '');
@@ -5212,6 +5274,7 @@ function updatePreview(){
   }).join('');
   document.getElementById('prev-total').textContent='₱'+fmtNum(gross);
   updateEntryLineStates();
+  if(window.WarehousePO?.updateTotalCheck)WarehousePO.updateTotalCheck();
 }
 let restockProductsLoaded = false;
 let restockSaveInProgress = false;
@@ -5220,9 +5283,7 @@ const restockPacksPerCase = {};
 async function loadRestockProducts() {
   if (restockProductsLoaded) return;
   try {
-    const response = await fetch(SCRIPT_URL + '?action=getV2Bootstrap&_=' + Date.now(), { cache: 'no-store' });
-    const result = await response.json();
-    if (!response.ok || !result.success) throw new Error(result.error || 'Could not load active products.');
+    const result = await fetchV2BootstrapResult('Could not load active products.');
     const productRecords = result.products || [];
     const products = productRecords.map(product => {
       restockPacksPerCase[product.name] = Number(product.packsPerCase) || 0;
@@ -5334,8 +5395,11 @@ async function readJsonResponse(response, label='Sheets') {
   }
 }
 
-async function submitEntry() {
-  if (entrySaveInProgress) return;
+async function submitEntry(options = {}) {
+  if (!options.poWorkflow && window.WarehousePO?.hasCurrentPo()) {
+    return WarehousePO.confirmAndSave();
+  }
+  if (entrySaveInProgress) return { success:false, error:'An entry is already being saved.' };
 
   const date    = document.getElementById('e-date').value;
   const buyer   = document.getElementById('e-buyer').value;
@@ -5346,7 +5410,7 @@ async function submitEntry() {
 
   if (!date || !buyer || !validLines.length || validLines.length !== lines.length) {
     showToast('Please fill in Date, Buyer, Product, and Pack Qty.', 'error');
-    return;
+    return { success:false, error:'Please fill in Date, Buyer, Product, and Pack Qty.' };
   }
 
   const newEntries = validLines.map(item => ({
@@ -5380,7 +5444,7 @@ async function submitEntry() {
             packs: item.packs,
             cases: item.cases,
             price: item.price,
-            priceUnit: getEntryPriceUnit(item.product,buyer),
+            priceUnit: options.poWorkflow ? 'PACK' : getEntryPriceUnit(item.product,buyer),
             warehouse: item.warehouse
           }))
         })
@@ -5403,7 +5467,7 @@ async function submitEntry() {
                 packs: item.packs,
                 cases: item.cases,
                 price: item.price,
-                priceUnit: getEntryPriceUnit(item.product,buyer),
+                priceUnit: options.poWorkflow ? 'PACK' : getEntryPriceUnit(item.product,buyer),
                 warehouse: item.warehouse
               })
             });
@@ -5429,34 +5493,24 @@ async function submitEntry() {
     try {
       await saveInBackground();
       applySavedEntriesLocally(newEntries);
-      resetEntryFormFields();
+      if (!options.preserveForm) resetEntryFormFields();
       finishEntrySaveOverlay('success', 'Entry confirmed in Sheets.');
+      return { success:true, entries:newEntries };
     } catch (e) {
       finishEntrySaveOverlay('error', e?.message || 'Unknown error');
       showToast('Sheets error - entry was kept on screen. Verify Sheets before retrying: ' + (e?.message || 'Unknown error'), 'error');
+      return { success:false, error:e?.message || 'Unknown error' };
     } finally {
       entrySaveInProgress = false;
       setEntrySubmitBusy(false);
     }
-    return;
   } else {
     applySavedEntriesLocally(newEntries);
     showToast(validLines.length>1 ? `${validLines.length} entries added locally!` : 'Entry added locally!', 'success');
   }
 
-  // Reset form fields
-  getEntryLineElements().forEach((line,index) => {
-    if(index>0) line.remove();
-    else {
-      line.querySelector('.entry-product').value = '';
-      line.querySelector('.entry-packs').value = '';
-      line.querySelector('.entry-cases').value = '';
-      line.querySelector('.entry-price').value = '';
-      line.querySelector('.entry-price-hint').textContent='Select a product and buyer to auto-fill price.';
-    }
-  });
-  renumberEntryLines();
-  updatePreview();
+  if (!options.preserveForm) resetEntryFormFields();
+  return { success:true, entries:newEntries };
 }
 
 // ===============================================
@@ -5624,5 +5678,9 @@ function openSidebar(){
   document.getElementById('sidebarToggle').classList.remove('visible');
 }
 </script>
+<script src="/po-core.js"></script>
+<script src="/po-entry-integration.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="/po-feature.js"></script>
 </body>
 </html>

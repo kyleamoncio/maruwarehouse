@@ -1,0 +1,108 @@
+Page 1 of 1
+50033566
+50033576
+50033577
+50033580
+SKU
+Vendor Part #
+UPC
+ 2
+ 5
+ 1
+ 2
+ 37,117.4400
+ 59,615.9500
+ 1,293.8400
+ 5,155.2000
+FLUFFY SQUARE COTTON PADS 100S 
+2S
+FLUFFY COTTON BUDS 
+200STEM400TIPS
+FLUFFY KITCHEN TOWEL 2PLY 2ROLLS 
+FLUFFY INTRFLDED PAPER TOWEL 
+2PLY150S2S
+TOTAL:
+ 103,182.4300
+NOTES:       
+1. This PO is subject to the provisions of the A.S. Watson Group General Conditions of Purchase and Trading Terms Agreement.
+2. One invoice for one PO policy applies.
+3. Quantity delivered may not exceed the quantity ordered.
+Receiver Notes: 
+Dept /
+Class
+021/006
+021/007
+021/001
+021/001
+55792356
+85792326
+75792336
+95792316
+Description
+Buy Qty
+ 18,558.7200
+ 11,923.1900
+ 1,293.8400
+ 2,577.6000
+Buy
+U/M
+Case
+Case
+Case
+Case
+Date:
+20/07/26
+Time:
+06:44:32
+Supplier Name:
+MARU GLOBAL VENTURES, INC.
+Supplier Code:
+1116551
+Terms & Discounts:
+60 Days
+Company Name:
+WATSONS PERSONALCARE
+Location:
+93677 DC3 PAMPANGA(V)
+BJ LAND INC COMPOUND QUENZN RD
+Group Name :
+PERSONAL CARE
+Order Type:
+ARB
+9691669
+Entry Date:
+20-JUL-26
+Expected Receipt Date: 
+24-JUL-26
+Cancel Date:
+25-JUL-26
+PURCHASE ORDER
+PO Number:
+Order
+Line #
+1
+2
+3
+4
+Sell
+U/M
+Unit
+Retail
+Buy Cost
+Ext. Cost
+ 179.0000
+ 69.0000
+ 150.0000
+ 179.0000
+EA
+EA
+EA
+EA
+ 143,312.0000
+Ordered By:
+Approved By:
+Verified By:
+Received By:
+Date Received:
+Inv. No:
+RMSPRD

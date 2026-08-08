@@ -19,8 +19,12 @@
     }
   ],
   "functions": {
-    "api/sheets.js": {
-      "maxDuration": 30
-    }
+    "api/sheets.js": { "maxDuration": 60 },
+    "api/po/index.js": { "maxDuration": 30 },
+    "api/po/generate.js": { "maxDuration": 60, "includeFiles": "assets/forms/**" },
+    "api/po/preview.js": { "maxDuration": 60, "includeFiles": "assets/forms/**" },
+    "api/po/commit.js": { "maxDuration": 60, "includeFiles": "assets/forms/**" },
+    "api/po/file.js": { "maxDuration": 30 },
+    "api/po/calibration.js": { "maxDuration": 30 }
   }
 }
