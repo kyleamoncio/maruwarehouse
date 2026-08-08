@@ -97,3 +97,45 @@ test('Portal getAllData reads authoritative V2 ORDER LINES instead of Original A
   assert.match(branch[0],/V2_APPS_SCRIPT_URL, V2_API_TOKEN/);
   assert.doesNotMatch(branch[0],/ORIGINAL_APPS_SCRIPT_URL|ORIGINAL_API_TOKEN/);
 });
+
+test('mixed duplicate and new V2 batch forwards only accepted indexes to Original',async t=>{
+  const oldEnv={...process.env};
+  const oldFetch=global.fetch;
+  t.after(()=>{
+    global.fetch=oldFetch;
+    for(const key of Object.keys(process.env)) if(!(key in oldEnv)) delete process.env[key];
+    Object.assign(process.env,oldEnv);
+    delete require.cache[bridgePath];
+  });
+  process.env.WAREHOUSE_PORTAL_V2_URL='https://script.google.test/v2/exec';
+  process.env.WAREHOUSE_PORTAL_V2_API_TOKEN='v2-secret';
+  process.env.WAREHOUSE_PORTAL_APPS_SCRIPT_URL='https://script.google.test/original/exec';
+  process.env.WAREHOUSE_PORTAL_API_TOKEN='original-secret';
+  const calls=[];
+  global.fetch=async(url,options={})=>{
+    const body=options.body?JSON.parse(options.body):null;
+    calls.push({url:String(url),body});
+    if(body?.action==='health') return response({success:true,version:'2026-08-08.42'});
+    if(String(url).includes('/v2/')) return response({
+      success:true,version:'2026-08-08.42',acceptedEntryIndexes:[1],
+      canonicalEntries:[
+        {...body.entries[0],price:179,total:179},
+        {...body.entries[1],price:189,total:189}
+      ],appended:[{product:body.entries[1].product}]
+    });
+    if(String(url).includes('/original/')) return response({success:true});
+    return response({success:false,error:'Unexpected action'},400);
+  };
+  delete require.cache[bridgePath];
+  const handler=require(bridgePath);
+  const entries=[
+    {buyer:'PERSONAL',product:'Cotton Pads Fluffy',packs:1,cases:1,price:0},
+    {buyer:'PERSONAL',product:'Kitchen Towel Fluffy',packs:1,cases:1,price:0}
+  ];
+  const result=await call(handler,{action:'appendProducts',entries});
+  assert.equal(result.body.success,true);
+  const originalCall=calls.find(call=>call.url.includes('/original/'));
+  assert.ok(originalCall,'Original write missing');
+  assert.equal(originalCall.body.entries.length,1);
+  assert.equal(originalCall.body.entries[0].product,'Kitchen Towel Fluffy');
+});

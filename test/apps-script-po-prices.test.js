@@ -38,13 +38,17 @@ test('normal V2 order saves are idempotent, sync SUMMARY, and defer only expensi
 
 test('SUMMARY synchronization is targeted, idempotent, formatting-preserving, and document-column safe',()=>{
   const source=fs.readFileSync(sourcePath,'utf8');
-  const sync=source.match(/function\s+syncSummaryForOrderBatch_\s*\([\s\S]*?\n\}/);
-  assert.ok(sync,'syncSummaryForOrderBatch_ missing');
-  assert.match(sync[0],/canonicalPersonalBuyer_/);
-  assert.match(sync[0],/findPersonalSourceLayout_\(sheet/);
-  assert.match(sync[0],/getRange\([^\n]*,1,1,9\)\.setValues/);
-  assert.match(sync[0],/prependSummaryRowsPreservingFormat_/);
-  assert.doesNotMatch(sync[0],/\.clear\(|clearContent|deleteRow|sort\(|setBackground|setFontColor|writeSheet_|formatV2_/);
+  const plan=source.match(/function\s+planSummarySyncForOrderBatch_\s*\([\s\S]*?\n\}/);
+  const apply=source.match(/function\s+applySummarySyncPlan_\s*\([\s\S]*?\n\}/);
+  assert.ok(plan,'planSummarySyncForOrderBatch_ missing');
+  assert.ok(apply,'applySummarySyncPlan_ missing');
+  assert.match(plan[0],/canonicalPersonalBuyer_/);
+  assert.match(plan[0],/requireCanonicalSummaryLayout_\(sheet\)/);
+  assert.doesNotMatch(plan[0],/\.setValues|insertRowsBefore|deleteRows/);
+  assert.match(apply[0],/getRange\([^\n]*,1,1,9\)\.setValues/);
+  assert.match(apply[0],/insertRowsBefore/);
+  assert.match(apply[0],/copyFormatToRange/);
+  assert.doesNotMatch(apply[0],/\.clear\(|clearContent|sort\(|setBackground|setFontColor|writeSheet_|formatV2_/);
   const prepend=source.match(/function\s+prependSummaryRowsPreservingFormat_\s*\([\s\S]*?\n\}/);
   assert.ok(prepend,'prependSummaryRowsPreservingFormat_ missing');
   assert.match(prepend[0],/insertRowsBefore/);
@@ -161,10 +165,12 @@ test('PERSONAL pricing is backend-authoritative from Product Master SRP and hist
   assert.match(append[0],/priceUnit = canonicalPersonalBuyer_\(buyer\) === 'PERSONAL' \? 'PACK'/);
   assert.match(append[0],/canonicalEntries/);
   const repair=source.match(/function\s+repairPersonalSrpPricing_\s*\([\s\S]*?\n\}/);
+  const repairPlan=source.match(/function\s+buildPersonalSrpRepairPlan_\s*\([\s\S]*?\n\}/);
   assert.ok(repair,'repairPersonalSrpPricing_ missing');
-  assert.match(repair[0],/canonicalPersonalBuyer_/);
+  assert.ok(repairPlan,'buildPersonalSrpRepairPlan_ missing');
+  assert.match(repairPlan[0],/canonicalPersonalBuyer_/);
   assert.match(repair[0],/getRange\([^\n]*,8,[^\n]*,5\)\.setValues/);
-  assert.doesNotMatch(repair[0],/writeSheet_|clearContent|deleteRow|sort\(|setBackground|setFontColor/);
+  assert.doesNotMatch(repair[0]+repairPlan[0],/writeSheet_|clearContent|deleteRow|sort\(|setBackground|setFontColor/);
   assert.match(source,/body\.action === 'repairPersonalSrpPricing'/);
 });
 
@@ -252,4 +258,99 @@ test('V2 bootstrap reads Buyer Prices below its detected title/header and does n
   assert.match(helper[0],/findPersonalSourceLayout_\(priceSheet,PRICE_HEADERS\)/);
   assert.doesNotMatch(helper[0],/readBody_\(ss\.getSheetByName\(V2\.SHEETS\.prices\)\)/);
   assert.doesNotMatch(helper[0],/orderBuyers/);
+});
+
+test('V2 preflights SUMMARY and compensates ORDER LINES if post-write synchronization fails',()=>{
+  const source=fs.readFileSync(sourcePath,'utf8');
+  const append=source.match(/function\s+appendProductsV2_\s*\([\s\S]*?\n\}/);
+  assert.ok(append,'appendProductsV2_ missing');
+  const planAt=append[0].indexOf('planSummarySyncForOrderBatch_(');
+  const orderWriteAt=append[0].indexOf('prependRowsBelowHeader_(');
+  const applyAt=append[0].indexOf('applySummarySyncPlan_(');
+  const sortAt=append[0].indexOf('sortDataRowsByDateDesc_(');
+  assert.ok(planAt>=0 && planAt<orderWriteAt,'SUMMARY must be preflighted before ORDER LINES mutation');
+  assert.ok(applyAt>orderWriteAt && sortAt>applyAt,'SUMMARY must apply before ORDER LINES are sorted');
+  assert.match(append[0],/catch\s*\(summaryError\)[\s\S]*orderSheet\.deleteRows\(orderLayout\.headerRow\+1,newRows\.length\)[\s\S]*throw summaryError/);
+  const apply=source.match(/function\s+applySummarySyncPlan_\s*\([\s\S]*?\n\}/);
+  assert.ok(apply,'applySummarySyncPlan_ missing');
+  assert.match(apply[0],/catch\s*\(error\)[\s\S]*deleteRows[\s\S]*setValues/);
+});
+
+test('mixed retry batches identify only genuinely new entries for Original dual-write',()=>{
+  const source=fs.readFileSync(sourcePath,'utf8');
+  const append=source.match(/function\s+appendProductsV2_\s*\([\s\S]*?\n\}/);
+  assert.ok(append,'appendProductsV2_ missing');
+  assert.match(append[0],/acceptedEntryIndexes\.push\(index\)/);
+  assert.match(append[0],/acceptedEntryIndexes/);
+});
+
+test('destructive historical SUMMARY actions require dry run and exact confirmation',()=>{
+  const source=fs.readFileSync(sourcePath,'utf8');
+  const missing=source.match(/function\s+repairMissingSummaryRows_\s*\([\s\S]*?\n\}/);
+  const remove=source.match(/function\s+removeSampleSummaryRows_\s*\([\s\S]*?\n\}/);
+  assert.ok(missing && remove,'guarded SUMMARY repair helpers missing');
+  assert.match(missing[0],/body\s*&&\s*body\.apply\s*===\s*true/);
+  assert.match(missing[0],/REPAIR MISSING SUMMARY/);
+  assert.match(remove[0],/body\s*&&\s*body\.apply\s*===\s*true/);
+  assert.match(remove[0],/REMOVE SAMPLE SUMMARY/);
+});
+
+test('SUMMARY fails closed unless its unique business header row is exactly A:I',()=>{
+  const source=fs.readFileSync(sourcePath,'utf8');
+  const helper=source.match(/function\s+requireCanonicalSummaryLayout_\s*\([\s\S]*?\n\}/);
+  assert.ok(helper,'requireCanonicalSummaryLayout_ missing');
+  const required=['DATE','ORDER BY','PO #','SI #','ITEMS','TOTAL','COST','NET TOTAL','DUE BY'];
+  const makeSheet=rows=>({getLastRow:()=>rows.length,getLastColumn:()=>12,getRange:()=>({getDisplayValues:()=>rows}),getName:()=> 'SUMMARY'});
+  const context={normalize_:value=>String(value||'').trim().toUpperCase(),required,makeSheet};
+  vm.runInNewContext(`${helper[0]}; valid=requireCanonicalSummaryLayout_(makeSheet([['SUMMARY'],required.concat(['PDF','SI','DR'])]));`,context);
+  assert.equal(context.valid.headerRow,2);
+  assert.throws(()=>vm.runInNewContext(`requireCanonicalSummaryLayout_(makeSheet([['SUMMARY'],['X'].concat(required)]))`,context),/A:I|exact order/i);
+  assert.throws(()=>vm.runInNewContext(`requireCanonicalSummaryLayout_(makeSheet([required,required]))`,context),/exactly one/i);
+});
+
+test('SUMMARY identity trims PO and SI values consistently',()=>{
+  const source=fs.readFileSync(sourcePath,'utf8');
+  const helper=source.match(/function\s+summaryKeyFromRow_\s*\([\s\S]*?\n\}/);
+  assert.ok(helper,'summaryKeyFromRow_ missing');
+  const context={normalize_:value=>String(value||'').trim().toUpperCase(),dateKey_:()=> '2026-08-08'};
+  vm.runInNewContext(`${helper[0]}; a=summaryKeyFromRow_([new Date(),'WATSONS',' 123 ',' 456 ']); b=summaryKeyFromRow_([new Date(),'WATSONS','123','456']);`,context);
+  assert.equal(context.a,context.b);
+});
+
+test('recent SUMMARY repair includes same-day holes within a bounded lookback',()=>{
+  const source=fs.readFileSync(sourcePath,'utf8');
+  const repair=source.match(/function\s+repairRecentSummaryRows_\s*\([\s\S]*?\n\}/);
+  assert.ok(repair,'repairRecentSummaryRows_ missing');
+  assert.match(repair[0],/lookbackDays/);
+  assert.match(repair[0],/date\s*>=\s*cutoff/);
+  assert.doesNotMatch(repair[0],/date\s*>\s*latestDate/);
+});
+
+test('raw Product Master per-pack COST and PERSONAL repair packs are validated',()=>{
+  const source=fs.readFileSync(sourcePath,'utf8');
+  const helper=source.match(/function\s+requirePerPackCost_\s*\([\s\S]*?\n\}/);
+  assert.ok(helper,'requirePerPackCost_ missing');
+  const context={};
+  vm.runInNewContext(`${helper[0]}; zero=requirePerPackCost_(0,'X'); valid=requirePerPackCost_('39.94','X');`,context);
+  assert.equal(context.zero,0);
+  assert.equal(context.valid,39.94);
+  assert.throws(()=>vm.runInNewContext(`requirePerPackCost_('','X')`,context),/COST/i);
+  assert.throws(()=>vm.runInNewContext(`requirePerPackCost_('not-a-number','X')`,context),/COST/i);
+  const append=source.match(/function\s+appendProductsV2_\s*\([\s\S]*?\n\}/);
+  const repair=source.match(/function\s+buildPersonalSrpRepairPlan_\s*\([\s\S]*?\n\}/);
+  assert.match(append[0],/requirePerPackCost_/);
+  assert.ok(repair,'buildPersonalSrpRepairPlan_ missing');
+  assert.match(repair[0],/requirePerPackCost_/);
+  assert.match(repair[0],/packs\s*>\s*0/);
+});
+
+test('PERSONAL SRP dry run does not acquire the global write lock and proxy allows maintenance timeout',()=>{
+  const source=fs.readFileSync(sourcePath,'utf8');
+  const bridge=fs.readFileSync(path.resolve(__dirname,'..','api','sheets.js'),'utf8');
+  const repair=source.match(/function\s+repairPersonalSrpPricing_\s*\([\s\S]*?\n\}/);
+  assert.ok(repair,'repairPersonalSrpPricing_ missing');
+  const dryRunAt=repair[0].indexOf('if (!apply)');
+  const lockAt=repair[0].indexOf('LockService.getScriptLock()');
+  assert.ok(dryRunAt>=0 && lockAt>dryRunAt,'dry run must return before write lock acquisition');
+  assert.match(bridge,/action === "repairPersonalSrpPricing"[\s\S]*"V2",\s*55000/);
 });

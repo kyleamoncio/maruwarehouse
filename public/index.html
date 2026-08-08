@@ -3956,7 +3956,7 @@ function applyV2ReferenceData(result) {
     (result.prices || []).forEach(record => {
       const product = String(record.product || '').trim();
       const buyer = canonicalPortalBuyer(record.buyer).toUpperCase();
-      if (!activeProducts.has(product) || !buyer) return;
+      if (!activeProducts.has(product) || !buyer || buyer === 'PERSONAL') return;
       const targets = buyer === 'WATSONS'
         ? ['WATSONS GANADO','WATSONS PAMPANGA','WATSONS CEBU']
         : [buyer];

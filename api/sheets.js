@@ -163,8 +163,13 @@ function originalLegacyPayload(action, body) {
 function canonicalOriginalPayload(action, body, v2Result) {
   const canonicalEntries = Array.isArray(v2Result?.canonicalEntries) ? v2Result.canonicalEntries : null;
   if (!canonicalEntries || !canonicalEntries.length) return originalLegacyPayload(action, body);
-  if (action === 'appendProducts') return originalLegacyPayload(action, {...body, entries:canonicalEntries});
-  if (action === 'appendToProduct') return originalLegacyPayload(action, {...body, ...canonicalEntries[0]});
+  const acceptedIndexes = Array.isArray(v2Result?.acceptedEntryIndexes) ? v2Result.acceptedEntryIndexes : null;
+  const acceptedEntries = acceptedIndexes
+    ? acceptedIndexes.map(index=>canonicalEntries[index]).filter(Boolean)
+    : canonicalEntries;
+  if (!acceptedEntries.length) return null;
+  if (action === 'appendProducts') return originalLegacyPayload(action, {...body, entries:acceptedEntries});
+  if (action === 'appendToProduct') return originalLegacyPayload(action, {...body, ...acceptedEntries[0]});
   return originalLegacyPayload(action, body);
 }
 
@@ -276,7 +281,9 @@ module.exports = async function handler(req, res) {
         : { __status: 503, success: false, error: "Restock is temporarily paused while the formula-safe backend repair is being deployed." };
     } else if (["setupPersonalTab", "setupViews"].includes(action)) {
       result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2", 55000);
-    } else if (["repairRestockDamage", "repairRestockRows", "repairV2OrderCosts", "repairPersonalSrpPricing", "repairMissingSummaryRows", "repairRecentSummaryRows", "removeSampleSummaryRows", "repairSummaryIdentityFromOfficial", "moveBuyerRowsToTop", "applyDateOrderAndPaymentTerms", "buildWarehouseTrackerV2", "refreshProductView", "refreshLatestFirstViews", "formatV2", "applyRequestedLayout", "applyApprovedSmPrices", "ensureSummaryDocumentColumns"].includes(action)) {
+    } else if (action === "repairPersonalSrpPricing") {
+      result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2", 55000);
+    } else if (["repairRestockDamage", "repairRestockRows", "repairV2OrderCosts", "repairMissingSummaryRows", "repairRecentSummaryRows", "removeSampleSummaryRows", "repairSummaryIdentityFromOfficial", "moveBuyerRowsToTop", "applyDateOrderAndPaymentTerms", "buildWarehouseTrackerV2", "refreshProductView", "refreshLatestFirstViews", "formatV2", "applyRequestedLayout", "applyApprovedSmPrices", "ensureSummaryDocumentColumns"].includes(action)) {
       result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2");
     } else if (action === "getV2Bootstrap") {
       result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2", 55000);

@@ -58,12 +58,18 @@ test('Sheet reference refresh replaces stale Portal products buyers and prices',
     PRICES:{'Old Product':{'OLD BUYER':1},'Cotton Pads Fluffy':{'OLD BUYER':2}},
     PRICE_UNITS:{'Old Product':{'OLD BUYER':'PACK'}},
     PACKS_PER_CASE:{'Old Product':99},COSTS:{'Old Product':99},BUYERS:['OLD BUYER'],
-    canonicalPortalBuyer:value=>String(value||'').trim().toUpperCase(),
+    canonicalPortalBuyer:value=>{
+      const buyer=String(value||'').trim().toUpperCase();
+      return ['SAMPLE','SAMPLES','SAMPLE/PERSONAL','PERSONAL'].includes(buyer)?'PERSONAL':buyer;
+    },
     normalizeBuyerList:values=>[...new Set(values.map(value=>String(value||'').trim().toUpperCase()).filter(Boolean))]
   };
   vm.runInNewContext(`${helper[0]}; applyV2ReferenceData({
     products:[{name:'Cotton Pads Fluffy',packsPerCase:72,defaultSrp:179,defaultCost:39.94}],
-    prices:[{buyer:'WATSONS',product:'Cotton Pads Fluffy',price:128.88,priceUnit:'PACK'}],
+    prices:[
+      {buyer:'WATSONS',product:'Cotton Pads Fluffy',price:128.88,priceUnit:'PACK'},
+      {buyer:'SAMPLE/PERSONAL',product:'Cotton Pads Fluffy',price:0,priceUnit:'PACK'}
+    ],
     buyers:['WATSONS GANADO','WATSONS PAMPANGA','WATSONS CEBU','PERSONAL']
   });`,context);
   assert.equal(context.PRICES['Old Product'],undefined);
