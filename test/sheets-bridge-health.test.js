@@ -89,3 +89,11 @@ test('PERSONAL canonical SRP accepted by V2 is forwarded to Original even from a
   assert.equal(originalCall.body.entries[0].total,358);
   assert.equal(originalCall.body.entries[0].priceUnit,'PACK');
 });
+
+test('Portal getAllData reads authoritative V2 ORDER LINES instead of Original ALL DATA',()=>{
+  const source=require('node:fs').readFileSync(bridgePath,'utf8');
+  const branch=source.match(/else if \(action === "getAllData"\)\s*\{[\s\S]*?\n\s*\}/);
+  assert.ok(branch,'getAllData bridge branch missing');
+  assert.match(branch[0],/V2_APPS_SCRIPT_URL, V2_API_TOKEN/);
+  assert.doesNotMatch(branch[0],/ORIGINAL_APPS_SCRIPT_URL|ORIGINAL_API_TOKEN/);
+});

@@ -49,3 +49,29 @@ test('Buyer Price and Restock bootstraps use the production-stable POST bridge r
   assert.match(source,/loadRestockProducts[\s\S]*fetchV2BootstrapResult\('Could not load active products\.'/);
   assert.doesNotMatch(source,/\?action=getV2Bootstrap/);
 });
+
+test('Sheet reference refresh replaces stale Portal products buyers and prices',()=>{
+  const source=fs.readFileSync(sourcePath,'utf8');
+  const helper=source.match(/function applyV2ReferenceData\(result\)\s*\{[\s\S]*?\n\}/);
+  assert.ok(helper,'applyV2ReferenceData missing');
+  const context={
+    PRICES:{'Old Product':{'OLD BUYER':1},'Cotton Pads Fluffy':{'OLD BUYER':2}},
+    PRICE_UNITS:{'Old Product':{'OLD BUYER':'PACK'}},
+    PACKS_PER_CASE:{'Old Product':99},COSTS:{'Old Product':99},BUYERS:['OLD BUYER'],
+    canonicalPortalBuyer:value=>String(value||'').trim().toUpperCase(),
+    normalizeBuyerList:values=>[...new Set(values.map(value=>String(value||'').trim().toUpperCase()).filter(Boolean))]
+  };
+  vm.runInNewContext(`${helper[0]}; applyV2ReferenceData({
+    products:[{name:'Cotton Pads Fluffy',packsPerCase:72,defaultSrp:179,defaultCost:39.94}],
+    prices:[{buyer:'WATSONS',product:'Cotton Pads Fluffy',price:128.88,priceUnit:'PACK'}],
+    buyers:['WATSONS GANADO','WATSONS PAMPANGA','WATSONS CEBU','PERSONAL']
+  });`,context);
+  assert.equal(context.PRICES['Old Product'],undefined);
+  assert.equal(context.PRICES['Cotton Pads Fluffy']['OLD BUYER'],undefined);
+  assert.equal(context.PRICES['Cotton Pads Fluffy']['PERSONAL'],179);
+  assert.equal(context.PRICES['Cotton Pads Fluffy']['WATSONS GANADO'],128.88);
+  assert.equal(context.PRICES['Cotton Pads Fluffy']['WATSONS PAMPANGA'],128.88);
+  assert.equal(context.PRICES['Cotton Pads Fluffy']['WATSONS CEBU'],128.88);
+  assert.equal(context.COSTS['Cotton Pads Fluffy'],39.94);
+  assert.ok(!context.BUYERS.includes('OLD BUYER'));
+});

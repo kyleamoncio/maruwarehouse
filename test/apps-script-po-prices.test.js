@@ -240,7 +240,16 @@ test('read-only startup calls have a cold-start-safe timeout budget',()=>{
   const bridge=fs.readFileSync(path.resolve(__dirname,'..','api','sheets.js'),'utf8');
   const vercel=fs.readFileSync(path.resolve(__dirname,'..','vercel.json'),'utf8');
   assert.match(bridge,/action === "getV2Bootstrap"[\s\S]*"V2",\s*55000/);
-  assert.match(bridge,/action === "getAllData"[\s\S]*"Original",\s*55000/);
+  assert.match(bridge,/action === "getAllData"[\s\S]*"V2",\s*55000/);
   assert.match(bridge,/\["setupPersonalTab", "setupViews"\]\.includes\(action\)[\s\S]*"V2",\s*55000/);
   assert.equal(JSON.parse(vercel).functions['api/sheets.js'].maxDuration,60);
+});
+
+test('V2 bootstrap reads Buyer Prices below its detected title/header and does not retain historical-only buyers',()=>{
+  const source=fs.readFileSync(sourcePath,'utf8');
+  const helper=source.match(/function\s+getV2Bootstrap_\s*\([\s\S]*?\n\}/);
+  assert.ok(helper,'getV2Bootstrap_ missing');
+  assert.match(helper[0],/findPersonalSourceLayout_\(priceSheet,PRICE_HEADERS\)/);
+  assert.doesNotMatch(helper[0],/readBody_\(ss\.getSheetByName\(V2\.SHEETS\.prices\)\)/);
+  assert.doesNotMatch(helper[0],/orderBuyers/);
 });

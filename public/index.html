@@ -3937,29 +3937,42 @@ async function fetchV2BootstrapResult(fallbackMessage) {
   throw lastError || new Error(fallbackMessage);
 }
 
-async function loadV2ReferenceData(force = false) {
-  if (v2ReferenceLoadPromise && !force) return v2ReferenceLoadPromise;
-  v2ReferenceLoadPromise = (async () => {
-    const result = await fetchV2BootstrapResult('Could not load Product Master and Buyer Prices.');
-    (result.products || []).forEach(product => {
+function applyV2ReferenceData(result) {
+    const products = (result.products || []).filter(product => String(product.name || '').trim());
+    if (!products.length) throw new Error('Product Master returned no active products. Existing Portal references were preserved.');
+    const activeProducts = new Set(products.map(product => String(product.name || '').trim()));
+    [PRICES, PRICE_UNITS, PACKS_PER_CASE, COSTS].forEach(reference => {
+      Object.keys(reference).forEach(name => { if (!activeProducts.has(name)) delete reference[name]; });
+    });
+    products.forEach(product => {
       const name = String(product.name || '').trim();
-      if (!name) return;
-      if (!PRICES[name]) PRICES[name] = {};
-      if (!PRICE_UNITS[name]) PRICE_UNITS[name] = {};
+      PRICES[name] = {};
+      PRICE_UNITS[name] = {};
       PRICES[name]['PERSONAL'] = Number(product.defaultSrp) || 0;
       PRICE_UNITS[name]['PERSONAL'] = 'PACK';
       PACKS_PER_CASE[name] = Number(product.packsPerCase) || 0;
+      COSTS[name] = Number(product.defaultCost) || 0;
     });
     (result.prices || []).forEach(record => {
       const product = String(record.product || '').trim();
       const buyer = canonicalPortalBuyer(record.buyer).toUpperCase();
-      if (!product || !buyer) return;
-      if (!PRICES[product]) PRICES[product] = {};
-      if (!PRICE_UNITS[product]) PRICE_UNITS[product] = {};
-      PRICES[product][buyer] = Number(record.price) || 0;
-      PRICE_UNITS[product][buyer] = String(record.priceUnit || 'PACK').trim().toUpperCase() === 'CASE' ? 'CASE' : 'PACK';
+      if (!activeProducts.has(product) || !buyer) return;
+      const targets = buyer === 'WATSONS'
+        ? ['WATSONS GANADO','WATSONS PAMPANGA','WATSONS CEBU']
+        : [buyer];
+      targets.forEach(target => {
+        PRICES[product][target] = Number(record.price) || 0;
+        PRICE_UNITS[product][target] = String(record.priceUnit || 'PACK').trim().toUpperCase() === 'CASE' ? 'CASE' : 'PACK';
+      });
     });
-    BUYERS = normalizeBuyerList(BUYERS.concat(result.buyers || [], (result.prices || []).map(record => record.buyer)));
+    BUYERS = normalizeBuyerList((result.buyers || []).filter(buyer => String(buyer || '').trim().toUpperCase() !== 'WATSONS'));
+}
+
+async function loadV2ReferenceData(force = false) {
+  if (v2ReferenceLoadPromise && !force) return v2ReferenceLoadPromise;
+  v2ReferenceLoadPromise = (async () => {
+    const result = await fetchV2BootstrapResult('Could not load Product Master and Buyer Prices.');
+    applyV2ReferenceData(result);
     populateDropdowns();
     renderBuyerPills();
     renderPriceReference();

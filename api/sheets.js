@@ -286,7 +286,7 @@ module.exports = async function handler(req, res) {
       result = await dualWrite(action, body);
     } else if (action === "getAllData") {
       result = await forwardToAppsScript(
-        ORIGINAL_APPS_SCRIPT_URL, ORIGINAL_API_TOKEN, action, body, "Original", 55000
+        V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2", 55000
       );
     } else {
       result = await forwardToAppsScript(
