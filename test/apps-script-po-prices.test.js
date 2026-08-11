@@ -19,7 +19,7 @@ test('PO prices persist only on authoritative ORDER LINES without legacy snapsho
   assert.doesNotMatch(helper[0],/prependRows_\([^\n]*V2\.SHEETS\.prices|writeSheet_\([^\n]*V2\.SHEETS\.prices|PO PRICE SNAPSHOTS/);
 });
 
-test('normal V2 order saves are idempotent, sync SUMMARY, and defer only expensive dashboards',()=>{
+test('normal V2 order saves are idempotent, sync SUMMARY, and queue the Tracker safely',()=>{
   const source=fs.readFileSync(sourcePath,'utf8');
   const helper=source.match(/function\s+appendProductsV2_\s*\([\s\S]*?\n\}/);
   assert.ok(helper,'appendProductsV2_ missing');
@@ -29,11 +29,16 @@ test('normal V2 order saves are idempotent, sync SUMMARY, and defer only expensi
   assert.match(helper[0],/const existingOrderRows = readOrderRows_\(orderSheet,orderLayout\)/);
   assert.match(helper[0],/syncSummaryForOrderBatch_\(ss,[^;]+\)/);
   assert.match(helper[0],/summarySynced:true/);
-  assert.match(helper[0],/prependRowsBelowHeader_\(orderSheet,newRows,orderLayout\.headerRow\)/);
+  assert.match(helper[0],/prependCanonicalOrderRows_\(orderSheet,newRows\)/);
   assert.match(helper[0],/sortDataRowsByDateDesc_\(orderSheet,orderLayout\.headerRow\)/);
+  assert.match(helper[0],/queueWarehouseTrackerRefresh_\(\)/);
+  assert.match(helper[0],/trackerRefreshQueued/);
+  assert.match(helper[0],/trackerRefreshWarning/);
   assert.doesNotMatch(helper[0],/\bprependRows_\(orderSheet/);
   assert.doesNotMatch(helper[0],/refreshLatestFirstViews_/);
   assert.doesNotMatch(helper[0],/buildWarehouseTrackerV2_/);
+  assert.match(source,/function\s+refreshWarehouseTrackerAfterOrder_\s*\(/);
+  assert.match(source,/ScriptApp\.newTrigger\(handler\)\.timeBased\(\)\.after\(10000\)\.create\(\)/);
 });
 
 test('SUMMARY synchronization is targeted, idempotent, formatting-preserving, and document-column safe',()=>{
@@ -265,7 +270,7 @@ test('V2 preflights SUMMARY and compensates ORDER LINES if post-write synchroniz
   const append=source.match(/function\s+appendProductsV2_\s*\([\s\S]*?\n\}/);
   assert.ok(append,'appendProductsV2_ missing');
   const planAt=append[0].indexOf('planSummarySyncForOrderBatch_(');
-  const orderWriteAt=append[0].indexOf('prependRowsBelowHeader_(');
+  const orderWriteAt=append[0].indexOf('prependCanonicalOrderRows_(');
   const applyAt=append[0].indexOf('applySummarySyncPlan_(');
   const sortAt=append[0].indexOf('sortDataRowsByDateDesc_(');
   assert.ok(planAt>=0 && planAt<orderWriteAt,'SUMMARY must be preflighted before ORDER LINES mutation');

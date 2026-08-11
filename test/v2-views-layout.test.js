@@ -104,7 +104,15 @@ test('preserving view refreshes never unmerge or recolor and requested values st
   assert.match(source,/function\s+centerViewValueColumns_\s*\(/);
 });
 
-test('Warehouse Tracker reverses only the three proven legacy duplicate deductions',()=>{
+test('Product View deducts recorded pack and case quantities independently',()=>{
+  const source=fs.readFileSync(sourcePath,'utf8');
+  assert.doesNotMatch(source,/getRange\('B8'\)\.setFormula\(`=IFERROR\(B7\/B5/);
+  assert.equal((source.match(/'\$\{V2\.SHEETS\.snapshots\}'!G:G/g)||[]).length,2);
+  assert.match(source,/SUMIF\('\$\{V2\.SHEETS\.orders\}'!E:E,B2,'\$\{V2\.SHEETS\.orders\}'!G:G\)/);
+  assert.match(source,/SUMIF\('\$\{V2\.SHEETS\.restocks\}'!B:B,B2,'\$\{V2\.SHEETS\.restocks\}'!C:C\)/);
+});
+
+test('Warehouse Tracker uses Product View balances once per product and neutralizes duplicate listings',()=>{
   const source=fs.readFileSync(sourcePath,'utf8');
   const helper=extractFunction(source,'legacyTrackerDuplicateReversal_');
   const context={};
@@ -120,6 +128,20 @@ test('Warehouse Tracker reverses only the three proven legacy duplicate deductio
     {packs:36,product:'Wet Wipes 30s Plush'},
     null
   ]));
+  assert.match(source,/const authoritativeTrackerBalances = new Map\(inventoryBalancesForProducts_/);
+  assert.match(source,/const trackerBalanceProducts = trackerProductRows\.map/);
+  assert.match(source,/const correctedPacks = number_\(balance\.currentPacks\)/);
+  assert.match(source,/row\[1\] = number_\(balance\.currentCases\)/);
+  assert.match(source,/openingCases:0,soldCases:0,restockedCases:0,currentCases:0/);
+  assert.match(source,/if \(seenTrackerProducts\.has\(productKey\)\)/);
+  assert.match(source,/row\[1\] = 'N\/A';[\s\S]*row\[2\] = 'N\/A';[\s\S]*row\[3\] = 'N\/A'/);
+  assert.match(source,/reconciledProducts\.push/);
+  assert.match(source,/duplicateListings\.push/);
+  const productKey=extractFunction(source,'trackerProductKey_');
+  const keyContext={normalize_:value=>String(value||'').trim().toUpperCase().replace(/\s+/g,' ')};
+  vm.runInNewContext(`${productKey}; result=trackerProductKey_;`,keyContext);
+  assert.equal(keyContext.result('FLUFFY KITCHEN TOWEL'),keyContext.result('Kitchen Towel Fluffy'));
+  assert.notEqual(keyContext.result('FLUFFY KITCHEN TOWEL'),keyContext.result('Kitchen Towel Plush'));
   assert.match(source,/repairPlushInventoryDuplicates_/);
   assert.match(source,/body\.action === 'buildWarehouseTrackerV2' && body\.repairPlushInventoryDuplicates === true/);
   assert.match(source,/REPAIR PLUSH INVENTORY DUPLICATES/);

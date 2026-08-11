@@ -890,18 +890,20 @@ table {
 
 #summaryTable {
   table-layout: fixed;
-  min-width: 0;
+  min-width: 1180px;
 }
 
 #summaryTable th,
 #summaryTable td {
-  padding-left: 12px;
-  padding-right: 12px;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 #summaryTable th:first-child,
 #summaryTable td:first-child {
-  padding-left: 18px;
+  padding-left: 10px;
+  padding-right: 6px;
+  text-align: center;
 }
 
 #summaryTable th:last-child,
@@ -909,30 +911,45 @@ table {
   padding-right: 18px;
 }
 
-#summaryTable th:nth-child(1),
-#summaryTable td:nth-child(1) { width: 8%; }
-#summaryTable th:nth-child(2),
-#summaryTable td:nth-child(2) { width: 11%; }
-#summaryTable th:nth-child(3),
-#summaryTable td:nth-child(3) { width: 8%; }
-#summaryTable th:nth-child(4),
-#summaryTable td:nth-child(4) { width: 6%; }
-#summaryTable th:nth-child(5),
-#summaryTable td:nth-child(5) { width: 17%; }
-#summaryTable th:nth-child(6),
-#summaryTable td:nth-child(6) { width: 9%; }
-#summaryTable th:nth-child(7),
-#summaryTable td:nth-child(7) { width: 8%; }
-#summaryTable th:nth-child(8),
-#summaryTable td:nth-child(8) { width: 9%; }
-#summaryTable th:nth-child(9),
-#summaryTable td:nth-child(9) { width: 9%; }
-#summaryTable th:nth-child(10),
-#summaryTable td:nth-child(10),
-#summaryTable th:nth-child(11),
-#summaryTable td:nth-child(11),
-#summaryTable th:nth-child(12),
-#summaryTable td:nth-child(12) { width: 5%; }
+#summaryTable th:nth-child(1),#summaryTable td:nth-child(1) { width: 4%; }
+#summaryTable th:nth-child(2),#summaryTable td:nth-child(2) { width: 8%; }
+#summaryTable th:nth-child(3),#summaryTable td:nth-child(3) { width: 10%; }
+#summaryTable th:nth-child(4),#summaryTable td:nth-child(4) { width: 8%; }
+#summaryTable th:nth-child(5),#summaryTable td:nth-child(5) { width: 6%; }
+#summaryTable th:nth-child(6),#summaryTable td:nth-child(6) { width: 18%; }
+#summaryTable th:nth-child(7),#summaryTable td:nth-child(7) { width: 9%; }
+#summaryTable th:nth-child(8),#summaryTable td:nth-child(8) { width: 9%; }
+#summaryTable th:nth-child(9),#summaryTable td:nth-child(9) { width: 9%; }
+#summaryTable th:nth-child(10),#summaryTable td:nth-child(10) { width: 10%; }
+#summaryTable th:nth-child(11),#summaryTable td:nth-child(11),
+#summaryTable th:nth-child(12),#summaryTable td:nth-child(12),
+#summaryTable th:nth-child(13),#summaryTable td:nth-child(13) { width: 3%; }
+
+.summary-selection-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--panel-inner);
+}
+.summary-selection-toolbar .summary-selection-actions { display:flex; align-items:center; gap:8px; }
+.summary-selection-count { color:var(--text-secondary); font-size:13px; }
+.summary-row-select,#summarySelectAll { width:16px; height:16px; accent-color:#f2eee5; cursor:pointer; }
+.summary-pdf-modal {
+  position:fixed; inset:0; z-index:300; display:none; align-items:center; justify-content:center;
+  padding:24px; background:rgba(0,0,0,.78); backdrop-filter:blur(4px);
+}
+.summary-pdf-modal.is-open { display:flex; }
+.summary-pdf-dialog {
+  width:min(1100px,96vw); height:min(820px,92vh); display:grid; grid-template-rows:auto minmax(0,1fr);
+  overflow:hidden; border:1px solid rgba(255,255,255,.12); border-radius:12px; background:var(--panel-outer);
+}
+.summary-pdf-header { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; border-bottom:1px solid var(--border-light); }
+.summary-pdf-header strong { font-size:16px; }
+.summary-pdf-actions { display:flex; gap:8px; }
+#summaryPdfFrame { width:100%; height:100%; border:0; background:#e9e9e9; }
 
 #page-search .table-wrap table { table-layout: fixed; }
 #page-search th:nth-child(1), #page-search td:nth-child(1) { width: 10%; }
@@ -992,7 +1009,7 @@ table {
 
 .search-summary-item span {
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: .085em;
   text-transform: uppercase;
@@ -1004,6 +1021,17 @@ table {
   font-weight: 800;
   line-height: 1.1;
   font-variant-numeric: tabular-nums;
+}
+
+.search-summary-item.is-currency {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.search-summary-item.is-currency strong {
+  font-size: clamp(12px, 1vw, 16px);
+  letter-spacing: -0.025em;
+  white-space: nowrap;
 }
 
 .search-summary-item.is-cost strong {
@@ -3168,8 +3196,8 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
 /* TARGETED UI FIX 2026-07-02B: keep search metrics inside panels and flatten Summary rows. */
 #page-search .search-summary-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important}
 #page-search .search-summary-item{min-width:0!important;overflow:hidden!important;background:#111316!important;border-color:#2A2D2F!important}
-#page-search .search-summary-item strong{display:block!important;max-width:100%!important;overflow:hidden!important;text-overflow:clip!important;white-space:nowrap!important;font-size:clamp(22px,1.55vw,28px)!important;line-height:1.05!important;letter-spacing:-.04em!important}
-#page-search .search-summary-item span{font-size:10px!important;letter-spacing:.11em!important}
+#page-search .search-summary-item:not(.is-currency) strong{display:block!important;max-width:100%!important;overflow:hidden!important;text-overflow:clip!important;white-space:nowrap!important;font-size:clamp(22px,1.55vw,28px)!important;line-height:1.05!important;letter-spacing:-.04em!important}
+#page-search .search-summary-item span{font-size:13px!important;letter-spacing:.09em!important}
 #page-summary .summary-terminal-card,#page-summary .summary-terminal-body,#page-summary .summary-terminal-wrap{background:transparent!important;box-shadow:none!important}
 #page-summary #summaryTable,#page-summary #summaryTable tbody,#page-summary #summaryTable tr,#page-summary #summaryTable td{background:#0E1011!important;box-shadow:none!important}
 #page-summary #summaryTable thead,#page-summary #summaryTable thead tr,#page-summary #summaryTable thead th{background:#0C0F10!important;box-shadow:none!important}
@@ -3438,10 +3466,18 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
     </div>
   </div>
   <div class="card summary-terminal-card">
+    <div class="summary-selection-toolbar">
+      <span class="summary-selection-count" id="summarySelectionCount">0 rows selected</span>
+      <div class="summary-selection-actions">
+        <button class="btn btn-secondary" id="summaryPreviewPdf" type="button" onclick="previewSelectedSummaryPdf()" disabled>Preview PDF</button>
+        <button class="btn btn-primary" id="summaryDownloadPdf" type="button" onclick="downloadSelectedSummaryPdf()" disabled>Download PDF</button>
+      </div>
+    </div>
     <div class="card-body summary-terminal-body">
       <div class="table-wrap summary-terminal-wrap">
         <table id="summaryTable">
           <thead><tr>
+            <th><input id="summarySelectAll" type="checkbox" aria-label="Select all Summary rows" onchange="toggleAllSummaryRows(this.checked)"></th>
             <th style="white-space:nowrap">Date</th>
             <th>Buyer</th>
             <th>PO #</th>
@@ -3456,11 +3492,24 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
             <th class="summary-doc-col">DR</th>
           </tr></thead>
           <tbody id="summaryBody">
-            <tr><td colspan="12"><div class="empty-state"><div class="empty-icon">📂</div><h3>No summary data</h3><p>Load live data to show PO/SI groups.</p></div></td></tr>
+            <tr><td colspan="13"><div class="empty-state"><div class="empty-icon">📂</div><h3>No summary data</h3><p>Load live data to show PO/SI groups.</p></div></td></tr>
           </tbody>
         </table>
       </div>
     </div>
+  </div>
+</div>
+
+<div class="summary-pdf-modal" id="summaryPdfModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="summaryPdfTitle">
+  <div class="summary-pdf-dialog">
+    <div class="summary-pdf-header">
+      <strong id="summaryPdfTitle">Summary PDF Preview</strong>
+      <div class="summary-pdf-actions">
+        <button class="btn btn-primary" type="button" onclick="downloadSelectedSummaryPdf()">Download PDF</button>
+        <button class="btn btn-secondary" type="button" onclick="window.SummaryReport.closePreview()">Close</button>
+      </div>
+    </div>
+    <iframe id="summaryPdfFrame" title="Summary PDF preview"></iframe>
   </div>
 </div>
 
@@ -4754,20 +4803,30 @@ function changePage(d){ renderAllData(); }
 // ===============================================
 //  SUMMARY
 // ===============================================
+const summarySelectedKeys = new Set();
+let summaryRowsCache = [];
+
 function renderSummary() {
   const tbody = document.getElementById('summaryBody');
   if (!tbody) return;
   const rows = buildSummaryRows();
+  summaryRowsCache = rows;
+  const liveKeys = new Set(rows.map(row=>row.key));
+  Array.from(summarySelectedKeys).forEach(key=>{ if(!liveKeys.has(key)) summarySelectedKeys.delete(key); });
 
   if (!rows.length) {
-    tbody.innerHTML = '<tr><td colspan="12"><div class="empty-state"><div class="empty-icon">📂</div><h3>No summary data</h3><p>Load live data to show PO/SI groups.</p></div></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="13"><div class="empty-state"><div class="empty-icon">📂</div><h3>No summary data</h3><p>Load live data to show PO/SI groups.</p></div></td></tr>';
+    updateSummarySelectionUi();
     return;
   }
 
   tbody.innerHTML = rows.map(item => {
     const due = formatDueDate(item.date, getSummaryDueMonths(item.buyerNames));
+    item.due = due;
+    const encodedKey = encodeURIComponent(item.key);
 
     return `<tr>
+      <td><input class="summary-row-select" type="checkbox" aria-label="Select Summary row" data-summary-key="${encodedKey}" ${summarySelectedKeys.has(item.key)?'checked':''} onchange="toggleSummaryRow(decodeURIComponent(this.dataset.summaryKey),this.checked)"></td>
       <td class="mono" style="white-space:nowrap;">${item.date}</td>
       <td style="line-height:1.4;"><div class="summary-stack">${item.buyers || '—'}</div></td>
       <td class="mono" style="white-space:normal;line-height:1.4;">${item.po || '—'}</td>
@@ -4780,6 +4839,7 @@ function renderSummary() {
       ${window.renderSummaryDocumentCells ? window.renderSummaryDocumentCells(item) : '<td class="summary-doc-col">No PO</td><td class="summary-doc-col">Pending</td><td class="summary-doc-col">Pending</td>'}
     </tr>`;
   }).join('');
+  updateSummarySelectionUi();
 }
 
 function buildSummaryRows() {
@@ -4806,6 +4866,7 @@ function buildSummaryRows() {
 
     if (!groups[groupKey]) {
       groups[groupKey] = {
+        key: groupKey,
         date: dateKey,
         buyers: new Set(),
         po: new Set(),
@@ -4832,23 +4893,69 @@ function buildSummaryRows() {
   });
 
   return Object.values(groups)
-    .map(group => ({
+    .map(group => {
+      const buyerNames = Array.from(group.buyers);
+      const poValues = Array.from(group.po);
+      const siValues = Array.from(group.si);
+      const productNames = Object.keys(group.items);
+      return {
+      key: group.key,
       date: group.date,
-      buyerNames: Array.from(group.buyers),
-      buyers: Array.from(group.buyers)
+      buyerNames,
+      buyerText: buyerNames.join(', ') || '—',
+      buyers: buyerNames
         .map(b => `<span class="badge ${buyerBadge(b)}">${b}</span>`)
         .join(''),
-      po: Array.from(group.po).join('<br>'),
-      si: Array.from(group.si).join('<br>'),
-      items: Object.keys(group.items)
+      poText: poValues.join(', ') || '—',
+      siText: siValues.join(', ') || '—',
+      po: poValues.join('<br>'),
+      si: siValues.join('<br>'),
+      itemText: productNames.map(p => `${displayProductName(p)} (${(group.items[p]||0).toLocaleString()} packs)`).join(', ') || '—',
+      items: productNames
         .map(p => `<span class="badge ${p.includes('Plush') ? 'badge-plush' : 'badge-fluffy'}">${shortProduct(p)}</span>`)
         .join(''),
       packs: group.packs,
       total: group.total,
       cost: group.cost,
       netTotal: group.total - group.cost
-    }))
+    };})
     .sort((a, b) => parseLooseDate(b.date) - parseLooseDate(a.date));
+}
+
+function toggleSummaryRow(key,checked) {
+  if (checked) summarySelectedKeys.add(key); else summarySelectedKeys.delete(key);
+  updateSummarySelectionUi();
+}
+function toggleAllSummaryRows(checked) {
+  summaryRowsCache.forEach(row=>{ if(checked) summarySelectedKeys.add(row.key); else summarySelectedKeys.delete(row.key); });
+  document.querySelectorAll('.summary-row-select').forEach(input=>{ input.checked=checked; });
+  updateSummarySelectionUi();
+}
+function getSelectedSummaryRows() {
+  return summaryRowsCache.filter(row=>summarySelectedKeys.has(row.key));
+}
+function updateSummarySelectionUi() {
+  const count=summarySelectedKeys.size;
+  const label=document.getElementById('summarySelectionCount');
+  const preview=document.getElementById('summaryPreviewPdf');
+  const download=document.getElementById('summaryDownloadPdf');
+  const all=document.getElementById('summarySelectAll');
+  if(label)label.textContent=`${count} row${count===1?'':'s'} selected`;
+  if(preview)preview.disabled=count===0;
+  if(download)download.disabled=count===0;
+  if(all){all.checked=summaryRowsCache.length>0&&count===summaryRowsCache.length;all.indeterminate=count>0&&count<summaryRowsCache.length;}
+}
+async function previewSelectedSummaryPdf() {
+  const rows=getSelectedSummaryRows();
+  if(!rows.length){showToast('Select at least one Summary row.','warning');return;}
+  try { await window.SummaryReport.preview(rows); }
+  catch(error){ showToast('Could not preview PDF: '+(error.message||error),'error'); }
+}
+async function downloadSelectedSummaryPdf() {
+  const rows=getSelectedSummaryRows();
+  if(!rows.length){showToast('Select at least one Summary row.','warning');return;}
+  try { await window.SummaryReport.download(rows); }
+  catch(error){ showToast('Could not download PDF: '+(error.message||error),'error'); }
 }
 
 // ===============================================
@@ -4870,9 +4977,9 @@ function renderSearchSummary(results = []) {
     <div class="search-summary-item"><span>Results</span><strong>${fmtWhole(results.length)}</strong></div>
     <div class="search-summary-item"><span>Cases</span><strong>${fmtWhole(casesVal)}</strong></div>
     <div class="search-summary-item"><span>Packs</span><strong>${fmtWhole(packsVal)}</strong></div>
-    <div class="search-summary-item"><span>Total</span><strong>₱${fmtNum(totalVal)}</strong></div>
-    <div class="search-summary-item is-cost"><span>Cost</span><strong>₱${fmtNum(costVal)}</strong></div>
-    <div class="search-summary-item is-net"><span>Net</span><strong>₱${fmtNum(netVal)}</strong></div>
+    <div class="search-summary-item is-total is-currency"><span>Total</span><strong>₱${fmtNum(totalVal)}</strong></div>
+    <div class="search-summary-item is-cost is-currency"><span>Cost</span><strong>₱${fmtNum(costVal)}</strong></div>
+    <div class="search-summary-item is-net is-currency"><span>Net</span><strong>₱${fmtNum(netVal)}</strong></div>
   `;
 
   const productTotals = new Map();
@@ -5691,6 +5798,8 @@ function openSidebar(){
   document.getElementById('sidebarToggle').classList.remove('visible');
 }
 </script>
+<script src="/pdf-lib.min.js"></script>
+<script src="/summary-report.js"></script>
 <script src="/po-core.js"></script>
 <script src="/po-entry-integration.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
