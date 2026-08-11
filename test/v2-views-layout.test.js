@@ -15,7 +15,7 @@ function extractFunction(source,name){
 
 test('V2 view layout keeps ORDER LINES at two frozen rows and PERSONAL beside SUMMARY',()=>{
   const source=fs.readFileSync(sourcePath,'utf8');
-  assert.match(source,/VERSION:\s*'2026-08-08\.42'/);
+  assert.match(source,/VERSION:\s*'2026-08-11\.43'/);
   assert.match(source,/buyerView:\s*'BUYER VIEW'/);
   assert.match(source,/orders\.setFrozenRows\(2\)/);
   assert.match(source,/moveSheetAfter_\(target,\s*personalSheet,\s*summarySheet\)/);
@@ -54,6 +54,19 @@ test('Product and Buyer selectors use large merged selector cells while preservi
   assert.match(buyer,/getRange\('B2:L2'\)\.merge\(\)/);
 });
 
+test('Product refresh repairs a legacy B1:J1 dropdown into merged B2:J2 without touching detail rows',()=>{
+  const source=fs.readFileSync(sourcePath,'utf8');
+  const repair=extractFunction(source,'ensureProductSelectorLayout_');
+  const refresh=extractFunction(source,'refreshProductViewPreservingFormat_');
+  assert.match(repair,/getRange\('B1:J1'\)/);
+  assert.match(repair,/getRange\('B2:J2'\)/);
+  assert.match(repair,/misplaced/);
+  assert.match(repair,/breakApart\(\)/);
+  assert.match(repair,/getRange\('B2:J2'\)\.merge\(\)/);
+  assert.doesNotMatch(repair,/A3|A8|A9|A11|clear\(/);
+  assert.match(refresh,/ensureProductSelectorLayout_\(sheet\)/);
+});
+
 test('setupViews action builds both views without writing SUMMARY values',()=>{
   const source=fs.readFileSync(sourcePath,'utf8');
   const setup=extractFunction(source,'setupViewsV2_');
@@ -89,4 +102,24 @@ test('preserving view refreshes never unmerge or recolor and requested values st
   assert.match(product,/centerViewValueColumns_\(sheet,headerRow,\['DATE','PO #','SI #','PACK QTY','CASE QTY','PRICE','TOTAL','TOTAL COST','NET TOTAL'\]\)/);
   assert.match(buyer,/centerViewValueColumns_\(sheet,headerRow,\['DATE','PO #','SI #','ORDER PACK QTY','ORDER CASE QTY','PRICE','TOTAL','UNIT COST','TOTAL COST','NET TOTAL'\]\)/);
   assert.match(source,/function\s+centerViewValueColumns_\s*\(/);
+});
+
+test('Warehouse Tracker reverses only the three proven legacy duplicate deductions',()=>{
+  const source=fs.readFileSync(sourcePath,'utf8');
+  const helper=extractFunction(source,'legacyTrackerDuplicateReversal_');
+  const context={};
+  vm.runInNewContext(`${helper}; result=[
+    legacyTrackerDuplicateReversal_('QC INVENTORY 2026','PLUSH BATHROOM TISSUE 12 ROLLS'),
+    legacyTrackerDuplicateReversal_('PASIG INVENTORY 2026','PLUSH BATHROOM TISSUE 20 ROLLS'),
+    legacyTrackerDuplicateReversal_('FAST CARGO INVENTORY 2026','PLUSH WET WIPES 30s'),
+    legacyTrackerDuplicateReversal_('QC INVENTORY 2026','FLUFFY BATHROOM TISSUE 12 ROLLS')
+  ];`,context);
+  assert.equal(JSON.stringify(context.result),JSON.stringify([
+    {packs:1408,product:'Bathroom Tissue 12s Plush'},
+    {packs:2310,product:'Bathroom Tissue 20s Plush'},
+    {packs:36,product:'Wet Wipes 30s Plush'},
+    null
+  ]));
+  assert.match(source,/repairPlushInventoryDuplicates_/);
+  assert.match(source,/REPAIR PLUSH INVENTORY DUPLICATES/);
 });

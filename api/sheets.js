@@ -6,7 +6,7 @@ const ORIGINAL_API_TOKEN = process.env.WAREHOUSE_PORTAL_API_TOKEN || "";
 const V2_API_TOKEN = process.env.WAREHOUSE_PORTAL_V2_API_TOKEN || ORIGINAL_API_TOKEN;
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || "*";
 const WRITE_ACTIONS = new Set(["appendProducts", "appendToProduct"]);
-const ORDER_SAFE_V2_VERSIONS = new Set(["2026-07-30.35", "2026-08-01.36", "2026-08-01.37", "2026-08-01.38", "2026-08-01.39", "2026-08-01.40", "2026-08-01.41", "2026-08-08.42"]);
+const ORDER_SAFE_V2_VERSIONS = new Set(["2026-07-30.35", "2026-08-01.36", "2026-08-01.37", "2026-08-01.38", "2026-08-01.39", "2026-08-01.40", "2026-08-01.41", "2026-08-08.42", "2026-08-11.43"]);
 
 function setCors(res) {
   res.setHeader("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
@@ -283,7 +283,7 @@ module.exports = async function handler(req, res) {
       result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2", 55000);
     } else if (action === "repairPersonalSrpPricing") {
       result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2", 55000);
-    } else if (["repairRestockDamage", "repairRestockRows", "repairV2OrderCosts", "repairMissingSummaryRows", "repairRecentSummaryRows", "removeSampleSummaryRows", "repairSummaryIdentityFromOfficial", "moveBuyerRowsToTop", "applyDateOrderAndPaymentTerms", "buildWarehouseTrackerV2", "refreshProductView", "refreshLatestFirstViews", "formatV2", "applyRequestedLayout", "applyApprovedSmPrices", "ensureSummaryDocumentColumns"].includes(action)) {
+    } else if (["repairRestockDamage", "repairRestockRows", "repairV2OrderCosts", "repairPlushInventoryDuplicates", "repairMissingSummaryRows", "repairRecentSummaryRows", "removeSampleSummaryRows", "repairSummaryIdentityFromOfficial", "moveBuyerRowsToTop", "applyDateOrderAndPaymentTerms", "buildWarehouseTrackerV2", "refreshProductView", "refreshLatestFirstViews", "formatV2", "applyRequestedLayout", "applyApprovedSmPrices", "ensureSummaryDocumentColumns"].includes(action)) {
       result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2");
     } else if (action === "getV2Bootstrap") {
       result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2", 55000);
