@@ -163,10 +163,10 @@ test('New Entry owns upload actions and Summary places PDF SI DR immediately aft
   assert.match(html,/#page-entry \.entry-preview-col\s*\{[^}]*min-height:\s*0/i);
   assert.match(html,/#page-entry \.entry-preview-card\s*\{[^}]*height:\s*auto[^}]*min-height:\s*0/i,'Submit Entry must follow the preview content, not the full left-column height');
   assert.match(poCss,/\.po-state\.is-ready-to-preview\s*\{\s*display\s*:\s*none/i);
-  assert.match(html,/#summaryTable th:nth-child\(12\)[\s\S]*?width:\s*5%/i);
+  assert.match(html,/#summaryTable th:nth-child\(11\),#summaryTable th:nth-child\(12\),#summaryTable th:nth-child\(13\)\{width:3%!important\}/i);
   assert.match(html,/\.summary-terminal-card\s*\{[\s\S]*?transform:\s*none/i);
   assert.match(html,/\.summary-terminal-wrap\s*\{[\s\S]*?overflow-x:\s*auto/i);
-  assert.match(html,/#page-summary #summaryTable thead th\{position:static!important;top:auto!important/i);
+  assert.match(html,/#page-summary #summaryTable thead th\{position:sticky!important;top:0!important;z-index:4!important/i);
   assert.match(html,/#page-summary #summaryTable tbody tr:hover>td\{background:#151819!important/i);
   assert.match(html,/id="poDocumentModal"/);
   assert.doesNotMatch(html,/Preview PDFs stay upright/i);
@@ -187,7 +187,7 @@ test('Summary documents are icon-only preview actions and the modal is solid ful
   assert.doesNotMatch(client,/po-row-doc-menu/);
   assert.doesNotMatch(client,/<span>View PO<\/span>/);
   assert.match(css,/#page-summary #summaryTable tbody tr:hover>td\s*\{[^}]*background:#151819!important/i);
-  assert.match(css,/#page-summary #summaryTable thead th\s*\{[^}]*background:transparent!important/i);
+  assert.match(css,/#page-summary #summaryTable thead th\s*\{[^}]*background:#0c0f10!important/i);
   assert.match(css,/#page-summary\s*\{[^}]*background:transparent!important/i);
   assert.match(css,/#page-summary #summaryTable thead th\s*\{[^}]*padding-top:9px!important[^}]*padding-bottom:8px!important[^}]*height:auto!important[^}]*min-height:0!important/i);
   assert.match(css,/#page-summary \.summary-terminal-card\s*\{[^}]*border-top:0!important/i);

@@ -55,10 +55,32 @@ test('Summary PDF is plain white, uses only MARU Sales Summary, and omits subtit
   assert.doesNotMatch(reportSource,/selected row|Generated|Page \$\{|index%2/);
 });
 
+test('Summary PDF ends with a right-aligned grand total',()=>{
+  const reportSource=fs.readFileSync(path.join(publicDir,'summary-report.js'),'utf8');
+  assert.match(reportSource,/const grandTotal=data\.reduce/);
+  assert.match(reportSource,/drawText\('GRAND TOTAL'/);
+  assert.match(reportSource,/money\(grandTotal\)/);
+});
+
 test('Summary PDF controls stay visible while scrolling and preview uses nearly all viewport',()=>{
   const s=html();
-  assert.match(s,/\.summary-selection-toolbar\s*\{[\s\S]*?position:\s*sticky[\s\S]*?top:\s*\d+px[\s\S]*?z-index:/);
+
   assert.match(s,/#page-summary \.summary-terminal-wrap\s*\{[\s\S]*?max-height:\s*calc\(100vh\s*-\s*\d+px\)[\s\S]*?overflow-y:\s*auto[\s\S]*?scrollbar-gutter:\s*stable/);
+  assert.match(s,/#page-summary #summaryTable thead th\{position:sticky!important;top:0!important;z-index:4!important/);
+  assert.match(s,/#summaryTable th:nth-child\(13\)\{width:3%!important\}/);
+  assert.match(s,/<colgroup>[\s\S]*width:12%[\s\S]*width:8%[\s\S]*width:7%[\s\S]*width:18%[\s\S]*<col style="width:3%"><col style="width:3%"><col style="width:3%">/);
+  const poCss=fs.readFileSync(path.resolve(__dirname,'..','public','po-feature.css'),'utf8');
+  assert.match(poCss,/#page-summary \.summary-selection-toolbar\s*\{[\s\S]*?position:\s*relative!important[\s\S]*?top:\s*auto!important/);
+  assert.match(poCss,/#page-summary #summaryTable thead\s*\{[\s\S]*position:\s*sticky!important[\s\S]*background:\s*#0c0f10!important/i);
+  assert.match(poCss,/#page-summary \.summary-terminal-card\s*\{[\s\S]*border-left:\s*0!important[\s\S]*border-right:\s*0!important/i);
+  assert.match(poCss,/#page-summary #summaryTable thead th\s*\{[\s\S]*background:\s*#0c0f10!important/i);
   assert.match(s,/\.summary-pdf-modal\s*\{[\s\S]*?padding:\s*8px/);
   assert.match(s,/\.summary-pdf-dialog\s*\{[\s\S]*?width:\s*calc\(100vw\s*-\s*16px\)[\s\S]*?height:\s*calc\(100vh\s*-\s*16px\)/);
+});
+
+test('Summary grouping removes buyer duplicates caused only by whitespace',()=>{
+  const s=html();
+  assert.match(s,/function normalizeSummaryBuyerNames_\s*\(/);
+  assert.match(s,/replace\(\/\\s\+\/g,' '\)/);
+  assert.match(s,/buyerNames\s*=\s*normalizeSummaryBuyerNames_\(Array\.from\(group\.buyers\)\)/);
 });

@@ -98,6 +98,17 @@
       });
       y-=rowHeight;
     });
+    const grandTotal=data.reduce((sum,row)=>sum+(Number(row.total)||0),0);
+    const grandTotalHeight=30;
+    if(y-grandTotalHeight<margin+12)addPage();
+    const totalColumn=SUMMARY_REPORT_COLUMNS[SUMMARY_REPORT_COLUMNS.length-1];
+    const totalX=margin+SUMMARY_REPORT_COLUMNS.slice(0,-1).reduce((sum,column)=>sum+column.width,0);
+    const totalText=money(grandTotal);
+    const labelWidth=bold.widthOfTextAtSize('GRAND TOTAL',9);
+    const totalWidth=bold.widthOfTextAtSize(totalText,9);
+    page.drawLine({start:{x:totalX-130,y:y-4},end:{x:margin+tableWidth,y:y-4},thickness:.8,color:rgb(.35,.37,.35)});
+    page.drawText('GRAND TOTAL',{x:totalX-10-labelWidth,y:y-22,size:9,font:bold,color:rgb(.10,.11,.10)});
+    page.drawText(totalText,{x:margin+tableWidth-6-totalWidth,y:y-22,size:9,font:bold,color:rgb(.10,.11,.10)});
     return pdf.save({useObjectStreams:false});
   }
   async function makeBlob(rows){return new Blob([await buildPdfBytes(rows)],{type:'application/pdf'});}

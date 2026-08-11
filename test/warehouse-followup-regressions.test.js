@@ -50,9 +50,9 @@ test('Tracker forces visible integer formats for current case and current pack c
   assert.match(s,/getRange\(dataRow,2,data\.length,2\)\.setNumberFormat\('0'\)/);
 });
 
-test('production proxy exposes Version 45 restocks and guarded presentation repair',()=>{
+test('production proxy exposes Version 46 restocks and guarded presentation repair',()=>{
   const proxy=fs.readFileSync(path.resolve(__dirname,'..','api','sheets.js'),'utf8');
-  assert.match(proxy,/"2026-08-11\.45"\]\.includes\(health\.version\)/);
+  assert.match(proxy,/"2026-08-12\.46"\]\.includes\(health\.version\)/);
   assert.match(proxy,/\["setupPersonalTab", "setupViews", "repairWarehouseFollowupData", "repairWarehousePresentationData"\][\s\S]*55000/);
 });
 
@@ -81,6 +81,10 @@ test('views show TBA only for blank PO or SI while preserving submitted text and
   assert.match(s,/entry\.po\|\|''\s*,\s*entry\.si\|\|''/);
   assert.match(s,/function\s+replaceExactSampleCellsWithPersonal_\s*\(/);
   assert.match(s,/normalize_\(value\) === 'SAMPLE'/);
+  assert.match(s,/function\s+fillBlankIdentityCellsWithTba_\s*\(/);
+  assert.match(s,/blankOrderIdentityCells/);
+  assert.match(s,/blankSummaryIdentityCells/);
+  assert.match(s,/getRangeList\(refs\)\.setValue\('TBA'\)/);
 });
 
 test('March 10 PERSONAL WW60 uses current SRP and per-pack Product Master cost',()=>{
