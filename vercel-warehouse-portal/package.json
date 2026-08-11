@@ -1,0 +1,20 @@
+{
+  "name": "maruwarehouse",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MARU Warehouse Portal migrated from Google Apps Script to Vercel with an Apps Script bridge backend.",
+  "scripts": {
+    "check": "node scripts/check.js",
+    "test": "node --test test/*.test.js",
+    "test:visual": "node scripts/generate-test-pdfs.js"
+  },
+  "dependencies": {
+    "@vercel/blob": "^2.6.1",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^6.1.200",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "jsdom": "^29.1.1"
+  }
+}

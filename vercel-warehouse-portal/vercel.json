@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "public": true,
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store, max-age=0, must-revalidate" }
+      ]
+    },
+    {
+      "source": "/index.html",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store, max-age=0, must-revalidate" }
+      ]
+    }
+  ],
+  "functions": {
+    "api/sheets.js": { "maxDuration": 60 },
+    "api/po/index.js": { "maxDuration": 30 },
+    "api/po/generate.js": { "maxDuration": 60, "includeFiles": "assets/forms/**" },
+    "api/po/preview.js": { "maxDuration": 60, "includeFiles": "assets/forms/**" },
+    "api/po/commit.js": { "maxDuration": 60, "includeFiles": "assets/forms/**" },
+    "api/po/file.js": { "maxDuration": 30 },
+    "api/po/calibration.js": { "maxDuration": 30 }
+  }
+}
