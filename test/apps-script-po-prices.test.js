@@ -143,7 +143,7 @@ test('post-migration bridge retains only the idempotent Summary-column action',(
 
 test('Portal blocks order writes unless the V2 backend is in the explicit document-safe version set',()=>{
   const bridge=fs.readFileSync(path.resolve(__dirname,'..','api','sheets.js'),'utf8');
-  assert.match(bridge,/ORDER_SAFE_V2_VERSIONS\s*=\s*new Set\(\["2026-07-30\.35", "2026-08-01\.36", "2026-08-01\.37", "2026-08-01\.38", "2026-08-01\.39", "2026-08-01\.40", "2026-08-01\.41", "2026-08-08\.42"\]\)/);
+  assert.match(bridge,/ORDER_SAFE_V2_VERSIONS\s*=\s*new Set\(\["2026-07-30\.35", "2026-08-01\.36", "2026-08-01\.37", "2026-08-01\.38", "2026-08-01\.39", "2026-08-01\.40", "2026-08-01\.41", "2026-08-08\.42", "2026-08-11\.43"\]\)/);
   assert.match(bridge,/if \(!ORDER_SAFE_V2_VERSIONS\.has\(health\.version\)\)[\s\S]*blocked/i);
 });
 
@@ -176,7 +176,7 @@ test('PERSONAL pricing is backend-authoritative from Product Master SRP and hist
 
 test('PERSONAL summary view excludes document identity columns and canonicalizes historical SAMPLE rows',()=>{
   const source=fs.readFileSync(sourcePath,'utf8');
-  assert.match(source,/VERSION:\s*'2026-08-08\.42'/);
+  assert.match(source,/VERSION:\s*'2026-08-11\.43'/);
   assert.match(source,/personal:\s*'PERSONAL'/);
   assert.match(source,/const PERSONAL_HEADERS\s*=\s*Object\.freeze\(\['DATE','ORDER BY','ITEMS','TOTAL','COST','NET TOTAL','DUE BY'\]\)/);
   assert.match(source,/function\s+PERSONAL_SUMMARY\s*\(/);
