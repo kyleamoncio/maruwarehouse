@@ -28,7 +28,7 @@ test('targeted Wet Wipes 60 repair restores the old opening and two early entrie
   assert.match(s,/function\s+repairWarehouseFollowupData_\s*\(/);
   assert.match(s,/Wet Wipes 60s Plush[\s\S]*7092[\s\S]*1182/);
   assert.match(s,/WATSONS GANADO[\s\S]*9274332[\s\S]*12[\s\S]*2[\s\S]*194\.24/);
-  assert.match(s,/PERSONAL[\s\S]*SAMPLE[\s\S]*6[\s\S]*1[\s\S]*26\.6/);
+  assert.match(s,/new Date\(2026,2,10\),'PERSONAL','PERSONAL','PERSONAL',product,6,1,289,1734,123\.52,741\.12,992\.88/);
   assert.match(s,/orderRetryKey_/);
   assert.match(s,/REPAIR WAREHOUSE FOLLOWUP DATA/);
 });
@@ -50,8 +50,40 @@ test('Tracker forces visible integer formats for current case and current pack c
   assert.match(s,/getRange\(dataRow,2,data\.length,2\)\.setNumberFormat\('0'\)/);
 });
 
-test('production proxy exposes Version 44 restocks and guarded follow-up repair',()=>{
+test('production proxy exposes Version 45 restocks and guarded presentation repair',()=>{
   const proxy=fs.readFileSync(path.resolve(__dirname,'..','api','sheets.js'),'utf8');
-  assert.match(proxy,/"2026-08-11\.44"\]\.includes\(health\.version\)/);
-  assert.match(proxy,/\["setupPersonalTab", "setupViews", "repairWarehouseFollowupData"\][\s\S]*55000/);
+  assert.match(proxy,/"2026-08-11\.45"\]\.includes\(health\.version\)/);
+  assert.match(proxy,/\["setupPersonalTab", "setupViews", "repairWarehouseFollowupData", "repairWarehousePresentationData"\][\s\S]*55000/);
+});
+
+test('every V2 sheet that exposes case and pack puts CASE first without relabelling data',()=>{
+  const s=source();
+  assert.match(s,/const SNAPSHOT_HEADERS = \[[\s\S]*'COUNTED CASE QTY','COUNTED BASE QTY PACKS'/);
+  assert.match(s,/function\s+ensureSnapshotCaseQtyBeforePackQty_\s*\(/);
+  assert.match(s,/ensureCaseQtyBeforePackQty_\(ss\)[\s\S]*ensureSnapshotCaseQtyBeforePackQty_\(ss\)/);
+  assert.match(s,/const RESTOCK_HEADERS = \['DATE','PRODUCT NAME','CASE QTY','PACK QTY'\]/);
+  assert.match(s,/headers:\['PRODUCT','CURRENT CASE','CURRENT PACK'/);
+  assert.match(s,/\['DATE','ORDER BY','PO #','SI #','CASE QTY','PACK QTY'/);
+  assert.match(s,/\['Order Lines'\],\['Order Case Qty'\],\['Order Pack Qty'\]/);
+});
+
+test('Summary and product activity are newest-first while full Summary rows including documents stay together',()=>{
+  const s=source();
+  assert.match(s,/function\s+sortSummaryRowsNewestFirst_\s*\(/);
+  assert.match(s,/getRange\(layout\.headerRow\+1,1,rowCount,sheet\.getLastColumn\(\)\)\.sort/);
+  assert.match(s,/function\s+applySummarySyncPlan_[\s\S]*sortSummaryRowsNewestFirst_\(plan\.sheet\)/);
+  assert.match(s,/order by Col1 desc/);
+});
+
+test('views show TBA only for blank PO or SI while preserving submitted text and replacing SAMPLE with PERSONAL',()=>{
+  const s=source();
+  assert.match(s,/function\s+viewIdentityFormula_\s*\(/);
+  assert.match(s,/entry\.po\|\|''\s*,\s*entry\.si\|\|''/);
+  assert.match(s,/function\s+replaceExactSampleCellsWithPersonal_\s*\(/);
+  assert.match(s,/normalize_\(value\) === 'SAMPLE'/);
+});
+
+test('March 10 PERSONAL WW60 uses current SRP and per-pack Product Master cost',()=>{
+  const s=source();
+  assert.match(s,/new Date\(2026,2,10\),'PERSONAL','PERSONAL','PERSONAL',product,6,1,289,1734,123\.52,741\.12,992\.88/);
 });

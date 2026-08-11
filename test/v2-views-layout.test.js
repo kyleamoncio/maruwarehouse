@@ -15,7 +15,7 @@ function extractFunction(source,name){
 
 test('V2 view layout keeps ORDER LINES at two frozen rows and PERSONAL beside SUMMARY',()=>{
   const source=fs.readFileSync(sourcePath,'utf8');
-  assert.match(source,/VERSION:\s*'2026-08-11\.44'/);
+  assert.match(source,/VERSION:\s*'2026-08-11\.45'/);
   assert.match(source,/buyerView:\s*'BUYER VIEW'/);
   assert.match(source,/orders\.setFrozenRows\(2\)/);
   assert.match(source,/moveSheetAfter_\(target,\s*personalSheet,\s*summarySheet\)/);
@@ -39,7 +39,8 @@ test('BUYER VIEW dropdown dynamically includes BUYER PRICES plus PERSONAL',()=>{
   assert.match(builder,/buyerValues\.concat\(\[\['PERSONAL'\]\]\)/);
   assert.match(builder,/requireValueInRange\(buyerSourceRange,true\)/);
   assert.match(builder,/V2\.SHEETS\.orders/);
-  assert.match(builder,/starts with 'WATSONS'/);
+  const query=extractFunction(source,'buyerViewActivityFormula_');
+  assert.match(query,/starts with 'WATSONS'/);
 });
 
 test('Product and Buyer selectors use large merged selector cells while preserving separate helper columns',()=>{
