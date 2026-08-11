@@ -121,5 +121,6 @@ test('Warehouse Tracker reverses only the three proven legacy duplicate deductio
     null
   ]));
   assert.match(source,/repairPlushInventoryDuplicates_/);
+  assert.match(source,/body\.action === 'buildWarehouseTrackerV2' && body\.repairPlushInventoryDuplicates === true/);
   assert.match(source,/REPAIR PLUSH INVENTORY DUPLICATES/);
 });
