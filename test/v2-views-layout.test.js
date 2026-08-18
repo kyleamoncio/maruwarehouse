@@ -15,12 +15,25 @@ function extractFunction(source,name){
 
 test('V2 view layout keeps ORDER LINES at two frozen rows and PERSONAL beside SUMMARY',()=>{
   const source=fs.readFileSync(sourcePath,'utf8');
-  assert.match(source,/VERSION:\s*'2026-08-18\.47'/);
+  assert.match(source,/VERSION:\s*'2026-08-18\.48'/);
   assert.match(source,/buyerView:\s*'BUYER VIEW'/);
   assert.match(source,/orders\.setFrozenRows\(2\)/);
   assert.match(source,/moveSheetAfter_\(target,\s*personalSheet,\s*summarySheet\)/);
   assert.match(source,/moveSheetAfter_\(target,\s*buyerView,\s*productView\)/);
   assert.doesNotMatch(extractFunction(source,'ensurePersonalSheet_'),/moveActiveSheet\(target\.getNumSheets\(\)\)/);
+});
+
+test('Buyer View repair restores the complete case-first header from stable ORDER BY and PRODUCT NAME anchors',()=>{
+  const source=fs.readFileSync(sourcePath,'utf8');
+  const helper=extractFunction(source,'ensureBuyerViewHeaderRow_');
+  assert.match(helper,/headers\[1\]\s*===\s*'ORDER BY'/);
+  assert.match(helper,/headers\[4\]\s*===\s*'PRODUCT NAME'/);
+  assert.match(helper,/setValues\(\[ORDER_HEADERS\]\)/);
+  assert.doesNotMatch(helper,/clear|breakApart|delete/);
+  const refresh=extractFunction(source,'refreshBuyerViewPreservingFormat_');
+  assert.match(refresh,/ensureBuyerViewHeaderRow_\(sheet\)/);
+  assert.match(source,/function\s+repairBuyerViewPresentation_\s*\(/);
+  assert.match(source,/REPAIR BUYER VIEW PRESENTATION/);
 });
 
 test('BUYER VIEW dropdown dynamically includes BUYER PRICES plus PERSONAL',()=>{

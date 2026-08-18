@@ -6,7 +6,7 @@ const ORIGINAL_API_TOKEN = process.env.WAREHOUSE_PORTAL_API_TOKEN || "";
 const V2_API_TOKEN = process.env.WAREHOUSE_PORTAL_V2_API_TOKEN || ORIGINAL_API_TOKEN;
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || "*";
 const WRITE_ACTIONS = new Set(["appendProducts", "appendToProduct"]);
-const ORDER_SAFE_V2_VERSIONS = new Set(["2026-07-30.35", "2026-08-01.36", "2026-08-01.37", "2026-08-01.38", "2026-08-01.39", "2026-08-01.40", "2026-08-01.41", "2026-08-08.42", "2026-08-11.43", "2026-08-11.44", "2026-08-11.45", "2026-08-12.46", "2026-08-18.47"]);
+const ORDER_SAFE_V2_VERSIONS = new Set(["2026-07-30.35", "2026-08-01.36", "2026-08-01.37", "2026-08-01.38", "2026-08-01.39", "2026-08-01.40", "2026-08-01.41", "2026-08-08.42", "2026-08-11.43", "2026-08-11.44", "2026-08-11.45", "2026-08-12.46", "2026-08-18.47", "2026-08-18.48"]);
 
 function setCors(res) {
   res.setHeader("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
@@ -276,10 +276,10 @@ module.exports = async function handler(req, res) {
     let result;
     if (action === "appendRestocks") {
       const health = await getV2Health();
-      result = ["2026-07-13.10", "2026-07-13.11", "2026-07-13.12", "2026-07-13.13", "2026-07-13.14", "2026-07-13.15", "2026-07-13.16", "2026-07-13.17", "2026-07-13.18", "2026-07-13.19", "2026-07-13.20", "2026-07-13.21", "2026-07-13.22", "2026-07-13.23", "2026-07-13.24", "2026-07-13.25", "2026-07-13.26", "2026-07-13.27", "2026-07-24.28", "2026-07-24.29", "2026-07-29.30", "2026-07-29.31", "2026-07-29.32", "2026-07-29.33", "2026-07-30.34", "2026-07-30.35", "2026-08-01.36", "2026-08-01.37", "2026-08-01.38", "2026-08-01.39", "2026-08-01.40", "2026-08-01.41", "2026-08-08.42", "2026-08-11.43", "2026-08-11.44", "2026-08-11.45", "2026-08-12.46", "2026-08-18.47"].includes(health.version)
+      result = ["2026-07-13.10", "2026-07-13.11", "2026-07-13.12", "2026-07-13.13", "2026-07-13.14", "2026-07-13.15", "2026-07-13.16", "2026-07-13.17", "2026-07-13.18", "2026-07-13.19", "2026-07-13.20", "2026-07-13.21", "2026-07-13.22", "2026-07-13.23", "2026-07-13.24", "2026-07-13.25", "2026-07-13.26", "2026-07-13.27", "2026-07-24.28", "2026-07-24.29", "2026-07-29.30", "2026-07-29.31", "2026-07-29.32", "2026-07-29.33", "2026-07-30.34", "2026-07-30.35", "2026-08-01.36", "2026-08-01.37", "2026-08-01.38", "2026-08-01.39", "2026-08-01.40", "2026-08-01.41", "2026-08-08.42", "2026-08-11.43", "2026-08-11.44", "2026-08-11.45", "2026-08-12.46", "2026-08-18.47", "2026-08-18.48"].includes(health.version)
         ? await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2")
         : { __status: 503, success: false, error: "Restock is temporarily paused while the formula-safe backend repair is being deployed." };
-    } else if (["setupPersonalTab", "setupViews", "repairWarehouseFollowupData", "repairWarehousePresentationData", "repairHistoricalPersonalData"].includes(action)) {
+    } else if (["setupPersonalTab", "setupViews", "repairWarehouseFollowupData", "repairWarehousePresentationData", "repairHistoricalPersonalData", "repairBuyerViewPresentation"].includes(action)) {
       result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2", 55000);
     } else if (action === "repairPersonalSrpPricing") {
       result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2", 55000);

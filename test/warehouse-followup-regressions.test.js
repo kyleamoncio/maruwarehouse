@@ -52,8 +52,8 @@ test('Tracker forces visible integer formats for current case and current pack c
 
 test('production proxy exposes Version 47 restocks and guarded repairs',()=>{
   const proxy=fs.readFileSync(path.resolve(__dirname,'..','api','sheets.js'),'utf8');
-  assert.match(proxy,/"2026-08-18\.47"\]\.includes\(health\.version\)/);
-  assert.match(proxy,/\["setupPersonalTab", "setupViews", "repairWarehouseFollowupData", "repairWarehousePresentationData", "repairHistoricalPersonalData"\][\s\S]*55000/);
+  assert.match(proxy,/"2026-08-18\.48"\]\.includes\(health\.version\)/);
+  assert.match(proxy,/\["setupPersonalTab", "setupViews", "repairWarehouseFollowupData", "repairWarehousePresentationData", "repairHistoricalPersonalData", "repairBuyerViewPresentation"\][\s\S]*55000/);
 });
 
 test('every V2 sheet that exposes case and pack puts CASE first without relabelling data',()=>{
@@ -94,7 +94,7 @@ test('March 10 PERSONAL WW60 uses current SRP and per-pack Product Master cost',
 
 test('Version 47 repairs historical SAMPLE lines as PERSONAL from OLD quantities and preserves manual Summary identities',()=>{
   const s=source();
-  assert.match(s,/VERSION:\s*'2026-08-18\.47'/);
+  assert.match(s,/VERSION:\s*'2026-08-18\.48'/);
   assert.match(s,/function\s+repairHistoricalPersonalData_\s*\(/);
   assert.match(s,/SpreadsheetApp\.openById\(V2\.SOURCE_ID\)/);
   assert.match(s,/normalize_\(row\.buyer\) === 'SAMPLE'/);
