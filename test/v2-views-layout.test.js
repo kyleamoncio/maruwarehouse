@@ -15,7 +15,7 @@ function extractFunction(source,name){
 
 test('V2 view layout keeps ORDER LINES at two frozen rows and PERSONAL beside SUMMARY',()=>{
   const source=fs.readFileSync(sourcePath,'utf8');
-  assert.match(source,/VERSION:\s*'2026-08-12\.46'/);
+  assert.match(source,/VERSION:\s*'2026-08-18\.47'/);
   assert.match(source,/buyerView:\s*'BUYER VIEW'/);
   assert.match(source,/orders\.setFrozenRows\(2\)/);
   assert.match(source,/moveSheetAfter_\(target,\s*personalSheet,\s*summarySheet\)/);

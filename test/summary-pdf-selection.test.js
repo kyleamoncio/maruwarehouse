@@ -84,3 +84,12 @@ test('Summary grouping removes buyer duplicates caused only by whitespace',()=>{
   assert.match(s,/replace\(\/\\s\+\/g,' '\)/);
   assert.match(s,/buyerNames\s*=\s*normalizeSummaryBuyerNames_\(Array\.from\(group\.buyers\)\)/);
 });
+
+test('Portal Summary renders authoritative SUMMARY sheet rows instead of rebuilding edited identities from ORDER LINES',()=>{
+  const s=html();
+  assert.match(s,/let summaryData = \[\]/);
+  assert.match(s,/summaryData\s*=\s*\(json\.summary\s*\|\|\s*\[\]\)\.map/);
+  assert.match(s,/function buildAuthoritativeSummaryRows\s*\(/);
+  assert.match(s,/if \(summaryData\.length\) return buildAuthoritativeSummaryRows\(\)/);
+  assert.match(s,/const due = item\.due \|\| formatDueDate/);
+});

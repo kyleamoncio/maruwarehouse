@@ -50,10 +50,10 @@ test('Tracker forces visible integer formats for current case and current pack c
   assert.match(s,/getRange\(dataRow,2,data\.length,2\)\.setNumberFormat\('0'\)/);
 });
 
-test('production proxy exposes Version 46 restocks and guarded presentation repair',()=>{
+test('production proxy exposes Version 47 restocks and guarded repairs',()=>{
   const proxy=fs.readFileSync(path.resolve(__dirname,'..','api','sheets.js'),'utf8');
-  assert.match(proxy,/"2026-08-12\.46"\]\.includes\(health\.version\)/);
-  assert.match(proxy,/\["setupPersonalTab", "setupViews", "repairWarehouseFollowupData", "repairWarehousePresentationData"\][\s\S]*55000/);
+  assert.match(proxy,/"2026-08-18\.47"\]\.includes\(health\.version\)/);
+  assert.match(proxy,/\["setupPersonalTab", "setupViews", "repairWarehouseFollowupData", "repairWarehousePresentationData", "repairHistoricalPersonalData"\][\s\S]*55000/);
 });
 
 test('every V2 sheet that exposes case and pack puts CASE first without relabelling data',()=>{
@@ -90,4 +90,25 @@ test('views show TBA only for blank PO or SI while preserving submitted text and
 test('March 10 PERSONAL WW60 uses current SRP and per-pack Product Master cost',()=>{
   const s=source();
   assert.match(s,/new Date\(2026,2,10\),'PERSONAL','PERSONAL','PERSONAL',product,6,1,289,1734,123\.52,741\.12,992\.88/);
+});
+
+test('Version 47 repairs historical SAMPLE lines as PERSONAL from OLD quantities and preserves manual Summary identities',()=>{
+  const s=source();
+  assert.match(s,/VERSION:\s*'2026-08-18\.47'/);
+  assert.match(s,/function\s+repairHistoricalPersonalData_\s*\(/);
+  assert.match(s,/SpreadsheetApp\.openById\(V2\.SOURCE_ID\)/);
+  assert.match(s,/normalize_\(row\.buyer\) === 'SAMPLE'/);
+  assert.match(s,/const total = packs \* model\.srp/);
+  assert.match(s,/const totalCost = packs \* model\.cost/);
+  assert.match(s,/const netTotal = total - totalCost/);
+  assert.match(s,/preserveIdentityUnlessSample_/);
+  assert.match(s,/REPAIR HISTORICAL PERSONAL DATA/);
+  assert.match(s,/getRange\(change\.sheetRow,1,1,9\)\.setValues/);
+  assert.doesNotMatch(s,/getRange\(change\.sheetRow,1,1,12\)\.setValues/);
+});
+
+test('V2 getAllData includes current editable SUMMARY A-I values for the Portal',()=>{
+  const s=source();
+  assert.match(s,/function\s+getSummaryPortalData_\s*\(/);
+  assert.match(s,/getLegacyAllData_\(\),summary:getSummaryPortalData_\(\)/);
 });

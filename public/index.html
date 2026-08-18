@@ -3968,6 +3968,7 @@ let SCRIPT_URL = DEFAULT_API_URL;
 let BUYERS      = normalizeBuyerList(JSON.parse(localStorage.getItem('maru_buyers') || 'null'));
 let allData     = [];
 let filteredData= [];
+let summaryData = [];
 let currentPage = 1;
 const PAGE_SIZE = 25;
 let sortKey = 'date', sortDir = -1;
@@ -4311,6 +4312,10 @@ async function loadAllData() {
     if (!res.ok || json.error) throw new Error(json.error || 'No data returned');
     if (!json.data) throw new Error('No data returned');
     allData = json.data.map(r => ({ date:r[0],buyer:r[1],po:r[2],si:r[3],packs:+r[4],cases:+r[5],price:+r[6],total:+r[7],cost:+r[8],net:+r[9],product:r[10] }));
+    summaryData = (json.summary || []).map((r,index) => ({
+      sourceIndex:index,date:r[0],buyer:r[1],po:r[2],si:r[3],items:r[4],
+      total:+r[5]||0,cost:+r[6]||0,netTotal:+r[7]||0,due:r[8]
+    }));
     filteredData = [...allData];
     renderDashboard(); renderAllData(); renderSummary();
     showToast('Data loaded successfully','success');
@@ -4830,7 +4835,7 @@ function renderSummary() {
   }
 
   tbody.innerHTML = rows.map(item => {
-    const due = formatDueDate(item.date, getSummaryDueMonths(item.buyerNames));
+    const due = item.due || formatDueDate(item.date, getSummaryDueMonths(item.buyerNames));
     item.due = due;
     const encodedKey = encodeURIComponent(item.key);
 
@@ -4862,6 +4867,7 @@ function normalizeSummaryBuyerNames_(values) {
 }
 
 function buildSummaryRows() {
+  if (summaryData.length) return buildAuthoritativeSummaryRows();
   const groups = {};
 
   allData.forEach(r => {
@@ -4939,6 +4945,39 @@ function buildSummaryRows() {
       netTotal: group.total - group.cost
     };})
     .sort((a, b) => parseLooseDate(b.date) - parseLooseDate(a.date));
+}
+
+function summaryEscapeHtml_(value) {
+  return String(value == null ? '' : value).replace(/[&<>"']/g,char=>({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  })[char]);
+}
+
+function buildAuthoritativeSummaryRows() {
+  return summaryData
+    .filter(row=>{
+      const parsed=parseLooseDate(row.date);
+      return parsed && !isNaN(parsed) && parsed.getFullYear() >= 2026;
+    })
+    .map(row=>{
+      const buyer=String(row.buyer||'').trim();
+      const buyerNames=buyer?[buyer]:[];
+      const itemText=String(row.items||'').trim()||'—';
+      const itemNames=itemText==='—'?[]:itemText.split(',').map(value=>value.trim()).filter(Boolean);
+      const poText=String(row.po||'').trim()||'—';
+      const siText=String(row.si||'').trim()||'—';
+      return {
+        key:[row.date,poText,siText,row.sourceIndex].join('||'),
+        date:row.date,buyerNames,buyerText:buyer||'—',
+        buyers:buyer?`<span class="badge ${buyerBadge(buyer)}">${summaryEscapeHtml_(buyer)}</span>`:'—',
+        poText,siText,po:summaryEscapeHtml_(poText),si:summaryEscapeHtml_(siText),
+        itemText,
+        items:itemNames.length?itemNames.map(item=>`<span class="badge badge-fluffy">${summaryEscapeHtml_(item)}</span>`).join(''):'—',
+        packs:0,total:Number(row.total)||0,cost:Number(row.cost)||0,
+        netTotal:Number(row.netTotal)||0,due:row.due||''
+      };
+    })
+    .sort((a,b)=>parseLooseDate(b.date)-parseLooseDate(a.date));
 }
 
 function toggleSummaryRow(key,checked) {
