@@ -4953,6 +4953,12 @@ function summaryEscapeHtml_(value) {
   })[char]);
 }
 
+const AUTHORITATIVE_SUMMARY_PLUSH_CODES = new Set(['PBT','PKT','PPT','PWW']);
+function authoritativeSummaryItemBadge_(item) {
+  const code=String(item||'').trim().toUpperCase().split(/\s+/)[0];
+  return AUTHORITATIVE_SUMMARY_PLUSH_CODES.has(code) ? 'badge-plush' : 'badge-fluffy';
+}
+
 function buildAuthoritativeSummaryRows() {
   return summaryData
     .filter(row=>{
@@ -4972,7 +4978,7 @@ function buildAuthoritativeSummaryRows() {
         buyers:buyer?`<span class="badge ${buyerBadge(buyer)}">${summaryEscapeHtml_(buyer)}</span>`:'—',
         poText,siText,po:summaryEscapeHtml_(poText),si:summaryEscapeHtml_(siText),
         itemText,
-        items:itemNames.length?itemNames.map(item=>`<span class="badge badge-fluffy">${summaryEscapeHtml_(item)}</span>`).join(''):'—',
+        items:itemNames.length?itemNames.map(item=>`<span class="badge ${authoritativeSummaryItemBadge_(item)}">${summaryEscapeHtml_(item)}</span>`).join(''):'—',
         packs:0,total:Number(row.total)||0,cost:Number(row.cost)||0,
         netTotal:Number(row.netTotal)||0,due:row.due||''
       };

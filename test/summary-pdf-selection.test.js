@@ -19,6 +19,15 @@ test('Search Summary headings are larger while currency values use a fit-safe si
   assert.match(s,/class="search-summary-item is-net is-currency"/);
 });
 
+test('Authoritative Summary restores Plush yellow and Fluffy blue item badges',()=>{
+  const s=html();
+  assert.match(s,/const AUTHORITATIVE_SUMMARY_PLUSH_CODES\s*=\s*new Set\(\['PBT','PKT','PPT','PWW'\]\)/);
+  assert.match(s,/function authoritativeSummaryItemBadge_\(item\)/);
+  assert.match(s,/AUTHORITATIVE_SUMMARY_PLUSH_CODES\.has\(code\)\s*\?\s*'badge-plush'\s*:\s*'badge-fluffy'/);
+  assert.match(s,/itemNames\.map\(item=>`<span class="badge \$\{authoritativeSummaryItemBadge_\(item\)\}"/);
+  assert.doesNotMatch(s,/itemNames\.map\(item=>`<span class="badge badge-fluffy"/);
+});
+
 test('Summary rows support multi-selection and PDF preview/download controls',()=>{
   const s=html();
   assert.match(s,/id="summarySelectionCount"/);
