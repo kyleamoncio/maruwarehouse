@@ -111,4 +111,5 @@ test('V2 getAllData includes current editable SUMMARY A-I values for the Portal'
   const s=source();
   assert.match(s,/function\s+getSummaryPortalData_\s*\(/);
   assert.match(s,/getLegacyAllData_\(\),summary:getSummaryPortalData_\(\)/);
+  assert.equal((s.match(/getLegacyAllData_\(\),summary:getSummaryPortalData_\(\)/g)||[]).length,2,'GET and POST must both return authoritative Summary rows');
 });
