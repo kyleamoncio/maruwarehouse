@@ -72,11 +72,17 @@ test('House-style quantity steppers wrap case and pack fields and clamp at each 
   assert.match(s,/function stepQuantityInput\s*\(button,direction\)/);
   assert.match(s,/Math\.max\(minimum,current\+delta\)/);
   assert.match(s,/input\.dispatchEvent\(new Event\('input',\{bubbles:true\}\)\)/);
-  assert.match(s,/\.qty-stepper\s*\{[^}]*grid-template-columns:\s*minmax\(0,1fr\)\s*34px/i);
-  assert.match(s,/\.qty-step-buttons\s*\{[^}]*grid-template-rows:\s*1fr\s*1fr/i);
-  assert.match(s,/\.qty-step-button\s*\{[^}]*min-height:\s*24px\s*!important/i);
+  assert.match(s,/\.qty-stepper\s*\{[^}]*grid-template-columns:\s*minmax\(0,1fr\)\s*34px[^}]*height:\s*34px\s*!important[^}]*min-height:\s*34px\s*!important/i);
+  assert.match(s,/\.qty-step-buttons\s*\{[^}]*grid-template-rows:\s*1fr\s*1fr[^}]*height:\s*32px\s*!important/i);
+  assert.match(s,/\.qty-step-button\s*\{[^}]*height:\s*16px\s*!important[^}]*min-height:\s*16px\s*!important/i);
+  assert.match(s,/\.entry-line \.entry-price\s*\{[^}]*height:\s*34px\s*!important[^}]*min-height:\s*34px\s*!important/i);
   assert.match(s,/\.qty-step-button:first-child::before/);
   assert.match(s,/\.qty-step-button:last-child::before/);
+});
+
+test('Order Preview keeps each label close to its value',()=>{
+  const styles=html()+css();
+  assert.match(styles,/#page-entry \.entry-preview-summary \.summary-row\s*\{[^}]*justify-content:\s*flex-start\s*!important[^}]*gap:\s*12px\s*!important/i);
 });
 
 test('empty BUYER transition destroys stale MARU profit chart and legend',()=>{
