@@ -6,6 +6,7 @@ const path=require('node:path');
 
 const publicDir=path.resolve(__dirname,'..','public');
 const html=()=>fs.readFileSync(path.join(publicDir,'index.html'),'utf8');
+const css=()=>fs.readFileSync(path.join(publicDir,'po-feature.css'),'utf8');
 
 test('Search Summary headings are larger while currency values use a fit-safe size',()=>{
   const s=html();
@@ -41,6 +42,7 @@ test('Summary rows support multi-selection and PDF preview/download controls',()
   assert.match(s,/colspan="13"/);
   assert.match(s,/src="\/pdf-lib\.min\.js"/);
   assert.match(s,/src="\/summary-report\.js"/);
+  assert.match(css(),/#page-summary \.summary-selection-toolbar\s*\{[^}]*border:\s*1px solid var\(--border\)\s*!important/i);
 });
 
 test('PDF report model includes balanced business fields but excludes due by, cost, and net total',async()=>{
