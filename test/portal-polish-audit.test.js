@@ -84,3 +84,12 @@ test('browser and Sheet-originated labels are rendered as text rather than execu
   assert.match(source,/summaryEscapeHtml_\(shortProduct\(item\.product\)\)/);
   assert.match(source,/data-search-result-row[\s\S]*?summaryEscapeHtml_\(r\.date\|\|'—'\)[\s\S]*?summaryEscapeHtml_\(r\.buyer\|\|'—'\)[\s\S]*?summaryEscapeHtml_\(r\.po\|\|'—'\)[\s\S]*?summaryEscapeHtml_\(r\.si\|\|'—'\)/);
 });
+
+test('visual alignment matches House-style title insets and Search badge geometry',()=>{
+  const styles=css();
+  assert.match(styles,/\/\* Final alignment parity\. \*\/[\s\S]*?\.page-header,\s*#page-summary \.page-header\s*\{[^}]*padding-inline:\s*16px\s*!important/i);
+  assert.match(styles,/\/\* Final alignment parity\. \*\/[\s\S]*?\.card-header\s*\{[^}]*padding-left:\s*16px\s*!important[^}]*padding-right:\s*16px\s*!important/i);
+  assert.match(styles,/#summaryTable td:nth-child\(3\) \.badge\s*\{[^}]*display:\s*inline-flex\s*!important[^}]*align-items:\s*center\s*!important[^}]*min-height:\s*22px\s*!important[^}]*padding:\s*3px 8px\s*!important[^}]*font-size:\s*10px\s*!important[^}]*line-height:\s*12px\s*!important/i);
+  assert.match(styles,/#page-search \.search-summary-item span,\s*#page-search \.search-summary-item strong\s*\{[^}]*margin-left:\s*0\s*!important[^}]*justify-self:\s*start\s*!important/i);
+  assert.doesNotMatch(styles,/\.search-summary-item\.is-currency span\s*\{\s*margin-left:\s*8px\s*!important\s*\}/i);
+});

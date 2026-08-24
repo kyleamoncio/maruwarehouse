@@ -13,7 +13,7 @@ test('Search Summary titles align identically while MARU and BUYER currency valu
   const styles=s+css();
   assert.match(styles,/#page-search \.search-summary-item\s*\{[^}]*grid-template-rows:\s*16px 40px\s*!important[^}]*align-content:\s*center\s*!important/i);
   assert.match(styles,/#page-search \.search-summary-item span\s*\{[^}]*font-size:\s*13px\s*!important[^}]*line-height:\s*16px\s*!important/i);
-  assert.match(styles,/#page-search \.search-summary-item\.is-currency span\s*\{[^}]*margin-left:\s*8px\s*!important/i);
+  assert.match(styles,/#page-search \.search-summary-item\.is-currency span\s*\{[^}]*margin-left:\s*0\s*!important/i);
   assert.match(styles,/#page-search \.search-summary-item strong\s*\{[^}]*height:\s*40px\s*!important[^}]*line-height:\s*40px\s*!important/i);
   assert.match(styles,/#page-search \.search-summary-item\.is-currency strong\s*\{[^}]*font-size:\s*clamp\(15px,\s*1\.2vw,\s*18px\)\s*!important/i);
   assert.match(styles,/html\[data-portal-view="buyer"\] #searchSummary \.search-summary-item\.is-total strong\s*\{[^}]*font-size:\s*clamp\(22px,\s*1\.55vw,\s*28px\)\s*!important/i);

@@ -335,7 +335,7 @@
   line-height:40px!important;
   white-space:nowrap!important;
 }
-#page-search .search-summary-item.is-currency span{margin-left:8px!important}
+#page-search .search-summary-item.is-currency span{margin-left:0!important}
 #page-search #searchSummary .search-summary-item strong{line-height:40px!important}
 #page-search .search-summary-item.is-currency strong{
   font-size:clamp(15px,1.2vw,18px)!important;
@@ -477,4 +477,28 @@ html[data-portal-view="buyer"] #entryRecentTable :is(th,td):nth-child(9){width:1
   width:40px!important;
   height:40px!important;
   min-height:40px!important;
+}
+
+/* Final alignment parity. */
+.page-header,
+#page-summary .page-header{
+  padding-inline:16px!important;
+}
+.card-header{
+  padding-left:16px!important;
+  padding-right:16px!important;
+}
+#summaryTable td:nth-child(3) .badge{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:22px!important;
+  padding:3px 8px!important;
+  font-size:10px!important;
+  line-height:12px!important;
+}
+#page-search .search-summary-item span,
+#page-search .search-summary-item strong{
+  margin-left:0!important;
+  justify-self:start!important;
 }
