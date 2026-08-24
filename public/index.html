@@ -3561,21 +3561,21 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
               </div>
               <div class="form-group">
                 <label class="form-label">PO #</label>
-                <input class="form-control" id="s-po" placeholder="Purchase Order number"/>
+                <input class="form-control" id="s-po" placeholder="Purchase Order #"/>
               </div>
               <div class="form-group">
                 <label class="form-label">SI #</label>
-                <input class="form-control" id="s-si" placeholder="Sales Invoice number"/>
+                <input class="form-control" id="s-si" placeholder="Sales Invoice #"/>
               </div>
               <div class="form-group form-full">
                 <div class="search-product-toolbar">
-                  <span class="form-label">Product</span>
+                  <span class="form-label">Select Product</span>
                   <button class="btn btn-secondary" type="button" onclick="addSearchProductFilter()">+ Add Product</button>
                 </div>
                 <div class="product-filter-grid" id="searchProductFilters">
                   <div class="search-product-row">
-                    <select class="form-control search-product-filter" aria-label="Product filter"><option value="">Product</option></select>
-                    <button class="btn btn-secondary search-product-remove" type="button" onclick="removeSearchProductFilter(this)" hidden>Remove</button>
+                    <select class="form-control search-product-filter" aria-label="Select Product filter"><option value="">Select Product</option></select>
+                    <button class="btn btn-secondary search-product-remove" type="button" onclick="removeSearchProductFilter(this)">Remove</button>
                   </div>
                 </div>
               </div>
@@ -4239,7 +4239,7 @@ function addSearchProductFilter(value = '') {
   const row = document.createElement('div');
   row.className = 'search-product-row';
   row.innerHTML = `
-    <select class="form-control search-product-filter" aria-label="Product filter"><option value="">Product</option></select>
+    <select class="form-control search-product-filter" aria-label="Select Product filter"><option value="">Select Product</option></select>
     <button class="btn btn-secondary search-product-remove" type="button" onclick="removeSearchProductFilter(this)">Remove</button>
   `;
   host.appendChild(row);
@@ -4268,7 +4268,7 @@ function syncSearchProductFilterButtons() {
   rows.forEach(row => {
     const button = row.querySelector('.search-product-remove');
     if (button) {
-      button.hidden = rows.length <= 1;
+      button.hidden = false;
     }
   });
 }

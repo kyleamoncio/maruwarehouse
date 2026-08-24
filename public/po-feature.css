@@ -86,6 +86,7 @@
 }
 #page-summary #summaryTable thead th:first-child {border-left:1px solid var(--border)!important}
 #page-summary #summaryTable thead th:last-child {border-right:1px solid var(--border)!important}
+#page-summary #summaryTable tbody td:first-child {border-left:1px solid var(--border)!important}
 #page-summary #summaryTable tbody tr:hover,
 #page-summary #summaryTable tbody tr:hover>td {
   background:#151819!important;
@@ -288,6 +289,30 @@
 .entry-line .entry-price{height:34px!important;min-height:34px!important}
 #page-entry .entry-preview-summary .summary-row{justify-content:flex-start!important;gap:12px!important}
 
+#page-search .search-summary-item{
+  grid-template-rows:16px 40px!important;
+  align-content:center!important;
+  gap:8px!important;
+}
+#page-search .search-summary-item span{
+  align-self:start!important;
+  font-size:13px!important;
+  line-height:16px!important;
+  letter-spacing:.09em!important;
+}
+#page-search .search-summary-item strong{
+  display:block!important;
+  height:40px!important;
+  line-height:40px!important;
+  white-space:nowrap!important;
+}
+#page-search .search-summary-item.is-currency span{margin-left:8px!important}
+#page-search #searchSummary .search-summary-item strong{line-height:40px!important}
+#page-search .search-summary-item.is-currency strong{
+  font-size:clamp(15px,1.2vw,18px)!important;
+  letter-spacing:-.035em!important;
+}
+
 html[data-portal-view="buyer"] .buyer-private{display:none!important}
 html[data-portal-view="buyer"] #overviewStats{grid-template-columns:1fr!important}
 html[data-portal-view="buyer"] .search-summary-card .card-body{grid-template-rows:minmax(0,1fr)!important}
@@ -297,6 +322,10 @@ html[data-portal-view="buyer"] #searchSummary{
   height:100%!important;
 }
 html[data-portal-view="buyer"] #searchSummary .search-summary-item:nth-child(4){grid-column:1 / -1!important}
+html[data-portal-view="buyer"] #searchSummary .search-summary-item.is-total strong{
+  font-size:clamp(22px,1.55vw,28px)!important;
+  letter-spacing:-.04em!important;
+}
 html[data-portal-view="buyer"] #searchSummary .is-cost,
 html[data-portal-view="buyer"] #searchSummary .is-net{display:none!important}
 

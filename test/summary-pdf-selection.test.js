@@ -8,16 +8,29 @@ const publicDir=path.resolve(__dirname,'..','public');
 const html=()=>fs.readFileSync(path.join(publicDir,'index.html'),'utf8');
 const css=()=>fs.readFileSync(path.join(publicDir,'po-feature.css'),'utf8');
 
-test('Search Summary headings are larger while currency values use a fit-safe size',()=>{
+test('Search Summary titles align identically while MARU and BUYER currency values use mode-fit sizes',()=>{
   const s=html();
-  assert.match(s,/\.search-summary-item span\s*\{[\s\S]*?font-size:\s*13px/);
-  assert.match(s,/\.search-summary-item\.is-currency\s*\{[\s\S]*?padding-left:\s*12px[\s\S]*?padding-right:\s*12px/);
-  assert.match(s,/\.search-summary-item\.is-currency strong\s*\{[\s\S]*?font-size:\s*clamp\(12px,\s*1vw,\s*16px\)/);
-  assert.match(s,/#page-search \.search-summary-item:not\(\.is-currency\) strong/);
-  assert.match(s,/#page-search \.search-summary-item span\{font-size:13px!important/);
+  const styles=s+css();
+  assert.match(styles,/#page-search \.search-summary-item\s*\{[^}]*grid-template-rows:\s*16px 40px\s*!important[^}]*align-content:\s*center\s*!important/i);
+  assert.match(styles,/#page-search \.search-summary-item span\s*\{[^}]*font-size:\s*13px\s*!important[^}]*line-height:\s*16px\s*!important/i);
+  assert.match(styles,/#page-search \.search-summary-item\.is-currency span\s*\{[^}]*margin-left:\s*8px\s*!important/i);
+  assert.match(styles,/#page-search \.search-summary-item strong\s*\{[^}]*height:\s*40px\s*!important[^}]*line-height:\s*40px\s*!important/i);
+  assert.match(styles,/#page-search \.search-summary-item\.is-currency strong\s*\{[^}]*font-size:\s*clamp\(15px,\s*1\.2vw,\s*18px\)\s*!important/i);
+  assert.match(styles,/html\[data-portal-view="buyer"\] #searchSummary \.search-summary-item\.is-total strong\s*\{[^}]*font-size:\s*clamp\(22px,\s*1\.55vw,\s*28px\)\s*!important/i);
   assert.match(s,/class="search-summary-item is-total is-currency"/);
   assert.match(s,/class="search-summary-item is-cost is-currency"/);
   assert.match(s,/class="search-summary-item is-net is-currency"/);
+});
+
+test('Search uses compact Select Product rows and hash-style order placeholders',()=>{
+  const s=html();
+  assert.match(s,/id="s-po" placeholder="Purchase Order #"/);
+  assert.match(s,/id="s-si" placeholder="Sales Invoice #"/);
+  assert.match(s,/<span class="form-label">Select Product<\/span>/);
+  assert.match(s,/aria-label="Select Product filter"><option value="">Select Product<\/option>/);
+  assert.doesNotMatch(s,/search-product-remove"[^>]*hidden/);
+  assert.match(s,/button\.hidden\s*=\s*false/);
+  assert.doesNotMatch(s,/button\.hidden\s*=\s*rows\.length\s*<=\s*1/);
 });
 
 test('Authoritative Summary restores Plush yellow and Fluffy blue item badges',()=>{
@@ -43,6 +56,7 @@ test('Summary rows support multi-selection and PDF preview/download controls',()
   assert.match(s,/src="\/pdf-lib\.min\.js"/);
   assert.match(s,/src="\/summary-report\.js"/);
   assert.match(css(),/#page-summary \.summary-selection-toolbar\s*\{[^}]*border:\s*1px solid var\(--border\)\s*!important/i);
+  assert.match(css(),/#page-summary #summaryTable tbody td:first-child\s*\{[^}]*border-left:\s*1px solid var\(--border\)\s*!important/i);
 });
 
 test('PDF report model includes balanced business fields but excludes due by, cost, and net total',async()=>{
