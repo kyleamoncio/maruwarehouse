@@ -3280,34 +3280,34 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
   </div>
 
   <div class="topbar-nav">
-    <div class="nav-item active" onclick="navigate('dashboard')">
+    <button class="nav-item active" type="button" data-page="dashboard" onclick="navigate('dashboard')" aria-current="page">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
       Dashboard
-    </div>
-    <div class="nav-item" onclick="navigate('search')">
+    </button>
+    <button class="nav-item" type="button" data-page="search" onclick="navigate('search')" aria-current="false">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       Search
-    </div>
-    <div class="nav-item" onclick="navigate('summary')">
+    </button>
+    <button class="nav-item" type="button" data-page="summary" onclick="navigate('summary')" aria-current="false">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
       Summary
-    </div>
-    <div class="nav-item" onclick="navigate('alldata')" style="display:none">
+    </button>
+    <button class="nav-item" type="button" data-page="alldata" onclick="navigate('alldata')" aria-current="false" style="display:none">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
       All Data
-    </div>
-    <div class="nav-item" onclick="navigate('entry')">
+    </button>
+    <button class="nav-item" type="button" data-page="entry" onclick="navigate('entry')" aria-current="false">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
       New Entry
-    </div>
-    <div class="nav-item" onclick="navigate('restock')">
+    </button>
+    <button class="nav-item" type="button" data-page="restock" onclick="navigate('restock')" aria-current="false">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="8" cy="7" r="3"/><path d="M17 14v6M14 17h6"/></svg>
       Restock
-    </div>
-    <div class="nav-item" onclick="navigate('settings')">
+    </button>
+    <button class="nav-item" type="button" data-page="settings" onclick="navigate('settings')" aria-current="false">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       Settings
-    </div>
+    </button>
   </div>
 
   <div class="sidebar-footer">
@@ -3609,9 +3609,10 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
         </div>
       </div>
 
-      <div class="card">
+      <div class="card search-results-card">
         <div class="card-header">
           <div class="card-title search-results-title" id="searchResultTitle">Results</div>
+          <span class="table-scroll-cue" id="searchScrollCue" hidden>Scroll horizontally →</span>
         </div>
         <div class="table-wrap">
           <table id="searchResultsTable">
@@ -3657,7 +3658,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
           </div>
           <div class="form-group">
             <label class="form-label">Date</label>
-            <input type="date" class="form-control" id="e-date"/>
+            <input type="date" class="form-control" id="e-date" onchange="updateEntrySubmitState()"/>
           </div>
           <div class="form-group">
             <label class="form-label">Order By</label>
@@ -3736,7 +3737,8 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
           </div>
         </div>
       </div>
-      <button class="btn btn-primary entry-submit-button" id="entrySubmitButton" onclick="submitEntry()">
+      <div id="entryValidationSummary" class="form-validation-summary" role="status" aria-live="polite">Complete Date, Buyer, Product, and Pack Qty to submit.</div>
+      <button class="btn btn-primary entry-submit-button" id="entrySubmitButton" onclick="submitEntry()" disabled>
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
         Submit Entry
       </button>
@@ -3757,8 +3759,8 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
           <th style="width:12%">PO #</th>
           <th style="width:10%">SI #</th>
           <th style="width:15%">Product</th>
-          <th style="width:8%">Order Pack Qty</th>
           <th style="width:8%">Order Case Qty</th>
+          <th style="width:8%">Order Pack Qty</th>
           <th style="width:8%">Price</th>
           <th style="width:8%">Total</th>
           <th style="width:8%">Cost</th>
@@ -3786,7 +3788,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
     <div class="card-body">
       <div class="form-group restock-date-group">
         <label class="form-label">Date</label>
-        <input type="date" class="form-control" id="r-date"/>
+        <input type="date" class="form-control" id="r-date" onchange="updateRestockSubmitState()"/>
       </div>
       <div class="entry-lines" id="restockLines">
         <div class="entry-line" data-restock-line>
@@ -3812,7 +3814,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
             <div class="form-group">
               <label class="form-label">Pack Quantity</label>
               <span class="qty-stepper">
-                <input type="number" min="1" step="1" class="form-control restock-packs" placeholder="0"/>
+                <input type="number" min="1" step="1" class="form-control restock-packs" placeholder="0" oninput="updateRestockLineImpact(this.closest('[data-restock-line]'))"/>
                 <span class="qty-step-buttons">
                   <button class="qty-step-button" type="button" data-restock-qty-step="up" aria-label="Increase restock pack quantity" onclick="stepQuantityInput(this,'up')">▲</button>
                   <button class="qty-step-button" type="button" data-restock-qty-step="down" aria-label="Decrease restock pack quantity" onclick="stepQuantityInput(this,'down')">▼</button>
@@ -3820,11 +3822,13 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
               </span>
             </div>
           </div>
+          <div class="restock-impact" role="status" aria-live="polite">Select a product and quantity to preview this restock.</div>
         </div>
       </div>
     </div>
   </div>
-  <button id="restockSubmit" class="btn btn-primary entry-submit-button" type="button" onclick="submitRestock()" style="margin-top:14px;width:100%">
+  <div id="restockValidationSummary" class="form-validation-summary" role="status" aria-live="polite">Select a product and enter a Pack Quantity greater than zero.</div>
+  <button id="restockSubmit" class="btn btn-primary entry-submit-button" type="button" onclick="submitRestock()" style="margin-top:14px;width:100%" disabled>
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
     Submit Restock
   </button>
@@ -3868,6 +3872,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
           <div class="card-header"><div class="card-title">Product Reference</div></div>
           <div class="card-body">
             <div class="settings-section-desc">All tracked products and their current prices.</div>
+            <input class="form-control settings-table-filter" id="priceRefFilter" type="search" placeholder="Filter products, brands, or buyers…" aria-label="Filter Product Reference" oninput="filterPriceReference(this.value)"/>
             <div class="table-wrap">
               <table id="priceRefTable">
                 <thead><tr><th>Product</th><th>Brand</th><th>Buyer</th><th>Price</th></tr></thead>
@@ -4120,7 +4125,11 @@ document.addEventListener('DOMContentLoaded', () => {
   updatePreview();
   updateConnectionStatus();
   bindDatePickerOpeners();
+  const searchTableWrap = document.querySelector('.search-results-card .table-wrap');
+  searchTableWrap?.addEventListener('scroll', updateSearchScrollCue, { passive:true });
+  window.addEventListener('resize', updateSearchScrollCue, { passive:true });
   syncTopbarScrollState();
+  if (window.innerWidth <= 767) closeSidebar(false);
   window.addEventListener('scroll', syncTopbarScrollState, { passive: true });
   loadAllData();
 });
@@ -4149,6 +4158,7 @@ function setTodayDate() {
   document.getElementById('e-date').value = today;
   const restockDate = document.getElementById('r-date');
   if (restockDate) restockDate.value = today;
+  updateRestockSubmitState();
 }
 
 function populateDropdowns() {
@@ -4312,9 +4322,12 @@ function navigate(page) {
   document.documentElement.scrollTop = 0;
   document.body.scrollTop = 0;
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => {
+    const isActive = n.dataset.page === page;
+    n.classList.toggle('active', isActive);
+    n.setAttribute('aria-current', isActive ? 'page' : 'false');
+  });
   document.getElementById('page-' + page).classList.add('active');
-  document.querySelector(`[onclick="navigate('${page}')"]`).classList.add('active');
   document.getElementById('topbarTitle').textContent = PAGE_TITLES[page];
   if (page === 'summary') {
     renderSummary();
@@ -4460,6 +4473,10 @@ function renderOverviewStats() {
   }
 
   const metrics = getDashboardMetrics();
+  const dashboardRows = allData.filter(row=>{
+    const date=parseLooseDate(row.date);
+    return date&&!isNaN(date)&&date.getFullYear()>=2026;
+  });
   const latestMonthLabel = metrics.latestMonth ? new Date(`${metrics.latestMonth[0]}-01`).toLocaleString('en-PH', { month: 'long', year: 'numeric' }) : 'Current period';
   const momentumLabel = metrics.monthlyEntries.length > 1 ? `${metrics.profitDelta > 0 ? '+' : ''}${metrics.profitDelta.toFixed(1)}% vs prior month` : 'No prior month comparison yet';
 
@@ -4467,6 +4484,11 @@ function renderOverviewStats() {
     <div class="hero-metric">
       <div class="hero-metric-label">Gross Revenue</div>
       <div class="hero-metric-value">₱${fmtNum(metrics.revenue)}</div>
+      ${portalViewMode==='buyer' ? `<div class="buyer-overview-details">
+        <span><strong>${dashboardRows.length.toLocaleString()}</strong> Orders</span>
+        <span><strong>${dashboardRows.reduce((sum,row)=>sum+(Number(row.cases)||0),0).toLocaleString()}</strong> Cases</span>
+        <span><strong>${dashboardRows.reduce((sum,row)=>sum+(Number(row.packs)||0),0).toLocaleString()}</strong> Packs</span>
+      </div>` : ''}
     </div>
     <div class="hero-metric buyer-private">
       <div class="hero-metric-label">Profit</div>
@@ -4649,7 +4671,7 @@ function renderMonthlySalesTimeline() {
 
         document.getElementById('thpRows').innerHTML = products.map(p => `
           <div class="thp-row">
-            <div class="thp-name">${displayProductName(p.name)}</div>
+            <div class="thp-name">${summaryEscapeHtml_(displayProductName(p.name))}</div>
             <div class="thp-amount">₱${fmtNum(p.revenue)}</div>
             <div class="thp-bar-track">
               <div class="thp-bar-fill" style="width:${((p.revenue / maxRev) * 100).toFixed(1)}%"></div>
@@ -4698,13 +4720,13 @@ function renderEntryRecent() {
     const cost = getRowCost(r);
     const netTotal = (Number(r.total) || 0) - cost;
     return `<tr>
-      <td class="mono">${r.date || '—'}</td>
-      <td><span class="badge ${buyerBadge(r.buyer)}">${r.buyer || '—'}</span></td>
-      <td class="mono">${r.po || '—'}</td>
-      <td class="mono">${r.si || '—'}</td>
-      <td><span class="badge ${brandBadge(r.product)}">${shortProduct(r.product) || '—'}</span></td>
-      <td class="mono">${(r.packs || 0).toLocaleString()}</td>
+      <td class="mono">${summaryEscapeHtml_(r.date || '—')}</td>
+      <td><span class="badge ${buyerBadge(r.buyer)}">${summaryEscapeHtml_(r.buyer || '—')}</span></td>
+      <td class="mono">${summaryEscapeHtml_(r.po || '—')}</td>
+      <td class="mono">${summaryEscapeHtml_(r.si || '—')}</td>
+      <td><span class="badge ${brandBadge(r.product)}">${summaryEscapeHtml_(shortProduct(r.product) || '—')}</span></td>
       <td class="mono">${(r.cases || 0).toLocaleString()}</td>
+      <td class="mono">${(r.packs || 0).toLocaleString()}</td>
       <td class="mono">₱${fmtNum(r.price)}</td>
       <td class="mono" style="color:var(--text)">₱${fmtNum(r.total)}</td>
       <td class="mono" style="color:var(--red)">₱${fmtNum(cost)}</td>
@@ -4772,13 +4794,16 @@ function renderTopProducts() {
   const revenues = sorted.map(d => d.revenue);
   const profits = sorted.map(d => d.profit);
   const lead = sorted[0];
+  const safeLeadLabel = String(lead.label||'').replace(/[&<>"']/g,char=>({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  })[char]);
   const totalRevenue = sorted.reduce((sum, item) => sum + item.revenue, 0);
   const summary = document.getElementById('topProductsSummary');
   if (summary) {
     summary.innerHTML = `
       <div class="chart-pill">
         <div class="chart-pill-label">Lead Product</div>
-        <div class="chart-pill-value">${lead.label}</div>
+        <div class="chart-pill-value">${safeLeadLabel}</div>
       </div>
       <div class="chart-pill">
         <div class="chart-pill-label">Revenue Share</div>
@@ -4850,11 +4875,11 @@ function renderAllData() {
   }
   tbody.innerHTML = filteredData.map(r=>`
     <tr>
-      <td class="mono">${r.date||'—'}</td>
-      <td><span class="badge ${brandBadge(r.product)}">${shortProduct(r.product)}</span></td>
-      <td><span class="badge ${buyerBadge(r.buyer)}">${r.buyer||'—'}</span></td>
-      <td class="mono">${r.po||'—'}</td>
-      <td class="mono">${r.si||'—'}</td>
+      <td class="mono">${summaryEscapeHtml_(r.date||'—')}</td>
+      <td><span class="badge ${brandBadge(r.product)}">${summaryEscapeHtml_(shortProduct(r.product))}</span></td>
+      <td><span class="badge ${buyerBadge(r.buyer)}">${summaryEscapeHtml_(r.buyer||'—')}</span></td>
+      <td class="mono">${summaryEscapeHtml_(r.po||'—')}</td>
+      <td class="mono">${summaryEscapeHtml_(r.si||'—')}</td>
       <td class="mono">${(r.packs||0).toLocaleString()}</td>
       <td class="mono">${(r.cases||0).toLocaleString()}</td>
       <td class="mono">₱${fmtNum(r.price)}</td>
@@ -4914,7 +4939,7 @@ function renderSummary() {
 
     return `<tr>
       <td><input class="summary-row-select" type="checkbox" aria-label="Select Summary row" data-summary-key="${encodedKey}" ${summarySelectedKeys.has(item.key)?'checked':''} onchange="toggleSummaryRow(decodeURIComponent(this.dataset.summaryKey),this.checked)"></td>
-      <td class="mono" style="white-space:nowrap;">${item.date}</td>
+      <td class="mono" style="white-space:nowrap;">${summaryEscapeHtml_(item.date)}</td>
       <td style="line-height:1.4;"><div class="summary-stack">${item.buyers || '—'}</div></td>
       <td class="mono" style="white-space:normal;line-height:1.4;">${item.po || '—'}</td>
       <td class="mono" style="white-space:normal;line-height:1.4;">${item.si || '—'}</td>
@@ -4922,7 +4947,7 @@ function renderSummary() {
       <td class="mono" style="white-space:nowrap;color:var(--text);">₱${fmtNum(item.total)}</td>
       <td class="mono" style="white-space:nowrap;color:var(--red);">₱${fmtNum(item.cost)}</td>
       <td class="mono" style="white-space:nowrap;color:var(--green);">₱${fmtNum(item.netTotal)}</td>
-      <td class="mono" style="white-space:nowrap;">${due}</td>
+      <td class="mono" style="white-space:nowrap;">${summaryEscapeHtml_(due)}</td>
       ${window.renderSummaryDocumentCells ? window.renderSummaryDocumentCells(item) : '<td class="summary-doc-col">No PO</td><td class="summary-doc-col">Pending</td><td class="summary-doc-col">Pending</td>'}
     </tr>`;
   }).join('');
@@ -5002,15 +5027,15 @@ function buildSummaryRows() {
       buyerNames,
       buyerText: buyerNames.join(', ') || '—',
       buyers: buyerNames
-        .map(b => `<span class="badge ${buyerBadge(b)}">${b}</span>`)
+        .map(b => `<span class="badge ${buyerBadge(b)}">${summaryEscapeHtml_(b)}</span>`)
         .join(''),
       poText: poValues.join(', ') || '—',
       siText: siValues.join(', ') || '—',
-      po: poValues.join('<br>'),
-      si: siValues.join('<br>'),
+      po: poValues.map(summaryEscapeHtml_).join('<br>'),
+      si: siValues.map(summaryEscapeHtml_).join('<br>'),
       itemText: productNames.map(p => `${displayProductName(p)} (${(group.items[p]||0).toLocaleString()} packs)`).join(', ') || '—',
       items: productNames
-        .map(p => `<span class="badge ${p.includes('Plush') ? 'badge-plush' : 'badge-fluffy'}">${shortProduct(p)}</span>`)
+        .map(p => { const expandedLabel=expandSummaryItemLabel_(p); return `<span class="badge ${p.includes('Plush') ? 'badge-plush' : 'badge-fluffy'}" title="${summaryEscapeHtml_(expandedLabel)}" aria-label="${summaryEscapeHtml_(expandedLabel)}">${summaryEscapeHtml_(shortProduct(p))}</span>`; })
         .join(''),
       packs: group.packs,
       total: group.total,
@@ -5027,6 +5052,12 @@ function summaryEscapeHtml_(value) {
 }
 
 const AUTHORITATIVE_SUMMARY_PLUSH_CODES = new Set(['PBT','PKT','PPT','PWW']);
+const SUMMARY_ITEM_LABELS = {CB:'Cotton Buds',CP:'Cotton Pads',KT:'Kitchen Towel',PT:'Paper Towel',PBT:'Plush Bathroom Tissue',PKT:'Plush Kitchen Towel',PPT:'Plush Paper Towel',PWW:'Plush Wet Wipes'};
+function expandSummaryItemLabel_(item) {
+  const value=String(item||'').trim();
+  const code=value.toUpperCase().split(/\s+/)[0];
+  return SUMMARY_ITEM_LABELS[code] ? `${SUMMARY_ITEM_LABELS[code]} — ${value}` : value;
+}
 function authoritativeSummaryItemBadge_(item) {
   const code=String(item||'').trim().toUpperCase().split(/\s+/)[0];
   return AUTHORITATIVE_SUMMARY_PLUSH_CODES.has(code) ? 'badge-plush' : 'badge-fluffy';
@@ -5051,7 +5082,7 @@ function buildAuthoritativeSummaryRows() {
         buyers:buyer?`<span class="badge ${buyerBadge(buyer)}">${summaryEscapeHtml_(buyer)}</span>`:'—',
         poText,siText,po:summaryEscapeHtml_(poText),si:summaryEscapeHtml_(siText),
         itemText,
-        items:itemNames.length?itemNames.map(item=>`<span class="badge ${authoritativeSummaryItemBadge_(item)}">${summaryEscapeHtml_(item)}</span>`).join(''):'—',
+        items:itemNames.length?itemNames.map(item=>`<span class="badge ${authoritativeSummaryItemBadge_(item)}" title="${summaryEscapeHtml_(expandSummaryItemLabel_(item))}" aria-label="${summaryEscapeHtml_(expandSummaryItemLabel_(item))}">${summaryEscapeHtml_(item)}</span>`).join(''):'—',
         packs:0,total:Number(row.total)||0,cost:Number(row.cost)||0,
         netTotal:Number(row.netTotal)||0,due:row.due||''
       };
@@ -5141,7 +5172,7 @@ function renderSearchSummary(results = []) {
   productsHost.innerHTML = topProducts.length
     ? topProducts.map((item) => `
       <div class="search-summary-product-row">
-        <span class="badge ${brandBadge(item.product)}">${shortProduct(item.product)}</span>
+        <span class="badge ${brandBadge(item.product)}">${summaryEscapeHtml_(shortProduct(item.product))}</span>
         <span>${fmtWhole(item.cases)} cases</span>
         <span>${fmtWhole(item.packs)} packs</span>
         <strong>₱${fmtNum(item.total)}</strong>
@@ -5200,7 +5231,7 @@ function runSearch() {
   document.getElementById('searchResultTitle').textContent = `${results.length} result${results.length!==1?'s':''}`;
   renderSearchSummary(results);
   const tbody = document.getElementById('searchBody');
-  if (!results.length) { tbody.innerHTML='<tr><td colspan="11"><div class="empty-state"><div class="empty-icon">🔍</div><h3>No results</h3><p>Try different search terms.</p></div></td></tr>'; return; }
+  if (!results.length) { tbody.innerHTML='<tr><td colspan="11"><div class="empty-state"><div class="empty-icon">🔍</div><h3>No results</h3><p>Try different search terms.</p></div></td></tr>'; updateSearchScrollCue(); return; }
     tbody.innerHTML = results.map(r=>{
       const cost = getRowCost(r);
       const netTotal = (Number(r.total) || 0) - cost;
@@ -5218,6 +5249,14 @@ function runSearch() {
         <td class="mono" style="font-size:16px;color:var(--green);font-weight:600">₱${fmtNum(netTotal)}</td>
       </tr>`;
     }).join('');
+  window.requestAnimationFrame(updateSearchScrollCue);
+}
+function updateSearchScrollCue(){
+  const wrap=document.querySelector('.search-results-card .table-wrap');
+  const cue=document.getElementById('searchScrollCue');
+  if(!wrap||!cue)return;
+  const hasMore=wrap.scrollWidth-wrap.clientWidth-wrap.scrollLeft>2;
+  cue.hidden=!hasMore;
 }
 function clearSearch(){
   ['s-date','s-po','s-si'].forEach(id=>document.getElementById(id).value='');
@@ -5226,6 +5265,7 @@ function clearSearch(){
   document.getElementById('searchResultTitle').textContent='Results';
   renderSearchSummary([]);
   document.getElementById('searchBody').innerHTML='<tr><td colspan="11"><div class="empty-state"><div class="empty-icon">🔍</div><h3>Run a search</h3><p>Use the filters above to find records.</p></div></td></tr>';
+  updateSearchScrollCue();
 }
 
 // ===============================================
@@ -5370,6 +5410,52 @@ function updateEntryLineStates(){
     line.classList.toggle('is-incomplete', !complete);
   });
 }
+function getEntryValidationState(){
+  const date = document.getElementById('e-date');
+  const buyer = document.getElementById('e-buyer');
+  const lines = getEntryLineElements();
+  const missing = [];
+  let firstInvalid = null;
+  const markMissing = (control,label) => {
+    if (!control) return;
+    control.setAttribute('aria-invalid', 'true');
+    missing.push(label);
+    if (!firstInvalid) firstInvalid = control;
+  };
+  [date,buyer,...lines.flatMap(line=>Array.from(line.querySelectorAll('.entry-product,.entry-packs,.entry-price')))]
+    .filter(Boolean)
+    .forEach(control=>control.removeAttribute('aria-invalid'));
+  if (!date?.value) markMissing(date,'Date');
+  if (!buyer?.value) markMissing(buyer,'Buyer');
+  lines.forEach((line,index) => {
+    if (!line.querySelector('.entry-product')?.value) markMissing(line.querySelector('.entry-product'),`Product ${index+1}`);
+    if ((Number(line.querySelector('.entry-packs')?.value)||0) <= 0) markMissing(line.querySelector('.entry-packs'),`Pack Qty ${index+1}`);
+  });
+  return { valid:missing.length===0 && lines.every(isEntryLineComplete), missing, firstInvalid };
+}
+function updateEntrySubmitState(announce=false){
+  const state = getEntryValidationState();
+  const button = document.getElementById('entrySubmitButton');
+  const summary = document.getElementById('entryValidationSummary');
+  if (button) button.disabled = entrySaveInProgress || !state.valid;
+  if (summary) {
+    summary.classList.toggle('is-ready',state.valid);
+    summary.classList.toggle('is-error',announce && !state.valid);
+    summary.textContent = state.valid
+      ? 'Ready to submit this order.'
+      : `Complete ${state.missing.join(', ')} to submit.`;
+  }
+  return state;
+}
+function showEntryValidation(){
+  const state = updateEntrySubmitState(true);
+  if (!state.valid && state.firstInvalid) {
+    const firstInvalid = state.firstInvalid;
+    firstInvalid.focus({ preventScroll: true });
+    firstInvalid.scrollIntoView({ block:'center', behavior:'smooth' });
+  }
+  return state;
+}
 function collectEntryLines(){
   const buyer=document.getElementById('e-buyer').value;
   return getEntryLineElements().map(line => {
@@ -5417,8 +5503,8 @@ function renderEntrySaveOverlay(state, title, detail) {
   overlay.innerHTML = `
     <div class="entry-save-card">
       ${icon}
-      <strong>${title}</strong>
-      <span>${detail}</span>
+      <strong>${summaryEscapeHtml_(title)}</strong>
+      <span>${summaryEscapeHtml_(detail)}</span>
     </div>
   `;
 }
@@ -5457,6 +5543,7 @@ function setEntrySubmitBusy(isBusy) {
   button.innerHTML = isBusy
     ? '<span class="entry-save-spinner" aria-hidden="true" style="width:14px;height:14px;border-width:2px"></span> Saving...'
     : '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Submit Entry';
+  if (!isBusy) updateEntrySubmitState();
 }
 
 function applySavedEntriesLocally(entries) {
@@ -5531,20 +5618,21 @@ function updatePreview(){
     return `
       <div class="entry-preview-line${noRevenueBuyer ? ' is-no-price' : ''}">
         <div class="entry-preview-line-title">
-          <span>${product}</span>
+          <span>${summaryEscapeHtml_(product)}</span>
           <span>₱${fmtNum(item.total)}</span>
         </div>
         <div class="entry-preview-line-meta">
           <span>Cases: ${(parseFloat(item.cases)||0).toLocaleString()}</span>
           <span>Packs: ${(parseFloat(item.packs)||0).toLocaleString()}</span>
           <span>${priceLabel}: ₱${fmtNum(item.price)}</span>
-          <span>Warehouse: ${warehouseLabel}</span>
+          <span>Warehouse: ${summaryEscapeHtml_(warehouseLabel)}</span>
         </div>
       </div>
     `;
   }).join('');
   document.getElementById('prev-total').textContent='₱'+fmtNum(gross);
   updateEntryLineStates();
+  updateEntrySubmitState();
   if(window.WarehousePO?.updateTotalCheck)WarehousePO.updateTotalCheck();
 }
 let restockProductsLoaded = false;
@@ -5571,16 +5659,54 @@ function onRestockProductChange(select) {
   const line = select.closest('[data-restock-line]');
   const casesInput = line.querySelector('.restock-cases');
   if (Number(casesInput.value) > 0) onRestockCasesChange(casesInput);
+  else updateRestockLineImpact(line);
 }
 
 function onRestockCasesChange(input) {
   const line = input.closest('[data-restock-line]');
-  const product = line.querySelector('.restock-product').value;
-  const cases = Number(input.value) || 0;
+  updateRestockLineImpact(line);
+}
+
+function updateRestockLineImpact(line) {
+  if (!line) return;
+  const product = line.querySelector('.restock-product')?.value || '';
+  const cases = Math.max(0,Number(line.querySelector('.restock-cases')?.value)||0);
+  const packs = Math.max(0,Number(line.querySelector('.restock-packs')?.value)||0);
   const packsPerCase = Number(restockPacksPerCase[product]) || 0;
-  if (product && cases >= 0 && packsPerCase > 0) {
-    line.querySelector('.restock-packs').value = cases * packsPerCase;
+  const impact = line.querySelector('.restock-impact');
+  if (impact) {
+    impact.innerHTML = product && packs > 0
+      ? `<strong>This restock adds</strong><span>${cases.toLocaleString()} cases</span><span>${packs.toLocaleString()} packs</span>${packsPerCase ? `<span>${packsPerCase.toLocaleString()} packs/case reference</span>` : ''}`
+      : 'Select a product and quantity to preview this restock.';
   }
+  updateRestockSubmitState();
+}
+
+function updateRestockSubmitState(announce=false) {
+  const date = document.getElementById('r-date');
+  const lines = getRestockLines();
+  let firstInvalidLineControl = null;
+  for (const line of lines) {
+    const product = line.querySelector('.restock-product');
+    const cases = line.querySelector('.restock-cases');
+    const packs = line.querySelector('.restock-packs');
+    if (!product?.value) firstInvalidLineControl = product;
+    else if (Number(cases?.value) < 0) firstInvalidLineControl = cases;
+    else if ((Number(packs?.value)||0) <= 0) firstInvalidLineControl = packs;
+    if (firstInvalidLineControl) break;
+  }
+  const valid = Boolean(date?.value) && lines.length > 0 && !firstInvalidLineControl;
+  const button = document.getElementById('restockSubmit');
+  const summary = document.getElementById('restockValidationSummary');
+  if (button) button.disabled = restockSaveInProgress || !valid;
+  if (summary) {
+    summary.classList.toggle('is-ready',valid);
+    summary.classList.toggle('is-error',announce && !valid);
+    summary.textContent = valid
+      ? 'Ready to submit this restock.'
+      : 'Select a product, keep Case Quantity at zero or greater, and enter a Pack Quantity greater than zero.';
+  }
+  return {valid,firstInvalid:!date?.value ? date : firstInvalidLineControl};
 }
 
 function getRestockLines() {
@@ -5602,12 +5728,14 @@ async function addRestockLine() {
   line.querySelectorAll('select,input').forEach(element => { element.value = ''; });
   host.appendChild(line);
   renumberRestockLines();
+  updateRestockLineImpact(line);
 }
 
 function removeRestockLine(button) {
   if (getRestockLines().length <= 1) return;
   button.closest('[data-restock-line]').remove();
   renumberRestockLines();
+  updateRestockSubmitState();
 }
 
 async function submitRestock() {
@@ -5620,6 +5748,8 @@ async function submitRestock() {
     date
   }));
   if (!date || entries.some(entry => !entry.product || entry.packs <= 0 || entry.cases < 0)) {
+    const state = updateRestockSubmitState(true);
+    state.firstInvalid?.focus();
     showToast('Please select each Product and enter a Pack Quantity greater than zero.', 'error');
     return;
   }
@@ -5650,8 +5780,9 @@ async function submitRestock() {
     showToast('Could not save restock: ' + (error.message || error), 'error');
   } finally {
     restockSaveInProgress = false;
-    button.disabled = false;
     button.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Submit Restock';
+    getRestockLines().forEach(updateRestockLineImpact);
+    updateRestockSubmitState();
   }
 }
 
@@ -5680,6 +5811,7 @@ async function submitEntry(options = {}) {
   const validLines = lines.filter(item => isEntryLineComplete(item.line));
 
   if (!date || !buyer || !validLines.length || validLines.length !== lines.length) {
+    showEntryValidation();
     showToast('Please fill in Date, Buyer, Product, and Pack Qty.', 'error');
     return { success:false, error:'Please fill in Date, Buyer, Product, and Pack Qty.' };
   }
@@ -5797,15 +5929,22 @@ function saveScriptUrl(){
 function renderBuyerPills(){
   const el=document.getElementById('buyerPills');
   if(!el) return;
-  el.innerHTML=BUYERS.map((b,i)=>`<span class="buyer-pill">${b}<button class="pill-remove" onclick="removeBuyer(${i})" title="Remove">×</button></span>`).join('');
+  el.innerHTML=BUYERS.map((b,i)=>`<span class="buyer-pill"><span>${summaryEscapeHtml_(displayBuyerName(b))}</span><button class="pill-remove" type="button" onclick="removeBuyer(${i})" title="Remove buyer" aria-label="Remove ${summaryEscapeHtml_(b)}">×</button></span>`).join('');
 }
+function displayBuyerName(value){ return String(value||'').replace(/\bLOGISITCS\b/g,'LOGISTICS'); }
 function addBuyer(){
   const val=document.getElementById('newBuyerInput').value.trim().toUpperCase();
   if(!val||BUYERS.includes(val)) return;
   BUYERS.push(val); saveBuyers(); document.getElementById('newBuyerInput').value='';
   showToast(`Buyer "${val}" added.`,'success');
 }
-function removeBuyer(idx){ BUYERS.splice(idx,1); saveBuyers(); }
+function removeBuyer(idx){
+  const buyer=BUYERS[idx];
+  if(!buyer||!window.confirm(`Remove buyer "${buyer}" from this browser?`))return;
+  BUYERS.splice(idx,1);
+  saveBuyers();
+  showToast(`Buyer "${displayBuyerName(buyer)}" removed from this browser.`,'success');
+}
 function saveBuyers(){
   BUYERS=normalizeBuyerList(BUYERS);
   localStorage.setItem('maru_buyers',JSON.stringify(BUYERS));
@@ -5817,7 +5956,15 @@ function renderPriceReference(){
   Object.entries(PRICES).forEach(([product,buyers])=>{
     Object.entries(buyers).forEach(([buyer,price])=>{ if(price>0) rows.push({product,buyer,price}); });
   });
-  tbody.innerHTML=rows.map(r=>`<tr><td>${displayProductName(r.product)}</td><td><span class="badge ${brandBadge(r.product)}">${r.product.includes('Plush')?'Plush':'Fluffy'}</span></td><td><span class="badge ${buyerBadge(r.buyer)}">${r.buyer}</span></td><td class="mono">₱${fmtNum(r.price)}</td></tr>`).join('');
+  tbody.innerHTML=rows.map(r=>`<tr data-price-reference-search="${summaryEscapeHtml_(`${displayProductName(r.product)} ${r.product.includes('Plush')?'Plush':'Fluffy'} ${displayBuyerName(r.buyer)}`.toLowerCase())}"><td>${summaryEscapeHtml_(displayProductName(r.product))}</td><td><span class="badge ${brandBadge(r.product)}">${r.product.includes('Plush')?'Plush':'Fluffy'}</span></td><td><span class="badge ${buyerBadge(r.buyer)}">${summaryEscapeHtml_(displayBuyerName(r.buyer))}</span></td><td class="mono">₱${fmtNum(r.price)}</td></tr>`).join('');
+  filterPriceReference(document.getElementById('priceRefFilter')?.value||'');
+}
+function filterPriceReference(query){
+  const terms=String(query||'').trim().toLowerCase().split(/\s+/).filter(Boolean);
+  document.querySelectorAll('#priceRefBody tr').forEach(row=>{
+    const haystack=row.dataset.priceReferenceSearch||row.textContent.toLowerCase();
+    row.hidden=!terms.every(term=>haystack.includes(term));
+  });
 }
 
 // ===============================================
@@ -5931,7 +6078,11 @@ function showToast(msg,type='info'){
   const toast=document.createElement('div');
   toast.className=`toast ${type}`;
   const icons={success:'✓',error:'✕',info:'ℹ',warning:'!'};
-  toast.innerHTML=`<span>${icons[type]||'•'}</span><span>${msg}</span>`;
+  const icon=document.createElement('span');
+  icon.textContent=icons[type]||'•';
+  const message=document.createElement('span');
+  message.textContent=String(msg||'');
+  toast.append(icon,message);
   container.appendChild(toast);
   setTimeout(()=>toast.remove(),3500);
 }
