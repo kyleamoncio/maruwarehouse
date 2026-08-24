@@ -17,6 +17,10 @@ test('Search Summary titles align identically while MARU and BUYER currency valu
   assert.match(styles,/#page-search \.search-summary-item strong\s*\{[^}]*height:\s*40px\s*!important[^}]*line-height:\s*40px\s*!important/i);
   assert.match(styles,/#page-search \.search-summary-item\.is-currency strong\s*\{[^}]*font-size:\s*clamp\(15px,\s*1\.2vw,\s*18px\)\s*!important/i);
   assert.match(styles,/html\[data-portal-view="buyer"\] #searchSummary \.search-summary-item\.is-total strong\s*\{[^}]*font-size:\s*clamp\(22px,\s*1\.55vw,\s*28px\)\s*!important/i);
+  const initialSummary=s.match(/<div class="search-summary-grid" id="searchSummary">([\s\S]*?)<\/div>\s*<div class="search-summary-products"/i)?.[1]||'';
+  assert.match(initialSummary,/class="search-summary-item is-total is-currency"/);
+  assert.match(initialSummary,/class="search-summary-item is-cost is-currency"/);
+  assert.match(initialSummary,/class="search-summary-item is-net is-currency"/);
   assert.match(s,/class="search-summary-item is-total is-currency"/);
   assert.match(s,/class="search-summary-item is-cost is-currency"/);
   assert.match(s,/class="search-summary-item is-net is-currency"/);
