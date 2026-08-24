@@ -9,13 +9,17 @@ const root=path.join(__dirname,'..');
 const html=()=>fs.readFileSync(path.join(root,'public','index.html'),'utf8');
 const css=()=>fs.readFileSync(path.join(root,'public','po-feature.css'),'utf8');
 
-test('sidebar footer owns a horizontal MARU and BUYER view toggle with persisted state',()=>{
+test('sidebar footer is a full-width two-segment MARU and BUYER switch with no caption or arrows',()=>{
   const s=html();
+  const styles=css();
   const footer=s.match(/<div class="sidebar-footer"[\s\S]*?<\/div>\s*<\/nav>/i)?.[0]||'';
   assert.match(footer,/id="portalViewModeToggle"/);
   assert.match(footer,/data-mode-option="maru"/);
   assert.match(footer,/data-mode-option="buyer"/);
-  assert.match(footer,/portal-mode-arrow/);
+  assert.doesNotMatch(footer,/portal-mode-caption|portal-mode-arrow|Portal view/i);
+  assert.match(styles,/#sidebar \.sidebar-footer\s*\{[^}]*width:\s*215px\s*!important[^}]*padding:\s*0\s*!important[^}]*border-top:\s*0\s*!important/is);
+  assert.match(styles,/\.portal-mode-toggle\s*\{[^}]*grid-template-columns:\s*repeat\(2,minmax\(0,1fr\)\)\s*!important/is);
+  assert.match(styles,/\.portal-mode-option\s*\+\s*\.portal-mode-option\s*\{[^}]*border-left:/is);
   assert.match(s,/const PORTAL_VIEW_MODE_KEY\s*=\s*'maruWarehousePortalViewMode'/);
   assert.match(s,/function setPortalViewMode\s*\(/);
   assert.match(s,/document\.documentElement\.dataset\.portalView\s*=\s*portalViewMode/);
