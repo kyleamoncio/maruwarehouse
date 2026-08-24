@@ -209,6 +209,7 @@ test('Summary and Recent Entries use a wider balanced desktop table canvas',()=>
     const values=Array(count).fill(null);
     for(const match of css.matchAll(/([^{}]+)\{width:(\d+)%!important\}/g)){
       if(!match[1].includes(`#${tableId}`))continue;
+      if(match[1].includes('[data-portal-view="buyer"]'))continue;
       for(const column of match[1].matchAll(/nth-child\((\d+)\)/g)) values[Number(column[1])-1]=Number(match[2]);
     }
     values.forEach((value,index)=>assert.notEqual(value,null,`${tableId} column ${index+1} width missing`));

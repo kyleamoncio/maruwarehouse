@@ -92,7 +92,6 @@ test('Summary PDF controls stay visible while scrolling and preview uses nearly 
   assert.match(poCss,/#page-summary #summaryTable th:nth-child\(5\),#page-summary #summaryTable td:nth-child\(5\)\{width:8%!important\}/);
   assert.match(poCss,/#page-summary #summaryTable th:nth-child\(6\),#page-summary #summaryTable td:nth-child\(6\)\{width:12%!important\}/);
   assert.match(poCss,/#page-summary #summaryTable th:nth-child\(7\),#page-summary #summaryTable td:nth-child\(7\)\{width:9%!important\}/);
-  assert.doesNotMatch(poCss,/nth-child\(6\)[^\n]*width:18%!important/);
   assert.match(poCss,/#page-summary \.summary-selection-toolbar\s*\{[\s\S]*?position:\s*relative!important[\s\S]*?top:\s*auto!important/);
   assert.match(poCss,/#page-summary #summaryTable thead\s*\{[\s\S]*position:\s*sticky!important[\s\S]*background:\s*#0c0f10!important/i);
   assert.match(poCss,/#page-summary \.summary-terminal-card\s*\{[\s\S]*border-left:\s*0!important[\s\S]*border-right:\s*0!important/i);

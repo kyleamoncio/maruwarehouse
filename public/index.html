@@ -3310,7 +3310,14 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
     </div>
   </div>
 
-  <div class="sidebar-footer" aria-hidden="true"></div>
+  <div class="sidebar-footer">
+    <div class="portal-mode-caption">Portal view</div>
+    <button id="portalViewModeToggle" class="portal-mode-toggle" type="button" onclick="togglePortalViewMode()" aria-label="Switch between MARU and BUYER view" aria-pressed="false">
+      <span class="portal-mode-option is-active" data-mode-option="maru">MARU</span>
+      <span class="portal-mode-arrow" aria-hidden="true"><span class="portal-mode-arrow-left"></span><span class="portal-mode-arrow-right"></span></span>
+      <span class="portal-mode-option" data-mode-option="buyer">BUYER</span>
+    </button>
+  </div>
 </nav>
 
 <!-- == MAIN == -->
@@ -3334,7 +3341,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
               <h1>Overview</h1>
             </div>
           </div>
-          <div style="text-align:right">
+          <div id="dashboardProfitSignal" class="buyer-private" style="text-align:right">
             <div class="signal-value" id="dashboardMarginSignal">0.0%</div>
             <div class="signal-meta" id="dashboardMarginNarrative">Load data to calculate overall profitability and trend direction.</div>
           </div>
@@ -3370,7 +3377,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
     </div>
 
     <!-- Monthly Profit Table -->
-    <div class="card" style="margin-bottom:14px">
+    <div id="monthlyProfitCard" class="card buyer-private" style="margin-bottom:14px">
       <div class="card-header">
         <div>
           <div class="card-title">Monthly Profit</div>
@@ -3407,7 +3414,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
           </div>
         </div>
         <div id="topProductsLegend" style="display:flex;justify-content:center;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:14px;font-size:12px;color:var(--text-secondary)"></div>
-        <div style="position:relative;width:100%;height:420px">
+        <div class="top-products-chart-frame" style="position:relative;width:100%;height:280px">
           <canvas id="topProductsChart" role="img" aria-label="Horizontal bar chart showing revenue and profit for top products"></canvas>
         </div>
       </div>
@@ -3609,7 +3616,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
           <div class="card-title search-results-title" id="searchResultTitle">Results</div>
         </div>
         <div class="table-wrap">
-          <table>
+          <table id="searchResultsTable">
             <thead><tr><th>Date</th><th>Order By</th><th>PO #</th><th>SI #</th><th>Product</th><th>Cases</th><th>Packs</th><th>Price</th><th>Total</th><th>Cost</th><th>Net Total</th></tr></thead>
             <tbody id="searchBody">
               <tr><td colspan="11"><div class="empty-state"><div class="empty-icon">🔍</div><h3>Run a search</h3><p>Use the filters above to find records.</p></div></td></tr>
@@ -3680,11 +3687,23 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
                 </div>
                 <div class="form-group">
                   <label class="form-label">Case Quantity</label>
-                  <input type="number" class="form-control entry-cases" id="e-cases" placeholder="0" oninput="onCasesChange(this)"/>
+                  <span class="qty-stepper">
+                    <input type="number" min="0" step="1" class="form-control entry-cases" id="e-cases" placeholder="0" oninput="onCasesChange(this)"/>
+                    <span class="qty-step-buttons">
+                      <button class="qty-step-button" type="button" data-entry-qty-step="up" aria-label="Increase case quantity" onclick="stepQuantityInput(this,'up')">▲</button>
+                      <button class="qty-step-button" type="button" data-entry-qty-step="down" aria-label="Decrease case quantity" onclick="stepQuantityInput(this,'down')">▼</button>
+                    </span>
+                  </span>
                 </div>
                 <div class="form-group">
                   <label class="form-label">Pack Quantity</label>
-                  <input type="number" class="form-control entry-packs" id="e-packs" placeholder="0" oninput="updatePreview()"/>
+                  <span class="qty-stepper">
+                    <input type="number" min="0" step="1" class="form-control entry-packs" id="e-packs" placeholder="0" oninput="updatePreview()"/>
+                    <span class="qty-step-buttons">
+                      <button class="qty-step-button" type="button" data-entry-qty-step="up" aria-label="Increase pack quantity" onclick="stepQuantityInput(this,'up')">▲</button>
+                      <button class="qty-step-button" type="button" data-entry-qty-step="down" aria-label="Decrease pack quantity" onclick="stepQuantityInput(this,'down')">▼</button>
+                    </span>
+                  </span>
                 </div>
                 <div class="form-group">
                   <label class="form-label entry-price-label">Price per Pack (₱)</label>
@@ -3784,11 +3803,23 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
             </div>
             <div class="form-group">
               <label class="form-label">Case Quantity</label>
-              <input type="number" min="0" class="form-control restock-cases" placeholder="0" oninput="onRestockCasesChange(this)"/>
+              <span class="qty-stepper">
+                <input type="number" min="0" step="1" class="form-control restock-cases" placeholder="0" oninput="onRestockCasesChange(this)"/>
+                <span class="qty-step-buttons">
+                  <button class="qty-step-button" type="button" data-restock-qty-step="up" aria-label="Increase restock case quantity" onclick="stepQuantityInput(this,'up')">▲</button>
+                  <button class="qty-step-button" type="button" data-restock-qty-step="down" aria-label="Decrease restock case quantity" onclick="stepQuantityInput(this,'down')">▼</button>
+                </span>
+              </span>
             </div>
             <div class="form-group">
               <label class="form-label">Pack Quantity</label>
-              <input type="number" min="1" class="form-control restock-packs" placeholder="0"/>
+              <span class="qty-stepper">
+                <input type="number" min="1" step="1" class="form-control restock-packs" placeholder="0"/>
+                <span class="qty-step-buttons">
+                  <button class="qty-step-button" type="button" data-restock-qty-step="up" aria-label="Increase restock pack quantity" onclick="stepQuantityInput(this,'up')">▲</button>
+                  <button class="qty-step-button" type="button" data-restock-qty-step="down" aria-label="Decrease restock pack quantity" onclick="stepQuantityInput(this,'down')">▼</button>
+                </span>
+              </span>
             </div>
           </div>
         </div>
@@ -3974,6 +4005,39 @@ const PAGE_SIZE = 25;
 let sortKey = 'date', sortDir = -1;
 let demoLoaded  = false;
 let v2ReferenceLoadPromise = null;
+const PORTAL_VIEW_MODE_KEY = 'maruWarehousePortalViewMode';
+let portalViewMode = 'maru';
+
+function updatePortalViewModeControl() {
+  const toggle = document.getElementById('portalViewModeToggle');
+  if (!toggle) return;
+  toggle.setAttribute('aria-pressed', String(portalViewMode === 'buyer'));
+  toggle.setAttribute('aria-label', portalViewMode === 'buyer' ? 'Switch to MARU view' : 'Switch to BUYER view');
+  toggle.querySelectorAll('[data-mode-option]').forEach(option => {
+    option.classList.toggle('is-active', option.dataset.modeOption === portalViewMode);
+  });
+}
+
+function setPortalViewMode(mode,{persist=true}={}) {
+  portalViewMode = mode === 'buyer' ? 'buyer' : 'maru';
+  document.documentElement.dataset.portalView = portalViewMode;
+  updatePortalViewModeControl();
+  if (persist) {
+    try { localStorage.setItem(PORTAL_VIEW_MODE_KEY,portalViewMode); } catch (_) {}
+  }
+  if (document.getElementById('overviewStats')) renderOverviewStats();
+  if (document.getElementById('topProductsChart')) renderTopProducts();
+}
+
+function togglePortalViewMode() {
+  setPortalViewMode(portalViewMode==='buyer'?'maru':'buyer');
+}
+
+function initializePortalViewMode() {
+  let savedMode = 'maru';
+  try { savedMode = localStorage.getItem(PORTAL_VIEW_MODE_KEY) || 'maru'; } catch (_) {}
+  setPortalViewMode(savedMode,{persist:false});
+}
 
 async function fetchV2BootstrapResult(fallbackMessage) {
   let lastError;
@@ -4049,6 +4113,7 @@ async function loadV2ReferenceData(force = false) {
 //  INIT
 // ===============================================
 document.addEventListener('DOMContentLoaded', () => {
+  initializePortalViewMode();
   setTodayDate();
   populateDropdowns();
   loadV2ReferenceData().catch(() => {});
@@ -4405,11 +4470,11 @@ function renderOverviewStats() {
       <div class="hero-metric-label">Gross Revenue</div>
       <div class="hero-metric-value">₱${fmtNum(metrics.revenue)}</div>
     </div>
-    <div class="hero-metric">
+    <div class="hero-metric buyer-private">
       <div class="hero-metric-label">Profit</div>
       <div class="hero-metric-value">₱${fmtNum(metrics.profit)}</div>
     </div>
-    <div class="hero-metric">
+    <div class="hero-metric buyer-private">
       <div class="hero-metric-label">Margin</div>
       <div class="hero-metric-value">${metrics.margin.toFixed(1)}%</div>
     </div>`;
@@ -4662,10 +4727,32 @@ function renderTopProducts() {
   });
 
   const sorted = Object.entries(stats)
-    .filter(([p]) => !p.includes('Plush'))
     .map(([p, v]) => ({ label: displayProductName(p), revenue: v.revenue, profit: v.revenue - v.cost }))
     .sort((a, b) => b.revenue - a.revenue)
-    .slice(0, 11);
+    .slice(0, 5);
+
+  const canvas = document.getElementById('topProductsChart');
+  if (canvas) {
+    canvas.setAttribute(
+      'aria-label',
+      portalViewMode === 'buyer'
+        ? 'Horizontal bar chart showing revenue for the top five products'
+        : 'Horizontal bar chart showing revenue and profit for the top five products'
+    );
+  }
+
+  if (window._topProductsChartInstance) {
+    window._topProductsChartInstance.destroy();
+    window._topProductsChartInstance = null;
+  }
+
+  const legend = document.getElementById('topProductsLegend');
+  if (legend) {
+    legend.innerHTML = portalViewMode==='buyer'
+      ? `<span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:#7ab8ff;display:inline-block"></span>Revenue</span>`
+      : `<span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:#7ab8ff;display:inline-block"></span>Revenue</span>
+         <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:var(--green);display:inline-block"></span>Profit</span>`;
+  }
 
   if (!sorted.length) {
     const summary = document.getElementById('topProductsSummary');
@@ -4679,13 +4766,7 @@ function renderTopProducts() {
     return;
   }
 
-  const canvas = document.getElementById('topProductsChart');
   if (!canvas) return;
-
-  // destroy previous chart instance if it exists
-  if (window._topProductsChartInstance) {
-    window._topProductsChartInstance.destroy();
-  }
 
   Chart.defaults.font.family = "'IBM Plex Sans', sans-serif";
 
@@ -4707,29 +4788,28 @@ function renderTopProducts() {
       </div>`;
   }
 
+  const revenueDataset = {
+    label: 'Revenue',
+    data: revenues,
+    backgroundColor: 'rgba(122,184,255,0.25)',
+    borderColor: '#7ab8ff',
+    borderWidth: 1.5,
+    borderRadius: 4,
+  };
+  const profitDataset = {
+    label: 'Profit',
+    data: profits,
+    backgroundColor: 'rgba(32,178,108,0.25)',
+    borderColor: getComputedStyle(document.documentElement).getPropertyValue('--green').trim() || '#20b26c',
+    borderWidth: 1.5,
+    borderRadius: 4,
+  };
+  const topProductDatasets = [revenueDataset];
+  if (portalViewMode !== 'buyer') topProductDatasets.push(profitDataset);
+
   window._topProductsChartInstance = new Chart(canvas, {
     type: 'bar',
-    data: {
-      labels,
-      datasets: [
-        {
-          label: 'Revenue',
-          data: revenues,
-          backgroundColor: 'rgba(122,184,255,0.25)',
-          borderColor: '#7ab8ff',
-          borderWidth: 1.5,
-          borderRadius: 4,
-        },
-        {
-          label: 'Profit',
-          data: profits,
-          backgroundColor: 'rgba(32,178,108,0.25)',
-          borderColor: getComputedStyle(document.documentElement).getPropertyValue('--green').trim() || '#20b26c',
-          borderWidth: 1.5,
-          borderRadius: 4,
-        }
-      ]
-    },
+    data: { labels, datasets: topProductDatasets },
     options: {
       indexAxis: 'y',
       responsive: true,
@@ -4759,11 +4839,6 @@ function renderTopProducts() {
     }
   });
 
-  // custom legend
-  document.getElementById('topProductsLegend').innerHTML = `
-    <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:#7ab8ff;display:inline-block"></span>Revenue</span>
-    <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:var(--green);display:inline-block"></span>Profit</span>
-  `;
 }
 
 // ===============================================
@@ -5227,6 +5302,20 @@ function syncEntryLinePriceMode(line,buyer=document.getElementById('e-buyer').va
     if(noPrice) priceInput.value='0';
   }
 }
+function stepQuantityInput(button,direction) {
+  const input = button?.closest('.qty-stepper')?.querySelector('input[type="number"]');
+  if (!input) return;
+  const minimumValue = Number(input.min);
+  const minimum = Number.isFinite(minimumValue) ? minimumValue : 0;
+  const stepValue = Number(input.step);
+  const step = Number.isFinite(stepValue) && stepValue > 0 ? stepValue : 1;
+  const currentValue = Number(input.value);
+  const current = Number.isFinite(currentValue) ? currentValue : minimum;
+  const delta = direction === 'down' ? -step : step;
+  input.value = String(Math.max(minimum,current+delta));
+  input.dispatchEvent(new Event('input',{bubbles:true}));
+}
+
 function onCasesChange(el){
   const line = el ? el.closest('[data-entry-line]') : getEntryLineElements()[0];
   const product = getEntryLineValue(line, 'product');
