@@ -4340,7 +4340,7 @@ function navigate(page) {
   }
   if (page === 'restock') loadRestockProducts();
 
-  closeSidebar();
+  if (window.innerWidth <= 767) closeSidebar(false);
   window.requestAnimationFrame(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
     document.documentElement.scrollTop = 0;
@@ -5235,12 +5235,12 @@ function runSearch() {
     tbody.innerHTML = results.map(r=>{
       const cost = getRowCost(r);
       const netTotal = (Number(r.total) || 0) - cost;
-      return `<tr>
-        <td class="mono" style="font-size:16px">${r.date||'—'}</td>
-        <td style="font-size:16px"><span class="badge ${buyerBadge(r.buyer)}">${r.buyer||'—'}</span></td>
-        <td class="mono" style="font-size:16px">${r.po||'—'}</td>
-        <td class="mono" style="font-size:16px">${r.si||'—'}</td>
-        <td style="font-size:16px"><span class="badge ${brandBadge(r.product)}">${shortProduct(r.product)}</span></td>
+      return `<tr data-search-result-row>
+        <td class="mono" style="font-size:16px">${summaryEscapeHtml_(r.date||'—')}</td>
+        <td style="font-size:16px"><span class="badge ${buyerBadge(r.buyer)}">${summaryEscapeHtml_(r.buyer||'—')}</span></td>
+        <td class="mono" style="font-size:16px">${summaryEscapeHtml_(r.po||'—')}</td>
+        <td class="mono" style="font-size:16px">${summaryEscapeHtml_(r.si||'—')}</td>
+        <td style="font-size:16px"><span class="badge ${brandBadge(r.product)}">${summaryEscapeHtml_(shortProduct(r.product))}</span></td>
         <td class="mono" style="font-size:16px">${(r.cases||0).toLocaleString()}</td>
         <td class="mono" style="font-size:16px">${(r.packs||0).toLocaleString()}</td>
         <td class="mono" style="font-size:16px;color:var(--text)">₱${fmtNum(r.price)}</td>
@@ -5255,7 +5255,8 @@ function updateSearchScrollCue(){
   const wrap=document.querySelector('.search-results-card .table-wrap');
   const cue=document.getElementById('searchScrollCue');
   if(!wrap||!cue)return;
-  const hasMore=wrap.scrollWidth-wrap.clientWidth-wrap.scrollLeft>2;
+  const hasResults=!!document.querySelector('#searchBody tr[data-search-result-row]');
+  const hasMore=hasResults&&wrap.scrollWidth-wrap.clientWidth-wrap.scrollLeft>2;
   cue.hidden=!hasMore;
 }
 function clearSearch(){

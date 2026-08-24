@@ -25,6 +25,9 @@ test('late responsive overrides keep tablet content beside the sidebar and start
   assert.match(styles,/#content,#sidebar\.collapsed~#main #content\s*\{[^}]*width:\s*100%\s*!important/i);
   assert.match(styles,/#sidebarToggle,\.sidebar-close-control\s*\{[^}]*width:\s*40px\s*!important[^}]*height:\s*40px\s*!important/i);
   assert.match(html(),/if\s*\(window\.innerWidth\s*<=\s*767\)\s*closeSidebar\(false\)/);
+  const navigate=html().slice(html().indexOf('function navigate('),html().indexOf('function syncTopbarScrollState'));
+  assert.match(navigate,/if\s*\(window\.innerWidth\s*<=\s*767\)\s*closeSidebar\(false\)/);
+  assert.doesNotMatch(navigate,/\bcloseSidebar\(\);/);
 });
 
 test('New Entry keeps Case before Pack and exposes persistent accessible validation',()=>{
@@ -60,6 +63,7 @@ test('remaining audit polish is implemented without mutating authoritative data'
   assert.match(styles,/#page-search \.search-primary-grid\s*\{[^}]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/i);
   assert.match(source,/id="searchScrollCue"/);
   assert.match(source,/function updateSearchScrollCue\s*\(/);
+  assert.match(source,/hasResults\s*=\s*!!document\.querySelector\('#searchBody tr\[data-search-result-row\]'\)/);
   assert.match(source,/function expandSummaryItemLabel_\s*\(/);
   assert.match(source,/aria-label="\$\{summaryEscapeHtml_\(expandedLabel\)\}"/);
   assert.match(source,/id="priceRefFilter"[^>]+oninput="filterPriceReference\(this\.value\)"/);
@@ -78,4 +82,5 @@ test('browser and Sheet-originated labels are rendered as text rather than execu
   assert.match(source,/summaryEscapeHtml_\(r\.buyer\|\|'—'\)/);
   assert.match(source,/poValues\.map\(summaryEscapeHtml_\)\.join\('<br>'\)/);
   assert.match(source,/summaryEscapeHtml_\(shortProduct\(item\.product\)\)/);
+  assert.match(source,/data-search-result-row[\s\S]*?summaryEscapeHtml_\(r\.date\|\|'—'\)[\s\S]*?summaryEscapeHtml_\(r\.buyer\|\|'—'\)[\s\S]*?summaryEscapeHtml_\(r\.po\|\|'—'\)[\s\S]*?summaryEscapeHtml_\(r\.si\|\|'—'\)/);
 });
