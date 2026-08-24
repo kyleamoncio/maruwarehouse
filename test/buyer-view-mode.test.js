@@ -44,7 +44,9 @@ test('BUYER view hides every requested internal financial surface and rebalances
   assert.match(styles,/html\[data-portal-view="buyer"\] #entryRecentTable :is\(th,td\):nth-child\(11\)/);
   assert.match(styles,/html\[data-portal-view="buyer"\] #searchSummary \.is-cost/);
   assert.match(styles,/html\[data-portal-view="buyer"\] #searchSummary \.is-net/);
-  assert.match(styles,/html\[data-portal-view="buyer"\] #searchSummary\s*\{[^}]*grid-template-columns:\s*repeat\(4,minmax\(0,1fr\)\)/i);
+  assert.match(styles,/html\[data-portal-view="buyer"\] #searchSummary\s*\{[^}]*grid-template-columns:\s*repeat\(3,minmax\(0,1fr\)\)[^}]*grid-template-rows:\s*minmax\(118px,auto\)\s+minmax\(118px,1fr\)[^}]*height:\s*100%/i);
+  assert.match(styles,/html\[data-portal-view="buyer"\] #searchSummary \.search-summary-item:nth-child\(4\)\s*\{[^}]*grid-column:\s*1\s*\/\s*-1/i);
+  assert.match(styles,/html\[data-portal-view="buyer"\] \.search-summary-card \.card-body\s*\{[^}]*grid-template-rows:\s*minmax\(0,1fr\)/i);
   assert.match(styles,/html\[data-portal-view="buyer"\] #overviewStats\s*\{[^}]*grid-template-columns:\s*1fr/i);
 });
 

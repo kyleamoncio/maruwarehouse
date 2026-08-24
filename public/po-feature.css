@@ -288,7 +288,13 @@
 
 html[data-portal-view="buyer"] .buyer-private{display:none!important}
 html[data-portal-view="buyer"] #overviewStats{grid-template-columns:1fr!important}
-html[data-portal-view="buyer"] #searchSummary{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+html[data-portal-view="buyer"] .search-summary-card .card-body{grid-template-rows:minmax(0,1fr)!important}
+html[data-portal-view="buyer"] #searchSummary{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  grid-template-rows:minmax(118px,auto) minmax(118px,1fr)!important;
+  height:100%!important;
+}
+html[data-portal-view="buyer"] #searchSummary .search-summary-item:nth-child(4){grid-column:1 / -1!important}
 html[data-portal-view="buyer"] #searchSummary .is-cost,
 html[data-portal-view="buyer"] #searchSummary .is-net{display:none!important}
 
