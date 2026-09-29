@@ -7,6 +7,9 @@ const V2_API_TOKEN = process.env.WAREHOUSE_PORTAL_V2_API_TOKEN || ORIGINAL_API_T
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || "*";
 const WRITE_ACTIONS = new Set(["appendProducts", "appendToProduct"]);
 const ORDER_SAFE_V2_VERSIONS = new Set(["2026-07-30.35", "2026-08-01.36", "2026-08-01.37", "2026-08-01.38", "2026-08-01.39", "2026-08-01.40", "2026-08-01.41", "2026-08-08.42", "2026-08-11.43", "2026-08-11.44", "2026-08-11.45", "2026-08-12.46", "2026-08-18.47", "2026-08-18.48"]);
+const V2_HEALTH_CACHE_TTL_MS = 60 * 1000;
+let v2HealthCache = null;
+let v2HealthPromise = null;
 
 function setCors(res) {
   res.setHeader("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
@@ -45,7 +48,7 @@ function getAction(req, body) {
   return body.action || req.query?.action || "";
 }
 
-async function getV2Health() {
+async function fetchV2HealthUncached() {
   if (!V2_APPS_SCRIPT_URL) return { success: false, error: "V2 URL is not configured." };
   try {
     const health = await forwardToAppsScript(
@@ -68,6 +71,24 @@ async function getV2Health() {
     "V2 health fallback",
     45000
   );
+}
+
+function rememberV2Health(result) {
+  if (!result || result.success === false || !String(result.version || '').trim()) return result;
+  v2HealthCache = { checkedAt: Date.now(), result };
+  return result;
+}
+
+async function getV2Health() {
+  if (v2HealthCache && Date.now() - v2HealthCache.checkedAt <= V2_HEALTH_CACHE_TTL_MS) {
+    return v2HealthCache.result;
+  }
+  v2HealthCache = null;
+  if (v2HealthPromise) return v2HealthPromise;
+  v2HealthPromise = fetchV2HealthUncached()
+    .then(rememberV2Health)
+    .finally(() => { v2HealthPromise = null; });
+  return v2HealthPromise;
 }
 
 async function fetchLegacyGetAllData() {
@@ -193,6 +214,7 @@ async function dualWrite(action, body) {
   let v2Result;
   try {
     v2Result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, payload, "V2", 45000);
+    rememberV2Health(v2Result);
   } catch (error) {
     return {
       success: false,
@@ -287,6 +309,7 @@ module.exports = async function handler(req, res) {
       result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2");
     } else if (action === "getV2Bootstrap") {
       result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2", 55000);
+      rememberV2Health(result);
     } else if (action === "getSummaryDocuments") {
       result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2");
     } else if (req.method === "POST" && WRITE_ACTIONS.has(action)) {

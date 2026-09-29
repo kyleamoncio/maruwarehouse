@@ -130,7 +130,7 @@ test('Summary grouping removes buyer duplicates caused only by whitespace',()=>{
 test('Portal Summary renders authoritative SUMMARY sheet rows instead of rebuilding edited identities from ORDER LINES',()=>{
   const s=html();
   assert.match(s,/let summaryData = \[\]/);
-  assert.match(s,/summaryData\s*=\s*\(json\.summary\s*\|\|\s*\[\]\)\.map/);
+  assert.match(s,/summaryData\s*=\s*\(Array\.isArray\(json\.summary\)\s*\?\s*json\.summary\s*:\s*\[\]\)\.map/);
   assert.match(s,/function buildAuthoritativeSummaryRows\s*\(/);
   assert.match(s,/if \(summaryData\.length\) return buildAuthoritativeSummaryRows\(\)/);
   assert.match(s,/const due = item\.due \|\| formatDueDate/);

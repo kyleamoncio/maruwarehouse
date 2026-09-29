@@ -4008,6 +4008,11 @@ const PAGE_SIZE = 25;
 let sortKey = 'date', sortDir = -1;
 let demoLoaded  = false;
 let v2ReferenceLoadPromise = null;
+let v2ReferenceDataResult = null;
+let portalDataLoadPromise = null;
+let initialPortalDataLoadPromise = null;
+const PORTAL_DATA_CACHE_KEY = 'maruWarehousePortalDataV1';
+const PORTAL_DATA_CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 const PORTAL_VIEW_MODE_KEY = 'maruWarehousePortalViewMode';
 let portalViewMode = 'maru';
 
@@ -4095,7 +4100,8 @@ function applyV2ReferenceData(result) {
 }
 
 async function loadV2ReferenceData(force = false) {
-  if (v2ReferenceLoadPromise && !force) return v2ReferenceLoadPromise;
+  if (v2ReferenceLoadPromise) return v2ReferenceLoadPromise;
+  if (!force && v2ReferenceDataResult) return v2ReferenceDataResult;
   v2ReferenceLoadPromise = (async () => {
     const result = await fetchV2BootstrapResult('Could not load Product Master and Buyer Prices.');
     applyV2ReferenceData(result);
@@ -4104,6 +4110,7 @@ async function loadV2ReferenceData(force = false) {
     renderPriceReference();
     getEntryLineElements().forEach(line => autoFillPrice(getEntryLineValue(line, 'product'), document.getElementById('e-buyer').value, line));
     updatePreview();
+    v2ReferenceDataResult = result;
     return result;
   })().catch(error => {
     showToast('Could not refresh Buyer Prices: ' + (error.message || error), 'error');
@@ -4119,7 +4126,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initializePortalViewMode();
   setTodayDate();
   populateDropdowns();
-  loadV2ReferenceData().catch(() => {});
   renderBuyerPills();
   renderPriceReference();
   updatePreview();
@@ -4131,7 +4137,9 @@ document.addEventListener('DOMContentLoaded', () => {
   syncTopbarScrollState();
   if (window.innerWidth <= 767) closeSidebar(false);
   window.addEventListener('scroll', syncTopbarScrollState, { passive: true });
-  loadAllData();
+  const restoredCachedData = restoreCachedPortalData();
+  initialPortalDataLoadPromise = loadAllData({ quiet: restoredCachedData });
+  initialPortalDataLoadPromise.finally(() => loadV2ReferenceData().catch(() => {}));
 });
 
 function bindDatePickerOpeners() {
@@ -4335,7 +4343,8 @@ function navigate(page) {
   }
   if (page === 'entry') {
     renderEntryRecent();
-    loadV2ReferenceData(true).catch(() => {});
+    (initialPortalDataLoadPromise || Promise.resolve())
+      .finally(() => loadV2ReferenceData().catch(() => {}));
     if (window.WarehousePO) WarehousePO.init().catch(() => {});
   }
   if (page === 'restock') loadRestockProducts();
@@ -4379,23 +4388,90 @@ function loadDemoData() {
 // ===============================================
 //  LOAD ALL DATA (live)
 // ===============================================
-async function loadAllData() {
-  if (!SCRIPT_URL) { loadDemoData(); return; }
-  showToast('Fetching data from Sheets…','info');
+function applyPortalDataPayload(json) {
+  if (!json || !Array.isArray(json.data)) throw new Error('No data returned');
+  allData = json.data.map(r => ({ date:r[0],buyer:r[1],po:r[2],si:r[3],packs:+r[4],cases:+r[5],price:+r[6],total:+r[7],cost:+r[8],net:+r[9],product:r[10] }));
+  summaryData = (Array.isArray(json.summary) ? json.summary : []).map((r,index) => ({
+    sourceIndex:index,date:r[0],buyer:r[1],po:r[2],si:r[3],items:r[4],
+    total:+r[5]||0,cost:+r[6]||0,netTotal:+r[7]||0,due:r[8]
+  }));
+  filteredData = [...allData];
+  renderDashboard();
+  renderAllData();
+  renderSummary();
+}
+
+function persistPortalDataCache(json) {
+  if (!json || !Array.isArray(json.data)) return;
   try {
-    const res  = await fetch(SCRIPT_URL + '?action=getAllData');
-    const json = await res.json();
-    if (!res.ok || json.error) throw new Error(json.error || 'No data returned');
-    if (!json.data) throw new Error('No data returned');
-    allData = json.data.map(r => ({ date:r[0],buyer:r[1],po:r[2],si:r[3],packs:+r[4],cases:+r[5],price:+r[6],total:+r[7],cost:+r[8],net:+r[9],product:r[10] }));
-    summaryData = (json.summary || []).map((r,index) => ({
-      sourceIndex:index,date:r[0],buyer:r[1],po:r[2],si:r[3],items:r[4],
-      total:+r[5]||0,cost:+r[6]||0,netTotal:+r[7]||0,due:r[8]
-    }));
-    filteredData = [...allData];
-    renderDashboard(); renderAllData(); renderSummary();
-    showToast('Data loaded successfully','success');
-  } catch(e) { showToast('Could not load data: ' + (e?.message || 'Bridge error'),'error'); }
+    localStorage.setItem(PORTAL_DATA_CACHE_KEY, JSON.stringify({ savedAt:Date.now(), payload:{ data:json.data, summary:Array.isArray(json.summary) ? json.summary : [] } }));
+  } catch (_) {}
+}
+
+function updatePortalDataSyncStatus(state) {
+  const labels = {
+    refreshing:'Refreshing Sheets data…',
+    live:'Sheets data is live',
+    saved:'Showing saved data while Sheets reconnects',
+    error:'Sheets data is unavailable'
+  };
+  const label = labels[state] || labels.error;
+  document.documentElement.dataset.sheetsStatus = state;
+  const toggle = document.getElementById('portalViewModeToggle');
+  if (toggle) toggle.title = label;
+}
+
+function restoreCachedPortalData() {
+  try {
+    const cached = JSON.parse(localStorage.getItem(PORTAL_DATA_CACHE_KEY) || 'null');
+    const age = Date.now() - Number(cached?.savedAt || 0);
+    if (!cached?.payload || age < 0 || age > PORTAL_DATA_CACHE_MAX_AGE_MS) return false;
+    applyPortalDataPayload(cached.payload);
+    updatePortalDataSyncStatus('saved');
+    return true;
+  } catch (_) {
+    try { localStorage.removeItem(PORTAL_DATA_CACHE_KEY); } catch (_) {}
+    return false;
+  }
+}
+
+async function fetchPortalDataResult() {
+  let lastError;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const response = await fetch(SCRIPT_URL + '?action=getAllData', { cache:'no-store' });
+      const json = await response.json();
+      if (!response.ok || json.error) throw new Error(json.error || 'No data returned');
+      if (!Array.isArray(json.data)) throw new Error('No data returned');
+      return json;
+    } catch (error) {
+      lastError = error;
+      if (attempt === 0) await new Promise(resolve => setTimeout(resolve, 750));
+    }
+  }
+  throw lastError || new Error('No data returned');
+}
+
+async function loadAllData({ quiet = false } = {}) {
+  if (!SCRIPT_URL) { loadDemoData(); return false; }
+  if (portalDataLoadPromise) return portalDataLoadPromise;
+  portalDataLoadPromise = (async () => {
+    updatePortalDataSyncStatus('refreshing');
+    showToast(quiet ? 'Refreshing Sheets data…' : 'Fetching data from Sheets…','info');
+    try {
+      const json = await fetchPortalDataResult();
+      applyPortalDataPayload(json);
+      persistPortalDataCache(json);
+      updatePortalDataSyncStatus('live');
+      if (!quiet) showToast('Data loaded successfully','success');
+      return true;
+    } catch(e) {
+      updatePortalDataSyncStatus(allData.length ? 'saved' : 'error');
+      showToast((allData.length ? 'Showing saved data. Live refresh failed: ' : 'Could not load data: ') + (e?.message || 'Bridge error'),'error');
+      return false;
+    }
+  })().finally(() => { portalDataLoadPromise = null; });
+  return portalDataLoadPromise;
 }
 
 function getRowCost(row) {
@@ -4502,20 +4578,6 @@ function renderOverviewStats() {
   marginSignal.textContent = `${metrics.margin.toFixed(1)}%`;
   marginSignal.style.color = metrics.margin >= 50 ? 'var(--green)' : metrics.margin >= 35 ? 'var(--warning)' : 'var(--danger)';
   marginNarrative.textContent = `${latestMonthLabel} profit closed at ₱${fmtNum(metrics.latestProfit)}. ${momentumLabel}.`;
-  return;
-  spotlight.innerHTML = `
-    <div class="spotlight-row">
-      <div><div class="spotlight-label">Top SKU</div><div class="spotlight-value">${topProductName}</div></div>
-      <div class="spotlight-value">₱${topProductRevenue}</div>
-    </div>
-    <div class="spotlight-row">
-      <div><div class="spotlight-label">Primary Buyer</div><div class="spotlight-value">${topBuyerName}</div></div>
-      <div class="spotlight-value">${metrics.topBuyer ? `₱${fmtNum(metrics.topBuyer[1])}` : '--'}</div>
-    </div>
-    <div class="spotlight-row">
-      <div><div class="spotlight-label">Cost Base</div><div class="spotlight-value">Tracked COGS</div></div>
-      <div class="spotlight-value">₱${fmtNum(metrics.cost)}</div>
-    </div>`;
 }
 
 function renderMonthlyProfit() {
@@ -5552,7 +5614,6 @@ function applySavedEntriesLocally(entries) {
   filteredData = [...allData];
   renderDashboard();
   renderAllData();
-  renderEntryRecent();
 }
 
 function resetEntryFormFields() {
@@ -5643,7 +5704,7 @@ const restockPacksPerCase = {};
 async function loadRestockProducts() {
   if (restockProductsLoaded) return;
   try {
-    const result = await fetchV2BootstrapResult('Could not load active products.');
+    const result = await loadV2ReferenceData();
     const productRecords = result.products || [];
     const products = productRecords.map(product => {
       restockPacksPerCase[product.name] = Number(product.packsPerCase) || 0;
