@@ -4008,11 +4008,7 @@ const PAGE_SIZE = 25;
 let sortKey = 'date', sortDir = -1;
 let demoLoaded  = false;
 let v2ReferenceLoadPromise = null;
-let v2ReferenceDataResult = null;
 let portalDataLoadPromise = null;
-let initialPortalDataLoadPromise = null;
-const PORTAL_DATA_CACHE_KEY = 'maruWarehousePortalDataV1';
-const PORTAL_DATA_CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 const PORTAL_VIEW_MODE_KEY = 'maruWarehousePortalViewMode';
 let portalViewMode = 'maru';
 
@@ -4099,9 +4095,8 @@ function applyV2ReferenceData(result) {
     BUYERS = normalizeBuyerList((result.buyers || []).filter(buyer => String(buyer || '').trim().toUpperCase() !== 'WATSONS'));
 }
 
-async function loadV2ReferenceData(force = false) {
+async function loadV2ReferenceData() {
   if (v2ReferenceLoadPromise) return v2ReferenceLoadPromise;
-  if (!force && v2ReferenceDataResult) return v2ReferenceDataResult;
   v2ReferenceLoadPromise = (async () => {
     const result = await fetchV2BootstrapResult('Could not load Product Master and Buyer Prices.');
     applyV2ReferenceData(result);
@@ -4110,7 +4105,6 @@ async function loadV2ReferenceData(force = false) {
     renderPriceReference();
     getEntryLineElements().forEach(line => autoFillPrice(getEntryLineValue(line, 'product'), document.getElementById('e-buyer').value, line));
     updatePreview();
-    v2ReferenceDataResult = result;
     return result;
   })().catch(error => {
     showToast('Could not refresh Buyer Prices: ' + (error.message || error), 'error');
@@ -4123,6 +4117,7 @@ async function loadV2ReferenceData(force = false) {
 //  INIT
 // ===============================================
 document.addEventListener('DOMContentLoaded', () => {
+  try { localStorage.removeItem('maruWarehousePortalDataV1'); } catch (_) {}
   initializePortalViewMode();
   setTodayDate();
   populateDropdowns();
@@ -4137,9 +4132,8 @@ document.addEventListener('DOMContentLoaded', () => {
   syncTopbarScrollState();
   if (window.innerWidth <= 767) closeSidebar(false);
   window.addEventListener('scroll', syncTopbarScrollState, { passive: true });
-  const restoredCachedData = restoreCachedPortalData();
-  initialPortalDataLoadPromise = loadAllData({ quiet: restoredCachedData });
-  initialPortalDataLoadPromise.finally(() => loadV2ReferenceData().catch(() => {}));
+  loadV2ReferenceData().catch(() => {});
+  loadAllData();
 });
 
 function bindDatePickerOpeners() {
@@ -4343,8 +4337,7 @@ function navigate(page) {
   }
   if (page === 'entry') {
     renderEntryRecent();
-    (initialPortalDataLoadPromise || Promise.resolve())
-      .finally(() => loadV2ReferenceData().catch(() => {}));
+    loadV2ReferenceData().catch(() => {});
     if (window.WarehousePO) WarehousePO.init().catch(() => {});
   }
   if (page === 'restock') loadRestockProducts();
@@ -4401,40 +4394,6 @@ function applyPortalDataPayload(json) {
   renderSummary();
 }
 
-function persistPortalDataCache(json) {
-  if (!json || !Array.isArray(json.data)) return;
-  try {
-    localStorage.setItem(PORTAL_DATA_CACHE_KEY, JSON.stringify({ savedAt:Date.now(), payload:{ data:json.data, summary:Array.isArray(json.summary) ? json.summary : [] } }));
-  } catch (_) {}
-}
-
-function updatePortalDataSyncStatus(state) {
-  const labels = {
-    refreshing:'Refreshing Sheets data…',
-    live:'Sheets data is live',
-    saved:'Showing saved data while Sheets reconnects',
-    error:'Sheets data is unavailable'
-  };
-  const label = labels[state] || labels.error;
-  document.documentElement.dataset.sheetsStatus = state;
-  const toggle = document.getElementById('portalViewModeToggle');
-  if (toggle) toggle.title = label;
-}
-
-function restoreCachedPortalData() {
-  try {
-    const cached = JSON.parse(localStorage.getItem(PORTAL_DATA_CACHE_KEY) || 'null');
-    const age = Date.now() - Number(cached?.savedAt || 0);
-    if (!cached?.payload || age < 0 || age > PORTAL_DATA_CACHE_MAX_AGE_MS) return false;
-    applyPortalDataPayload(cached.payload);
-    updatePortalDataSyncStatus('saved');
-    return true;
-  } catch (_) {
-    try { localStorage.removeItem(PORTAL_DATA_CACHE_KEY); } catch (_) {}
-    return false;
-  }
-}
-
 async function fetchPortalDataResult() {
   let lastError;
   for (let attempt = 0; attempt < 2; attempt++) {
@@ -4452,22 +4411,18 @@ async function fetchPortalDataResult() {
   throw lastError || new Error('No data returned');
 }
 
-async function loadAllData({ quiet = false } = {}) {
+async function loadAllData() {
   if (!SCRIPT_URL) { loadDemoData(); return false; }
   if (portalDataLoadPromise) return portalDataLoadPromise;
   portalDataLoadPromise = (async () => {
-    updatePortalDataSyncStatus('refreshing');
-    showToast(quiet ? 'Refreshing Sheets data…' : 'Fetching data from Sheets…','info');
+    showToast('Fetching data from Sheets…','info');
     try {
       const json = await fetchPortalDataResult();
       applyPortalDataPayload(json);
-      persistPortalDataCache(json);
-      updatePortalDataSyncStatus('live');
-      if (!quiet) showToast('Data loaded successfully','success');
+      showToast('Data loaded successfully','success');
       return true;
     } catch(e) {
-      updatePortalDataSyncStatus(allData.length ? 'saved' : 'error');
-      showToast((allData.length ? 'Showing saved data. Live refresh failed: ' : 'Could not load data: ') + (e?.message || 'Bridge error'),'error');
+      showToast('Could not load data: ' + (e?.message || 'Bridge error'),'error');
       return false;
     }
   })().finally(() => { portalDataLoadPromise = null; });
@@ -5697,24 +5652,25 @@ function updatePreview(){
   updateEntrySubmitState();
   if(window.WarehousePO?.updateTotalCheck)WarehousePO.updateTotalCheck();
 }
-let restockProductsLoaded = false;
 let restockSaveInProgress = false;
 const restockPacksPerCase = {};
+let restockProductsLoadPromise = null;
 
 async function loadRestockProducts() {
-  if (restockProductsLoaded) return;
-  try {
-    const result = await loadV2ReferenceData();
+  if (restockProductsLoadPromise) return restockProductsLoadPromise;
+  restockProductsLoadPromise = (async () => {
+    const result = await fetchV2BootstrapResult('Could not load restock products.');
     const productRecords = result.products || [];
     const products = productRecords.map(product => {
       restockPacksPerCase[product.name] = Number(product.packsPerCase) || 0;
       return product.name;
     }).filter(Boolean);
     document.querySelectorAll('.restock-product').forEach(select => populateProductSelect(select, products));
-    restockProductsLoaded = true;
-  } catch (error) {
+    getRestockLines().forEach(updateRestockLineImpact);
+  })().catch(error => {
     showToast('Could not load restock products: ' + (error.message || error), 'error');
-  }
+  }).finally(() => { restockProductsLoadPromise = null; });
+  return restockProductsLoadPromise;
 }
 
 function onRestockProductChange(select) {

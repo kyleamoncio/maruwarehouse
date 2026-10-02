@@ -46,7 +46,7 @@ test('Buyer Price and Restock bootstraps use the production-stable POST bridge r
   assert.match(helper[0],/for\s*\(let attempt = 0; attempt < 2; attempt\+\+\)/);
   assert.match(helper[0],/await new Promise\(resolve => setTimeout\(resolve, 750\)\)/);
   assert.match(source,/loadV2ReferenceData[\s\S]*fetchV2BootstrapResult\('Could not load Product Master and Buyer Prices\.'/);
-  assert.match(source,/loadRestockProducts[\s\S]*const result = await loadV2ReferenceData\(\)/);
+  assert.match(source,/loadRestockProducts[\s\S]*const result = await fetchV2BootstrapResult\('Could not load restock products\.'/);
   assert.doesNotMatch(source,/\?action=getV2Bootstrap/);
 });
 
