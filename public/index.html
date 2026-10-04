@@ -3256,8 +3256,10 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
 }
 </style>
 <link rel="stylesheet" href="/po-feature.css"/>
+  <link rel="stylesheet" href="/warehouse-studio.css?v=warehouse-studio-2">
+  <link rel="stylesheet" href="/warehouse-studio-refinements.css?v=warehouse-studio-2">
 </head>
-<body>
+<body id="warehouse-studio-body">
 
 <!-- SIDEBAR TOGGLE -->
 <button id="sidebarToggle" onclick="openSidebar()" title="Open menu">
@@ -3282,31 +3284,31 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
   <div class="topbar-nav">
     <button class="nav-item active" type="button" data-page="dashboard" onclick="navigate('dashboard')" aria-current="page">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-      Dashboard
+      <span>Dashboard</span>
     </button>
     <button class="nav-item" type="button" data-page="search" onclick="navigate('search')" aria-current="false">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      Search
+      <span>Search</span>
     </button>
     <button class="nav-item" type="button" data-page="summary" onclick="navigate('summary')" aria-current="false">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
-      Summary
+      <span>Summary</span>
     </button>
     <button class="nav-item" type="button" data-page="alldata" onclick="navigate('alldata')" aria-current="false" style="display:none">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-      All Data
+      <span>All Data</span>
     </button>
     <button class="nav-item" type="button" data-page="entry" onclick="navigate('entry')" aria-current="false">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-      New Entry
+      <span>New Entry</span>
     </button>
     <button class="nav-item" type="button" data-page="restock" onclick="navigate('restock')" aria-current="false">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="8" cy="7" r="3"/><path d="M17 14v6M14 17h6"/></svg>
-      Restock
+      <span>Restock</span>
     </button>
     <button class="nav-item" type="button" data-page="settings" onclick="navigate('settings')" aria-current="false">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      Settings
+      <span>Settings</span>
     </button>
   </div>
 
@@ -3323,7 +3325,9 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
 
   <!-- TOPBAR -->
   <div id="topbar">
-    <span class="page-title" id="topbarTitle">Dashboard</span>
+    <div class="studio-context"><img class="studio-maru-logo" src="/studio-maru-logo.png" alt="MARU" width="76" height="18"><details class="studio-workspace-menu"><summary>Warehouse Portal <svg class="studio-workspace-chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m3 4.5 3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary><div class="studio-workspace-options"><span class="studio-menu-label">Workspaces</span><a href="https://maruhouse.vercel.app" target="_blank" rel="noopener noreferrer">House Portal <span aria-hidden="true">↗</span></a><a href="/" aria-current="page">Warehouse Portal</a></div></details><span class="studio-workspace-separator">/</span><span class="studio-workspace-name">Operations</span></div>
+    <div class="studio-topbar-copy"><span class="studio-workspace-separator">/</span><span class="page-title" id="topbarTitle">Dashboard</span></div>
+    <span class="studio-preview-tag">LOCAL PREVIEW · READ ONLY</span>
   </div>
 
   <!-- CONTENT -->
@@ -3336,7 +3340,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,#content::-webkit-scrollbar,.tab
         <div class="hero-top">
           <div>
             <div class="page-header-left">
-              <h1>Overview</h1>
+              <h1>MARU Warehouse Portal</h1>
             </div>
           </div>
           <div id="dashboardProfitSignal" class="buyer-private" style="text-align:right">
@@ -6124,5 +6128,7 @@ function openSidebar(){
 <script src="/po-entry-integration.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="/po-feature.js"></script>
+<script src="/warehouse-studio.js?v=warehouse-studio-2"></script>
+<script src="/warehouse-summary-viewer.js?v=warehouse-studio-2"></script>
 </body>
 </html>

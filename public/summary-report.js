@@ -68,13 +68,14 @@
       page=pdf.addPage(pageSize);
       y=pageSize[1]-margin;
       page.drawText('MARU Sales Summary',{x:margin,y:y-4,size:18,font:bold,color:rgb(.10,.11,.10)});
-      y-=30;
-      page.drawRectangle({x:margin,y:y-headerHeight,width:tableWidth,height:headerHeight,color:rgb(.13,.14,.13)});
+      y-=38;
+      page.drawRectangle({x:margin,y:y-headerHeight,width:tableWidth,height:headerHeight,color:rgb(.96,.97,.96)});
+      page.drawLine({start:{x:margin,y:y-headerHeight},end:{x:margin+tableWidth,y:y-headerHeight},thickness:.6,color:rgb(.84,.86,.85)});
       let x=margin;
       SUMMARY_REPORT_COLUMNS.forEach(column=>{
-        const labelWidth=bold.widthOfTextAtSize(column.label,8);
+        const labelWidth=regular.widthOfTextAtSize(column.label,8);
         const labelX=column.align==='right'?x+column.width-8-labelWidth:x+8;
-        page.drawText(column.label,{x:labelX,y:y-16,size:8,font:bold,color:rgb(1,1,1)});
+        page.drawText(column.label,{x:labelX,y:y-16,size:8,font:regular,color:rgb(.36,.40,.38)});
         x+=column.width;
       });
       y-=headerHeight;
@@ -85,7 +86,7 @@
       const rowHeight=Math.max(24,Math.max(...wrapped.map(lines=>lines.length))*lineHeight+10);
       if(y-rowHeight<margin+12)addPage();
 
-      page.drawLine({start:{x:margin,y:y-rowHeight},end:{x:margin+tableWidth,y:y-rowHeight},thickness:.45,color:rgb(.80,.82,.80)});
+      page.drawLine({start:{x:margin,y:y-rowHeight},end:{x:margin+tableWidth,y:y-rowHeight},thickness:.45,color:rgb(.88,.90,.89)});
       let x=margin;
       SUMMARY_REPORT_COLUMNS.forEach((column,columnIndex)=>{
         const lines=wrapped[columnIndex];
@@ -106,7 +107,7 @@
     const totalText=money(grandTotal);
     const labelWidth=bold.widthOfTextAtSize('GRAND TOTAL',9);
     const totalWidth=bold.widthOfTextAtSize(totalText,9);
-    page.drawLine({start:{x:totalX-130,y:y-4},end:{x:margin+tableWidth,y:y-4},thickness:.8,color:rgb(.35,.37,.35)});
+    page.drawLine({start:{x:totalX-130,y:y-4},end:{x:margin+tableWidth,y:y-4},thickness:.6,color:rgb(.72,.76,.74)});
     page.drawText('GRAND TOTAL',{x:totalX-10-labelWidth,y:y-22,size:9,font:bold,color:rgb(.10,.11,.10)});
     page.drawText(totalText,{x:margin+tableWidth-6-totalWidth,y:y-22,size:9,font:bold,color:rgb(.10,.11,.10)});
     return pdf.save({useObjectStreams:false});
