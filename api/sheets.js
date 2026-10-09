@@ -93,15 +93,40 @@ async function forwardToAppsScript(url, token, action, body, label, timeoutMs = 
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
-  let response;
   try {
-    response = await fetch(url, {
+    const response = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify({ ...body, action, token }),
       redirect: "follow",
       signal: controller.signal
     });
+    // Receiving headers is not a completed response. Keep the configured
+    // stage deadline active while consuming the full acknowledged JSON body.
+    const text = await response.text();
+    let parsed;
+    try {
+      parsed = JSON.parse(text);
+    } catch (error) {
+      const preview = sanitizeBodyPreview(text);
+      throw new Error(
+        `${label} Apps Script returned non-JSON response (${response.status}). ` +
+        (preview ? `Preview: ${preview}` : "No response body.")
+      );
+    }
+
+    if (label === "Original" && parsed?.error === "Unknown action" && action === "getAllData") {
+      return fetchLegacyGetAllData();
+    }
+    if (!response.ok) {
+      return {
+        __status: response.status,
+        success: false,
+        error: parsed.error || parsed.message || `${label} Apps Script request failed with HTTP ${response.status}`,
+        details: parsed
+      };
+    }
+    return parsed;
   } catch (error) {
     if (error && error.name === "AbortError") {
       throw new Error(`${label} Apps Script timed out after ${Math.round(timeoutMs / 1000)} seconds.`);
@@ -110,31 +135,6 @@ async function forwardToAppsScript(url, token, action, body, label, timeoutMs = 
   } finally {
     clearTimeout(timeout);
   }
-
-  const text = await response.text();
-  let parsed;
-  try {
-    parsed = JSON.parse(text);
-  } catch (error) {
-    const preview = sanitizeBodyPreview(text);
-    throw new Error(
-      `${label} Apps Script returned non-JSON response (${response.status}). ` +
-      (preview ? `Preview: ${preview}` : "No response body.")
-    );
-  }
-
-  if (label === "Original" && parsed?.error === "Unknown action" && action === "getAllData") {
-    return fetchLegacyGetAllData();
-  }
-  if (!response.ok) {
-    return {
-      __status: response.status,
-      success: false,
-      error: parsed.error || parsed.message || `${label} Apps Script request failed with HTTP ${response.status}`,
-      details: parsed
-    };
-  }
-  return parsed;
 }
 
 function succeeded(result) {
