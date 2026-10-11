@@ -33,6 +33,12 @@ function sanitizeBodyPreview(text) {
 }
 
 async function readRequestBody(req) {
+  // Hosting adapters may provide raw byte bodies even for JSON requests.
+  // A Buffer is also an object: decode it before the parsed-object shortcut.
+  if (ArrayBuffer.isView(req.body)) {
+    const raw = Buffer.from(req.body.buffer, req.body.byteOffset, req.body.byteLength).toString('utf8').trim();
+    return raw ? JSON.parse(raw) : {};
+  }
   if (req.body && typeof req.body === "object") return req.body;
   if (typeof req.body === "string") return req.body ? JSON.parse(req.body) : {};
   const chunks = [];
