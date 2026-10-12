@@ -1,4 +1,5 @@
 const { randomUUID } = require("crypto");
+const { attachInventoryDimensions } = require('../lib/inventory-dimensions');
 
 const ORIGINAL_APPS_SCRIPT_URL = process.env.WAREHOUSE_PORTAL_APPS_SCRIPT_URL || process.env.WAREHOUSE_PORTAL_URL || "";
 const V2_APPS_SCRIPT_URL = process.env.WAREHOUSE_PORTAL_V2_URL || "";
@@ -293,6 +294,9 @@ module.exports = async function handler(req, res) {
       result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2");
     } else if (action === "getV2Bootstrap") {
       result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2", 55000);
+    } else if (["getCurrentInventory","getInventoryCatalog"].includes(action)) {
+      result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2 inventory", 55000);
+      if(action==='getInventoryCatalog')result=attachInventoryDimensions(result);
     } else if (action === "getSummaryDocuments") {
       result = await forwardToAppsScript(V2_APPS_SCRIPT_URL, V2_API_TOKEN, action, body, "V2");
     } else if (req.method === "POST" && WRITE_ACTIONS.has(action)) {

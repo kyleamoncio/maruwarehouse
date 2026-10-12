@@ -1,0 +1,806 @@
+{
+  "source": "GAISANO CBM x MARU Dimensions.xlsx",
+  "sheet": "GAISANO DIMENSIONS",
+  "measurementDate": "2026-10-07",
+  "cbmOmitted": true,
+  "products": {
+    "Bathroom Tissue 4s Fluffy": {
+      "sourceRow": 2,
+      "description": "Fluffy Flushable 3-Ply 750 Sheets Tissue 4 Rolls",
+      "dimensions": [
+        {
+          "label": "Reference case size (GAISANO)",
+          "value": "12"
+        },
+        {
+          "label": "Gross item weight (g)",
+          "value": "460"
+        },
+        {
+          "label": "Item length (cm)",
+          "value": "10"
+        },
+        {
+          "label": "Item width (cm)",
+          "value": "20"
+        },
+        {
+          "label": "Item height (cm)",
+          "value": "20"
+        },
+        {
+          "label": "Carton length (cm)",
+          "value": "63"
+        },
+        {
+          "label": "Carton width (cm)",
+          "value": "42"
+        },
+        {
+          "label": "Carton height (cm)",
+          "value": "20"
+        }
+      ]
+    },
+    "Bathroom Tissue 9s Fluffy": {
+      "sourceRow": 3,
+      "description": "Fluffy Flushable 3-Ply 750 Sheets Tissue 9 Rolls",
+      "dimensions": [
+        {
+          "label": "Reference case size (GAISANO)",
+          "value": "12"
+        },
+        {
+          "label": "Gross item weight (g)",
+          "value": "1060"
+        },
+        {
+          "label": "Item length (cm)",
+          "value": "10"
+        },
+        {
+          "label": "Item width (cm)",
+          "value": "20"
+        },
+        {
+          "label": "Item height (cm)",
+          "value": "40"
+        },
+        {
+          "label": "Carton length (cm)",
+          "value": "63"
+        },
+        {
+          "label": "Carton width (cm)",
+          "value": "42"
+        },
+        {
+          "label": "Carton height (cm)",
+          "value": "20"
+        }
+      ]
+    },
+    "Bathroom Tissue 12s Fluffy": {
+      "sourceRow": 4,
+      "description": "Fluffy Flushable 3-Ply 750 Sheets Tissue 12 Rolls",
+      "dimensions": [
+        {
+          "label": "Reference case size (GAISANO)",
+          "value": "4"
+        },
+        {
+          "label": "Gross item weight (g)",
+          "value": "1416"
+        },
+        {
+          "label": "Item length (cm)",
+          "value": "10"
+        },
+        {
+          "label": "Item width (cm)",
+          "value": "30"
+        },
+        {
+          "label": "Item height (cm)",
+          "value": "40"
+        },
+        {
+          "label": "Carton length (cm)",
+          "value": "63"
+        },
+        {
+          "label": "Carton width (cm)",
+          "value": "42"
+        },
+        {
+          "label": "Carton height (cm)",
+          "value": "20"
+        }
+      ]
+    },
+    "Kitchen Towel Fluffy": {
+      "sourceRow": 5,
+      "description": "Fluffy Kitchen Towels 2-Ply, 2 Rolls",
+      "dimensions": [
+        {
+          "label": "Reference case size (GAISANO)",
+          "value": "12"
+        },
+        {
+          "label": "Gross item weight (g)",
+          "value": "400"
+        },
+        {
+          "label": "Item length (cm)",
+          "value": "8"
+        },
+        {
+          "label": "Item width (cm)",
+          "value": "23"
+        },
+        {
+          "label": "Item height (cm)",
+          "value": "22"
+        },
+        {
+          "label": "Carton length (cm)",
+          "value": "60.96"
+        },
+        {
+          "label": "Carton width (cm)",
+          "value": "44.45"
+        },
+        {
+          "label": "Carton height (cm)",
+          "value": "24.64"
+        }
+      ]
+    },
+    "Paper Towel Fluffy": {
+      "sourceRow": 6,
+      "description": "Fluffy Paper Towel 2-Ply 150 Pulls 300 Sheets",
+      "dimensions": [
+        {
+          "label": "Reference case size (GAISANO)",
+          "value": "20"
+        },
+        {
+          "label": "Gross item weight (g)",
+          "value": "340"
+        },
+        {
+          "label": "Item length (cm)",
+          "value": "20"
+        },
+        {
+          "label": "Item width (cm)",
+          "value": "10.6"
+        },
+        {
+          "label": "Item height (cm)",
+          "value": "20.5"
+        },
+        {
+          "label": "Carton length (cm)",
+          "value": "50"
+        },
+        {
+          "label": "Carton width (cm)",
+          "value": "19.8"
+        },
+        {
+          "label": "Carton height (cm)",
+          "value": "85.5"
+        }
+      ]
+    },
+    "Wet Wipes 30s Fluffy": {
+      "sourceRow": 7,
+      "description": "Fluffy Wet Wipes 30s",
+      "dimensions": [
+        {
+          "label": "Reference case size (GAISANO)",
+          "value": "12"
+        },
+        {
+          "label": "Gross item weight (g)",
+          "value": "860"
+        },
+        {
+          "label": "Item length (cm)",
+          "value": "10"
+        },
+        {
+          "label": "Item width (cm)",
+          "value": "16"
+        },
+        {
+          "label": "Item height (cm)",
+          "value": "10"
+        },
+        {
+          "label": "Carton length (cm)",
+          "value": "34"
+        },
+        {
+          "label": "Carton width (cm)",
+          "value": "34"
+        },
+        {
+          "label": "Carton height (cm)",
+          "value": "21"
+        }
+      ]
+    },
+    "Wet Wipes 60s Fluffy": {
+      "sourceRow": 8,
+      "description": "Fluffy Wet Wipes 60s",
+      "dimensions": [
+        {
+          "label": "Reference case size (GAISANO)",
+          "value": "6"
+        },
+        {
+          "label": "Gross item weight (g)",
+          "value": "1730"
+        },
+        {
+          "label": "Item length (cm)",
+          "value": "10"
+        },
+        {
+          "label": "Item width (cm)",
+          "value": "16"
+        },
+        {
+          "label": "Item height (cm)",
+          "value": "18"
+        },
+        {
+          "label": "Carton length (cm)",
+          "value": "34"
+        },
+        {
+          "label": "Carton width (cm)",
+          "value": "34"
+        },
+        {
+          "label": "Carton height (cm)",
+          "value": "21"
+        }
+      ]
+    },
+    "Bamboo Facial Tissue Fluffy": {
+      "sourceRow": 9,
+      "description": "Fluffy Bamboo Facial Tissue",
+      "dimensions": [
+        {
+          "label": "Reference case size (GAISANO)",
+          "value": "12"
+        },
+        {
+          "label": "Gross item weight (g)",
+          "value": "200"
+        },
+        {
+          "label": "Item length (cm)",
+          "value": "9"
+        },
+        {
+          "label": "Item width (cm)",
+          "value": "12"
+        },
+        {
+          "label": "Item height (cm)",
+          "value": "18"
+        },
+        {
+          "label": "Carton length (cm)",
+          "value": "38"
+        },
+        {
+          "label": "Carton width (cm)",
+          "value": "12.8"
+        },
+        {
+          "label": "Carton height (cm)",
+          "value": "55"
+        }
+      ]
+    },
+    "Cotton Pads Fluffy": {
+      "sourceRow": 10,
+      "description": "Fluffy Square Cotton Pads 100s",
+      "dimensions": [
+        {
+          "label": "Reference case size (GAISANO)",
+          "value": "144"
+        },
+        {
+          "label": "Gross item weight (g)",
+          "value": "65"
+        },
+        {
+          "label": "Item length (cm)",
+          "value": "6"
+        },
+        {
+          "label": "Item width (cm)",
+          "value": "5"
+        },
+        {
+          "label": "Item height (cm)",
+          "value": "23"
+        },
+        {
+          "label": "Carton length (cm)",
+          "value": "57"
+        },
+        {
+          "label": "Carton width (cm)",
+          "value": "52.5"
+        },
+        {
+          "label": "Carton height (cm)",
+          "value": "41.5"
+        }
+      ]
+    },
+    "Cotton Buds Fluffy": {
+      "sourceRow": 11,
+      "description": "Fluffy Cotton Buds",
+      "dimensions": [
+        {
+          "label": "Reference case size (GAISANO)",
+          "value": "240"
+        },
+        {
+          "label": "Gross item weight (g)",
+          "value": "50"
+        },
+        {
+          "label": "Item length (cm)",
+          "value": "10.5"
+        },
+        {
+          "label": "Item width (cm)",
+          "value": "3"
+        },
+        {
+          "label": "Item height (cm)",
+          "value": "7.5"
+        },
+        {
+          "label": "Carton length (cm)",
+          "value": "49.5"
+        },
+        {
+          "label": "Carton width (cm)",
+          "value": "41.5"
+        },
+        {
+          "label": "Carton height (cm)",
+          "value": "40.5"
+        }
+      ]
+    },
+    "Bathroom Tissue 4s Plush": {
+      "sourceRow": 16,
+      "description": "PLUSH Bathroom Tissue 4 Rolls",
+      "dimensions": [
+        {
+          "label": "Reference case size (GAISANO)",
+          "value": "24"
+        },
+        {
+          "label": "Gross item weight (g)",
+          "value": "472"
+        },
+        {
+          "label": "Item length (cm)",
+          "value": "20"
+        },
+        {
+          "label": "Item width (cm)",
+          "value": "10"
+        },
+        {
+          "label": "Item height (cm)",
+          "value": "20"
+        },
+        {
+          "label": "Carton length (cm)",
+          "value": "63"
+        },
+        {
+          "label": "Carton width (cm)",
+          "value": "42"
+        },
+        {
+          "label": "Carton height (cm)",
+          "value": "20"
+        }
+      ]
+    },
+    "Bathroom Tissue 9s Plush": {
+      "sourceRow": 17,
+      "description": "PLUSH Bathroom Tissue 9 Rolls",
+      "dimensions": [
+        {
+          "label": "Reference case size (GAISANO)",
+          "value": "12"
+        },
+        {
+          "label": "Gross item weight (g)",
+          "value": "1062"
+        },
+        {
+          "label": "Item length (cm)",
+          "value": "20"
+        },
+        {
+          "label": "Item width (cm)",
+          "value": "10"
+        },
+        {
+          "label": "Item height (cm)",
+          "value": "40"
+        },
+        {
+          "label": "Carton length (cm)",
+          "value": "63"
+        },
+        {
+          "label": "Carton width (cm)",
+          "value": "31.5"
+        },
+        {
+          "label": "Carton height (cm)",
+          "value": "30"
+        }
+      ]
+    },
+    "Bathroom Tissue 12s Plush": {
+      "sourceRow": 18,
+      "description": "PLUSH Bathroom Tissue 12 Rolls",
+      "dimensions": [
+        {
+          "label": "Reference case size (GAISANO)",
+          "value": "8"
+        },
+        {
+          "label": "Gross item weight (g)",
+          "value": "1416"
+        },
+        {
+          "label": "Item length (cm)",
+          "value": "30"
+        },
+        {
+          "label": "Item width (cm)",
+          "value": "10"
+        },
+        {
+          "label": "Item height (cm)",
+          "value": "40"
+        },
+        {
+          "label": "Carton length (cm)",
+          "value": "63"
+        },
+        {
+          "label": "Carton width (cm)",
+          "value": "42"
+        },
+        {
+          "label": "Carton height (cm)",
+          "value": "20"
+        }
+      ]
+    },
+    "Bathroom Tissue 20s Plush": {
+      "sourceRow": 19,
+      "description": "PLUSH Bathroom Tissue 20 Rolls",
+      "dimensions": [
+        {
+          "label": "Reference case size (GAISANO)",
+          "value": "2"
+        },
+        {
+          "label": "Gross item weight (g)",
+          "value": "4140"
+        },
+        {
+          "label": "Item length (cm)",
+          "value": "23"
+        },
+        {
+          "label": "Item width (cm)",
+          "value": "25"
+        },
+        {
+          "label": "Item height (cm)",
+          "value": "59"
+        },
+        {
+          "label": "Carton length (cm)",
+          "value": "62.5"
+        },
+        {
+          "label": "Carton width (cm)",
+          "value": "50"
+        },
+        {
+          "label": "Carton height (cm)",
+          "value": "23"
+        }
+      ]
+    },
+    "Bathroom Tissue 30s Plush": {
+      "sourceRow": 20,
+      "description": "PLUSH Bathroom Tissue 30 Rolls",
+      "dimensions": [
+        {
+          "label": "Reference case size (GAISANO)",
+          "value": "2"
+        },
+        {
+          "label": "Gross item weight (g)",
+          "value": "6210"
+        },
+        {
+          "label": "Item length (cm)",
+          "value": "22"
+        },
+        {
+          "label": "Item width (cm)",
+          "value": "33"
+        },
+        {
+          "label": "Item height (cm)",
+          "value": "64"
+        },
+        {
+          "label": "Carton length (cm)",
+          "value": "75"
+        },
+        {
+          "label": "Carton width (cm)",
+          "value": "62.5"
+        },
+        {
+          "label": "Carton height (cm)",
+          "value": "23"
+        }
+      ]
+    },
+    "Paper Towel Plush": {
+      "sourceRow": 21,
+      "description": "PLUSH Paper Towel 150 Pulls",
+      "dimensions": [
+        {
+          "label": "Reference case size (GAISANO)",
+          "value": "20"
+        },
+        {
+          "label": "Gross item weight (g)",
+          "value": "340"
+        },
+        {
+          "label": "Item length (cm)",
+          "value": "20"
+        },
+        {
+          "label": "Item width (cm)",
+          "value": "10.6"
+        },
+        {
+          "label": "Item height (cm)",
+          "value": "20.5"
+        },
+        {
+          "label": "Carton length (cm)",
+          "value": "50"
+        },
+        {
+          "label": "Carton width (cm)",
+          "value": "19.8"
+        },
+        {
+          "label": "Carton height (cm)",
+          "value": "85.5"
+        }
+      ]
+    },
+    "Kitchen Towel Plush": {
+      "sourceRow": 22,
+      "description": "PLUSH Kitchen Towel 80 Pulls",
+      "dimensions": [
+        {
+          "label": "Reference case size (GAISANO)",
+          "value": "16"
+        },
+        {
+          "label": "Gross item weight (g)",
+          "value": "480"
+        },
+        {
+          "label": "Item length (cm)",
+          "value": "28"
+        },
+        {
+          "label": "Item width (cm)",
+          "value": "10"
+        },
+        {
+          "label": "Item height (cm)",
+          "value": "21"
+        },
+        {
+          "label": "Carton length (cm)",
+          "value": "69"
+        },
+        {
+          "label": "Carton width (cm)",
+          "value": "46"
+        },
+        {
+          "label": "Carton height (cm)",
+          "value": "28"
+        }
+      ]
+    },
+    "Wet Wipes 30s Plush": {
+      "sourceRow": 23,
+      "description": "PLUSH Wet Wipes 30 Sheets Pack of 3",
+      "dimensions": [
+        {
+          "label": "Reference case size (GAISANO)",
+          "value": "12"
+        },
+        {
+          "label": "Gross item weight (g)",
+          "value": "285"
+        },
+        {
+          "label": "Item length (cm)",
+          "value": "3"
+        },
+        {
+          "label": "Item width (cm)",
+          "value": "10"
+        },
+        {
+          "label": "Item height (cm)",
+          "value": "15.5"
+        },
+        {
+          "label": "Carton length (cm)",
+          "value": "34"
+        },
+        {
+          "label": "Carton width (cm)",
+          "value": "33"
+        },
+        {
+          "label": "Carton height (cm)",
+          "value": "21"
+        }
+      ]
+    },
+    "Wet Wipes 60s Plush": {
+      "sourceRow": 24,
+      "description": "PLUSH Wet Wipes 60 Sheets Pack of 3",
+      "dimensions": [
+        {
+          "label": "Reference case size (GAISANO)",
+          "value": "6"
+        },
+        {
+          "label": "Gross item weight (g)",
+          "value": "575"
+        },
+        {
+          "label": "Item length (cm)",
+          "value": "6"
+        },
+        {
+          "label": "Item width (cm)",
+          "value": "10"
+        },
+        {
+          "label": "Item height (cm)",
+          "value": "15.5"
+        },
+        {
+          "label": "Carton length (cm)",
+          "value": "34"
+        },
+        {
+          "label": "Carton width (cm)",
+          "value": "33"
+        },
+        {
+          "label": "Carton height (cm)",
+          "value": "21"
+        }
+      ]
+    },
+    "Cotton Buds 200 Stems Plush": {
+      "sourceRow": 25,
+      "description": "PLUSH Cotton Buds 200 Paper Stems / 400 Tips",
+      "dimensions": [
+        {
+          "label": "Reference case size (GAISANO)",
+          "value": "144"
+        },
+        {
+          "label": "Gross item weight (g)",
+          "value": "65"
+        },
+        {
+          "label": "Item length (cm)",
+          "value": "6"
+        },
+        {
+          "label": "Item width (cm)",
+          "value": "5"
+        },
+        {
+          "label": "Item height (cm)",
+          "value": "23"
+        },
+        {
+          "label": "Carton length (cm)",
+          "value": "57"
+        },
+        {
+          "label": "Carton width (cm)",
+          "value": "52.5"
+        },
+        {
+          "label": "Carton height (cm)",
+          "value": "41.5"
+        }
+      ]
+    },
+    "Cotton Buds 300 Stems Plush": {
+      "sourceRow": 26,
+      "description": "PLUSH Cotton Buds 300 Paper Stems / 600 Tips",
+      "dimensions": [
+        {
+          "label": "Reference case size (GAISANO)",
+          "value": "60"
+        },
+        {
+          "label": "Gross item weight (g)",
+          "value": "147"
+        },
+        {
+          "label": "Item length (cm)",
+          "value": "9.8"
+        },
+        {
+          "label": "Item width (cm)",
+          "value": "9.8"
+        },
+        {
+          "label": "Item height (cm)",
+          "value": "8.2"
+        },
+        {
+          "label": "Carton length (cm)",
+          "value": "38.5"
+        },
+        {
+          "label": "Carton width (cm)",
+          "value": "29"
+        },
+        {
+          "label": "Carton height (cm)",
+          "value": "42.5"
+        }
+      ]
+    }
+  }
+}
